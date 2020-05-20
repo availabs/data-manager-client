@@ -1,26 +1,64 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { BrowserRouter,Switch } from 'react-router-dom';
+import ScrollToTop from 'utils/ScrollToTop'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Routes from 'Routes';
+import Layout from 'layouts/DefaultLayout'
+
+import { auth } from 'store/user';
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isAuthenticating: true
+    }
+    this.props.auth();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.state.isAuthenticating && this.props.user.attempts ) {
+      this.setState({ isAuthenticating: false });
+    }
+  }
+
+  render() {
+    return (
+      <BrowserRouter>
+        <ScrollToTop>
+          <Switch>
+            {Routes.map((route, i) => {
+              return (
+                <Layout
+                  {...route}
+                  authed={this.props.user.authed}
+                  isAuthenticating={this.state.isAuthenticating}
+                  key={i}
+                  layoutSettings={route.layoutSettings}
+                  menus={Routes
+                    .filter(r => r.mainNav)
+                  }
+                  router={this.props.router}
+                  routes={route.routes}
+                  user={this.props.user}
+                />
+              );
+            })}
+          </Switch>
+        </ScrollToTop>
+      </BrowserRouter>
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    user: state.user,
+    router: state.router
+  };
+};
+
+const mapDispatchToProps = { auth };
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
