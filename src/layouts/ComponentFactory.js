@@ -6,8 +6,10 @@ import CensusCharts from 'components/CensusCharts'
 import get from "lodash.get"
 
 const ComponentLibrary = {
+    ...CensusCharts
 }
 
+console.log('ComponentLibrary', ComponentLibrary)
 const getKey = (config, i) => get(config, "key", `key-${ i }`);
 
 const BasicJSX = ({ config, children }) =>
@@ -15,7 +17,7 @@ const BasicJSX = ({ config, children }) =>
 
 const getComponent = config =>
   typeof config === "function" ? config :
-  typeof config === "string" ? () => <>{ config }</> :
+  typeof config === "string" ? () => <React.Fragment>{ config }</React.Fragment> :
   get(ComponentLibrary, config.type, ({ children }) => <BasicJSX config={ config }>{ children }</BasicJSX>);
 
 const processConfig = (config, rest, i = 0) => {

@@ -32,7 +32,17 @@ export default
       className: 'grid grid-cols-12 gap-2 p-5 max-w-7xl m-auto'
     },
     children: [
-      { type: "div", children: ["CHILD 1"] },
+      { 
+        type: "div", 
+        props:{ className: 'h-64 bg-white shadow col-span-12'}, 
+        children: [
+          {
+            type: "TextBox",
+            header: "ECONOMY",
+            body: "The economic security of individuals and families is essential to achieving the values of American society. For complex reasons, this financial security is beyond the means of many in our community."
+          }
+        ] 
+      },
       { type: "div",
         props: { className: "col-span-4" }, 
         children: [
@@ -44,34 +54,24 @@ export default
     ]
   }
 }
-//       {
-//         type: "TextBox",
-//         header: "ECONOMY",
-//         body: "The economic security of individuals and families is essential to achieving the values of American society. For complex reasons, this financial security is beyond the means of many in our community.",
-//         container:{
-//           type: 'card',
-//           props: {className:'col-span-12'},
-//           h: 3,
-//           w: 12
-//         }
-//       },
-//       {
-//           type:"CensusStatBox",
-//           title:'Percent of Populaion Over 16 Years-old, Not in Labor Force',
-//           sumType: 'pct',
-//           censusKeys:["B23025_007E"],
-//           divisorKey: "B23025_001E",
-//           showCompareYear: true,
-//           invertColors: true,
-//           valueSuffix: '%',
-//           maximumFractionDigits: 1,
-//           container: {
-//             type: 'card',
-//             props: {className:'h-64 col-span-3'},
-//              w:3,
-//              h:9
-//           }
-//        },
+      
+      // {
+      //     type:"CensusStatBox",
+      //     title:'Percent of Populaion Over 16 Years-old, Not in Labor Force',
+      //     sumType: 'pct',
+      //     censusKeys:["B23025_007E"],
+      //     divisorKey: "B23025_001E",
+      //     showCompareYear: true,
+      //     invertColors: true,
+      //     valueSuffix: '%',
+      //     maximumFractionDigits: 1,
+      //     container: {
+      //       type: 'card',
+      //       props: {className:'h-64 col-span-3'},
+      //        w:3,
+      //        h:9
+      //     }
+      //  },
 //       {
 //         type: "CensusBarChart",
 //         title: "Employment Status for the Population 16 Years and Over",
