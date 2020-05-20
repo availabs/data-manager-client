@@ -4,15 +4,17 @@ import Layouts from 'layouts/components/Layouts'
 import PageFactory from 'layouts/PageFactory'
 import * as themes from 'layouts/components/Themes'
 
+import ComponentFactory from "layouts/ComponentFactory"
+
 import LoadingPage from "./components/Loading/LoadingPage"
 
-const DefaultLayout = ({component: Component, ...rest}) => {
+const DefaultLayout = ({ component, ...rest }) => {
   const Layout = Layouts[rest.layout] || Layouts['Sidebar']
   if ( rest.isAuthenticating && rest.authLevel >= 0  ) {
     return (
       <Layout {...rest}>
         <Route {...rest} render={matchProps => (
-          <div style={{background:"#f0f7f9"}}> 
+          <div style={{background:"#f0f7f9"}}>
             <LoadingPage />
           </div>
         )} />
@@ -20,11 +22,6 @@ const DefaultLayout = ({component: Component, ...rest}) => {
     )
   }
 
-  let config = {}
-  if(typeof Component === 'object') {
-    config = Component
-    Component = PageFactory
-  }
   return sendToLgin(rest) ?
   (
     <Redirect
@@ -35,10 +32,10 @@ const DefaultLayout = ({component: Component, ...rest}) => {
     />
   ) : (
     <Layout {...rest.layoutSettings} {...rest}>
-      <Route 
+      <Route
         {...rest}
         theme={themes[rest.layoutSettings.theme] || themes['light']}
-        render={matchProps => (<Component {...matchProps} {...rest} {...config}/>)} 
+        render={matchProps => (<ComponentFactory {...matchProps} {...rest} config={ component }/>)}
       />
     </Layout>
   )
