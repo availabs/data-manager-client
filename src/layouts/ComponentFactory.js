@@ -9,16 +9,20 @@ const ComponentLibrary = {
     ...CensusCharts
 }
 
-console.log('ComponentLibrary', ComponentLibrary)
 const getKey = (config, i) => get(config, "key", `key-${ i }`);
 
-const BasicJSX = ({ config, children }) =>
-  <config.type { ...config.props }>{ children }</config.type>
+const BasicJSX = ({ Comp, props, children }) =>
+  <Comp { ...props }>{ children }</Comp>
+
+const getBasicJSX = config => ({ children }) =>
+  <BasicJSX Comp={ config.type } props={ get(config, "props", {}) }>
+    { children }
+  </BasicJSX>
 
 const getComponent = config =>
   typeof config === "function" ? config :
   typeof config === "string" ? () => <React.Fragment>{ config }</React.Fragment> :
-  get(ComponentLibrary, config.type, ({ children }) => <BasicJSX config={ config }>{ children }</BasicJSX>);
+  get(ComponentLibrary, config.type, getBasicJSX(config));
 
 const processConfig = (config, rest, i = 0) => {
   const Component = getComponent(config),

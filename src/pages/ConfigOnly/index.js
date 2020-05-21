@@ -9,7 +9,22 @@ class Test extends React.Component {
   }
 }
 
-console.log("TESTING:", typeof Test)
+const DataFetcher = (WrappedComponent, options = {}) => {
+  return Class Wrapper extends React.Component {
+    state = {
+      loading: false,
+      data: null
+    }
+    componentDidMount() {
+      this.setState({ loading: true });
+      new Promise(resolve => setTimeout(resolve, 2000, { test: "DATA" }))
+        .then(data => this.setState({ loading: false, data }));
+    }
+    render() {
+      return <WrappedComponent { ...this.state } { ...this.props }/>
+    }
+  }
+}
 
 export default
 {
@@ -28,23 +43,31 @@ export default
 
   component: {
     type: "div",
+    wrappers: [
+      { type: "DataFetcher",
+        options: {
+
+        }
+      }
+    ],
     props: {
       className: 'grid grid-cols-12 gap-2 p-5 max-w-7xl m-auto'
     },
     children: [
-      { 
-        type: "div", 
-        props:{ className: 'h-64 bg-white shadow col-span-12'}, 
+      { type: "div",
+        props: { className: 'h-64 bg-white shadow col-span-12'},
         children: [
           {
             type: "TextBox",
-            header: "ECONOMY",
-            body: "The economic security of individuals and families is essential to achieving the values of American society. For complex reasons, this financial security is beyond the means of many in our community."
+            props: {
+              header: "ECONOMY",
+              body: "The economic security of individuals and families is essential to achieving the values of American society. For complex reasons, this financial security is beyond the means of many in our community."
+            }
           }
-        ] 
+        ]
       },
       { type: "div",
-        props: { className: "col-span-4" }, 
+        props: { className: "col-span-4" },
         children: [
           { type: "h1", children: ["HEADER!!!"] }
         ]
@@ -54,7 +77,7 @@ export default
     ]
   }
 }
-      
+
       // {
       //     type:"CensusStatBox",
       //     title:'Percent of Populaion Over 16 Years-old, Not in Labor Force',
