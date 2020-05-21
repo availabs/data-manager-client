@@ -1,6 +1,6 @@
 import React from "react"
 
-const DATA_ITEM = {
+const DATA_FORMAT = {
   id: "unique-database-id",
 
   app: "app-name",
