@@ -52,7 +52,8 @@ class DMS extends React.Component {
   static defaultProps = {
     app: "app-name",
     user: "user-id" // can be null,
-    DataItem: DefaultDataItem
+    DataItem: DefaultDataItem,
+    defaultTags: ["strings"]
   }
   state = {
     action: "list",
@@ -82,7 +83,9 @@ class DMS extends React.Component {
 
   render() {
     const { action, dataItems, activeItem, tags } = this.state,
-      { DataItem } = this.props;
+      { DataItem, defaultTags } = this.props;
+
+    const TAGS = tags.length ? tags : defaultTags;
 
     return (
       <div>
@@ -96,7 +99,7 @@ class DMS extends React.Component {
           { action === "list" ?
               dataItems
                 .filter(d =>
-                  tags.reduce((a, c) => a || d.tags.includes(c), !Boolean(tags.length))
+                  TAGS.reduce((a, c) => a || d.tags.includes(c), !Boolean(TAGS.length))
                 )
                 .map(d =>
                   <DataItem action="list" data={ d }
