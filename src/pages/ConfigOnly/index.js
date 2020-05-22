@@ -20,9 +20,10 @@ export default
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
+    nav: 'top',
     // maxWidth: 'max-w-7xl',
     headerBar: false,
-    theme: 'flat'
+    theme: 'light'
 
   },
 

@@ -1,6 +1,6 @@
 export const light = {
 	bg: 'bg-gray-200',
-	sidebarBg: 'bg-white',
+	menuBg: 'bg-white',
 	sidebarW: '56',
 	sidebarBorder: 'border-r border-gray-200',
 	sidebarItem: 'text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:bg-gray-100',
@@ -13,7 +13,7 @@ export const light = {
 
 export const dark = {
 	bg: 'bg-gray-800',
-	sidebarBg: 'bg-gray-800',
+	menuBg: 'bg-gray-800',
 	sidebarW: '56',
 	sidebarBorder: '',
 	sidebarItem: 'text-gray-300 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700',
@@ -26,7 +26,7 @@ export const dark = {
 
 export const blue = {
 	bg: 'bg-gray-200',
-	sidebarBg: 'bg-indigo-800',
+	menuBg: 'bg-indigo-800',
 	sidebarW: '56',
 	sidebarBorder: '',
 	sidebarItem: 'text-indigo-300 rounded-md hover:text-white hover:bg-indigo-700 focus:outline-none focus:text-white focus:bg-indigo-700',
@@ -39,7 +39,7 @@ export const blue = {
 
 export const flat = {
 	bg: 'custom-bg',
-	sidebarBg: 'custom-bg',
+	menuBg: 'custom-bg',
 	sidebarW: '56',
 	sidebarBorder: '',
 	sidebarItem: 'text-gray-400 group-hover:text-gray-600 group-focus:text-gray-300',

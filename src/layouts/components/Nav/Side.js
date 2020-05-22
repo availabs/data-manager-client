@@ -1,5 +1,5 @@
 import React from "react"
-import SidebarItem from './SideBarItem'
+import SidebarItem from './Item'
 
 
 
@@ -17,7 +17,7 @@ const MobileSidebar = ({open, toggle, menuItems=[], theme}) => (
 	            </svg>
 	          </button>
 	        </div>
-	        <div className={`flex-1 h-0 pt-2 pb-4 overflow-y-auto ${theme.sidebarBg}`}>
+	        <div className={`flex-1 h-0 pt-2 pb-4 overflow-y-auto ${theme.menuBg}`}>
 	          <div className='px-6 pt-4 pb-8 logo-text gray-900' >Logo{/* Logo Goes Here */}</div>
 	          <nav className="px-2">
 	            {menuItems.map((page,i) => {
@@ -39,7 +39,7 @@ const MobileSidebar = ({open, toggle, menuItems=[], theme}) => (
 ) 
 
 const DesktopSidebar = ({menuItems=[], fixed, theme}) => (
-	<div className={`hidden md:flex md:flex-shrink-0 z-20 ${theme.sidebarBg} ${fixed ? 'fixed top-0 h-screen' : ''} ${theme.sidebarBorder}`}>
+	<div className={`hidden md:flex md:flex-shrink-0 z-20 ${theme.menuBg} ${fixed ? 'fixed top-0 h-screen' : ''} ${theme.sidebarBorder}`}>
       <div className={`flex flex-col w-${theme.sidebarW}`}>
         <div className={`w-${theme.sidebarW} flex-1 flex flex-col pb-4 overflow-y-auto`}>
           <div className='px-6 pt-4 pb-8 logo-text gray-900' >Logo{/* Logo Goes Here */}</div>

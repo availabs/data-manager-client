@@ -11,7 +11,7 @@ export function classNames(...classes) {
 export default ({ active, to, icon, className, children, theme }) => {
   let linkClasses = classNames(
     className,
-    "group flex items-center px-2 py-1  text-sm leading-6 font-medium transition ease-in-out duration-150",
+    "group flex items-center px-2 py-1 text-sm leading-6 font-medium transition ease-in-out duration-150",
     active && theme.sidebarItemActive,
     !active && theme.sidebarItem
   );
@@ -23,12 +23,12 @@ export default ({ active, to, icon, className, children, theme }) => {
     !active && theme.sidebarItem
   );
  
-    return (
-      <Link to={to} className={linkClasses}>
-        <Icon icon={icon} className={iconClasses} />
-        {children}
-      </Link>
-    );
+  return (
+    <Link to={to} className={linkClasses}>
+      <Icon icon={icon} className={iconClasses} />
+      {children}
+    </Link>
+  );
   
 
 };
