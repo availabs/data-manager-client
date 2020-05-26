@@ -15,7 +15,7 @@ import get from 'lodash.get'
 //   right: ${ props => props.position.includes("right") ? "20px" : "auto" };
 // `
 
-class CensusStatBox extends React.Component {
+class CensusStatBox extends Component {
     fetchFalcorDeps(){
         return this.props.falcor.get(
           ['acs',

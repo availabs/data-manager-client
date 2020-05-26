@@ -1,9 +1,9 @@
 import React from "react"
 import SidebarItem from './Item'
+import { withRouter } from "react-router";
 
 
-
-const MobileSidebar = ({open, toggle, menuItems=[], theme}) => (
+const MobileSidebar = ({open, toggle, menuItems=[], theme, location}) => (
 	<div style={{display: open ? 'block' : 'none' }} className="md:hidden">
 	    <div className="fixed inset-0 z-20 transition-opacity ease-linear duration-300">
 	      <div className="absolute inset-0 bg-gray-600 opacity-75" />
@@ -19,10 +19,10 @@ const MobileSidebar = ({open, toggle, menuItems=[], theme}) => (
 	        </div>
 	        <div className={`flex-1 h-0 pt-2 pb-4 overflow-y-auto ${theme.menuBg}`}>
 	          <div className='px-6 pt-4 pb-8 logo-text gray-900' >Logo{/* Logo Goes Here */}</div>
-	          <nav className="px-2">
+	          <nav className="">
 	            {menuItems.map((page,i) => {
             		return (
-            			<SidebarItem key={i} to={page.path} icon={page.icon} theme={theme}>
+            			<SidebarItem key={i} to={page.path} icon={page.icon} theme={theme} active={page.path === location.pathname}>
         					{page.name}
       					</SidebarItem>
             		)
@@ -38,15 +38,15 @@ const MobileSidebar = ({open, toggle, menuItems=[], theme}) => (
   </div>
 ) 
 
-const DesktopSidebar = ({menuItems=[], fixed, theme}) => (
+const DesktopSidebar = ({menuItems=[], fixed, theme, location}) => (
 	<div className={`hidden md:flex md:flex-shrink-0 z-20 ${theme.menuBg} ${fixed ? 'fixed top-0 h-screen' : ''} ${theme.sidebarBorder}`}>
       <div className={`flex flex-col w-${theme.sidebarW}`}>
         <div className={`w-${theme.sidebarW} flex-1 flex flex-col pb-4 overflow-y-auto`}>
           <div className='px-6 pt-4 pb-8 logo-text gray-900' >Logo{/* Logo Goes Here */}</div>
-          <nav className="flex-1 px-2">
+          <nav className="flex-1">
             {menuItems.map((page,i) => {
             	return (
-            		<SidebarItem key={i} to={page.path}  active={page.active} icon={page.icon} theme={theme}>
+            		<SidebarItem key={i} to={page.path} icon={page.icon} theme={theme} active={page.path === location.pathname}>
         				{page.name}
       				</SidebarItem>
             	)
@@ -59,9 +59,12 @@ const DesktopSidebar = ({menuItems=[], fixed, theme}) => (
 )
 
 
-export default (props) => (
-	<>
+const SideNav = (props) => (
+	<React.Fragment>
 		<MobileSidebar {...props} />
 		<DesktopSidebar {...props} />
-	</>
+	</React.Fragment>
 )
+
+
+export default withRouter(SideNav)

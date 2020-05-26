@@ -1,6 +1,5 @@
 import React from 'react'
-import TrackVisibility from 'react-on-screen';
-import Containers from  'layouts/components/Containers'
+// import TrackVisibility from 'react-on-screen';
 import CensusCharts from 'components/CensusCharts'
 
 import get from "lodash.get"
@@ -9,16 +8,20 @@ const ComponentLibrary = {
     ...CensusCharts
 }
 
-console.log('ComponentLibrary', ComponentLibrary)
 const getKey = (config, i) => get(config, "key", `key-${ i }`);
 
-const BasicJSX = ({ config, children }) =>
-  <config.type { ...config.props }>{ children }</config.type>
+const BasicJSX = ({ Comp, props, children }) =>
+  <Comp { ...props }>{ children }</Comp>
+
+const getBasicJSX = config => ({ children }) =>
+  <BasicJSX Comp={ config.type } props={ get(config, "props", {}) }>
+    { children }
+  </BasicJSX>
 
 const getComponent = config =>
   typeof config === "function" ? config :
   typeof config === "string" ? () => <React.Fragment>{ config }</React.Fragment> :
-  get(ComponentLibrary, config.type, ({ children }) => <BasicJSX config={ config }>{ children }</BasicJSX>);
+  get(ComponentLibrary, config.type, getBasicJSX(config));
 
 const processConfig = (config, rest, i = 0) => {
   const Component = getComponent(config),
@@ -44,24 +47,24 @@ export default ({ config, ...rest }) => processConfig(config, rest)
 //         : (<Container {...container.props}><Graph { ...props } /></Container>)
 // }
 
-class ComponentHider extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state={
-            show: Boolean(props.isVisible)
-        }
-    }
+// class ComponentHider extends React.Component{
+//     constructor(props) {
+//         super(props);
+//         this.state={
+//             show: Boolean(props.isVisible)
+//         }
+//     }
 
-    componentDidUpdate(prevProps, prevState) {
-    	if(this.props.isVisible && !this.state.show) {
-    		this.setState({show:true})
-    	}
-    }
+//     componentDidUpdate(prevProps, prevState) {
+//     	if(this.props.isVisible && !this.state.show) {
+//     		this.setState({show:true})
+//     	}
+//     }
 
-    render () {
-    	const { isVisible, Graph, ...rest } = this.props;
-    	return (rest.type === "CensusMap" ? this.state.show : isVisible) ?
-		    <Graph { ...rest } /> :
-		    <div>Loading...</div>
-    }
-}
+//     render () {
+//     	const { isVisible, Graph, ...rest } = this.props;
+//     	return (rest.type === "CensusMap" ? this.state.show : isVisible) ?
+// 		    <Graph { ...rest } /> :
+// 		    <div>Loading...</div>
+//     }
+// }

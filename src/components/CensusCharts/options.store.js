@@ -52,6 +52,8 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, showModal: false };
     case SET_OPTIONS_MODAL_PAGE:
       return { ...state, page: action.page };
+    default:
+      return state
   }
-  return state;
+  //return state;
 }

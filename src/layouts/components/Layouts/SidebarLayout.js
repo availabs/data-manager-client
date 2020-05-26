@@ -42,7 +42,7 @@ class Layout extends Component {
           </div>
           ) : ''}
         {this.props.headerBar ? (
-          <div className={this.props.fixed ? `fixed left-0 top-0 w-full z-10` : ''}> 
+          <div className={`${this.props.fixed ? `fixed left-0 top-0 w-full z-10 ${this.props.nav === 'top' ? 'mt-16' : '' }` : ''}`}> 
             <div className={`${this.props.maxWidth} mx-auto`} >
               <HeaderBar 
                 toggle={this.toggleMenu} 
@@ -53,7 +53,7 @@ class Layout extends Component {
             </div>
           </div>
         ) : '' } 
-      	<div className={`mx-auto min-h-screen ${this.props.maxWidth} ${this.props.fixed ? 'mt-16' : ''}`} >
+      	<div className={`mx-auto min-h-screen ${this.props.maxWidth} ${this.props.nav === 'top' && this.props.fixed ? 'mt-16' : ''}`} >
           <div className="flex">
           {this.props.nav === 'side' ? (
             <SideNav 
@@ -65,7 +65,7 @@ class Layout extends Component {
             />) :''}
             <div className="w-0 flex-1 ">
               <main className={`
-                  flex-1 relative z-0 pt-2 pb-6 focus:outline-none md:py-6
+                  flex-1 relative z-0 pt-2 pb-6 focus:outline-none
                   ${theme.contentBg}
                   ${this.props.headerBar ? 'mt-16' : ''} 
                   ${this.props.fixed && this.props.nav === 'side' ?  `md:ml-${theme.sidebarW}` : '' }`

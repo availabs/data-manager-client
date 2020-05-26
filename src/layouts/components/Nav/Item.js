@@ -8,27 +8,19 @@ export function classNames(...classes) {
 }
 
 
-export default ({ active, to, icon, className, children, theme }) => {
-  let linkClasses = classNames(
-    className,
-    "group flex items-center px-2 py-1 text-sm leading-6 font-medium transition ease-in-out duration-150",
-    active && theme.sidebarItemActive,
-    !active && theme.sidebarItem
-  );
-   
+export default ({ active, to, icon, className, children, theme, type='side' }) => {
+  
 
-  let iconClasses = classNames(
-    "mr-4 h-6 w-6 transition ease-in-out duration-150",
-    active && theme.sidebarItemActive,
-    !active && theme.sidebarItem
-  );
- 
+  let sideClasses = active ? theme.sidebarItemActive : theme.sidebarItem
+  let topClasses = active ? theme.topnavItemActive : theme.topnavItem
+  let linkClasses = type === 'side' ? sideClasses : topClasses 
   return (
     <Link to={to} className={linkClasses}>
-      <Icon icon={icon} className={iconClasses} />
+      <Icon icon={icon} className={theme.menuIcon} />
       {children}
     </Link>
   );
   
 
 };
+

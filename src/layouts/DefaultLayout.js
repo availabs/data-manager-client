@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from "react-router-dom";
 import Layouts from 'layouts/components/Layouts'
-import PageFactory from 'layouts/PageFactory'
 import * as themes from 'layouts/components/Themes'
 
 import ComponentFactory from "layouts/ComponentFactory"
@@ -21,7 +20,6 @@ const DefaultLayout = ({ component, ...rest }) => {
       </Layout>
     )
   }
-
   return sendToLgin(rest) ?
   (
     <Redirect
