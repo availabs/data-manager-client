@@ -212,7 +212,8 @@ let initialState = {
   authLevel: -1,
   authed: false,
   attempts: 0,
-  meta: []
+  meta: [],
+  id: "fake-user-id"
 };
 
 // ------------------------------------

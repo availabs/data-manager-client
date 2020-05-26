@@ -3,10 +3,13 @@ import TrackVisibility from 'react-on-screen';
 import Containers from  'layouts/components/Containers'
 import CensusCharts from 'components/CensusCharts'
 
+import DmsComponents from "components/DMS"
+
 import get from "lodash.get"
 
 const ComponentLibrary = {
-    ...CensusCharts
+    ...CensusCharts,
+    ...DmsComponents
 }
 
 const getKey = (config, i) => get(config, "key", `key-${ i }`);
@@ -24,8 +27,14 @@ const getComponent = config =>
   typeof config === "string" ? () => <React.Fragment>{ config }</React.Fragment> :
   get(ComponentLibrary, config.type, getBasicJSX(config));
 
+const applyWrappers = (Component, config) => {
+  const wrappers = get(config, "wrappers", []);
+console.log("WRAPPERS:", wrappers);
+  return Component;
+}
+
 const processConfig = (config, rest, i = 0) => {
-  const Component = getComponent(config),
+  const Component = applyWrappers(getComponent(config), config),
     children = get(config, "children", []);
 
   return React.createElement(Component,

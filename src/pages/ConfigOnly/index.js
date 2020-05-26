@@ -10,14 +10,14 @@ class Test extends React.Component {
 }
 
 const DataFetcher = (WrappedComponent, options = {}) => {
-  return Class Wrapper extends React.Component {
+  return class Wrapper extends React.Component {
     state = {
       loading: false,
       data: null
     }
     componentDidMount() {
       this.setState({ loading: true });
-      new Promise(resolve => setTimeout(resolve, 2000, { test: "DATA" }))
+      new Promise(resolve => setTimeout(resolve, 2000, { data: "DATA" }))
         .then(data => this.setState({ loading: false, data }));
     }
     render() {
@@ -38,45 +38,91 @@ export default
     // maxWidth: 'max-w-7xl',
     headerBar: false,
     theme: 'flat'
-
   },
+  // auth: true,
 
   component: {
-    type: "div",
-    wrappers: [
-      { type: "DataFetcher",
-        options: {
-
-        }
-      }
-    ],
+    type: "dms-manager", // top level component for managing data items
     props: {
-      className: 'grid grid-cols-12 gap-2 p-5 max-w-7xl m-auto'
+      app: "blog",
+      dataFormat: "blog-post",
+      defaultAction: "list",
+      actions: ["create"]
     },
     children: [
-      { type: "div",
-        props: { className: 'h-64 bg-white shadow col-span-12'},
-        children: [
-          {
-            type: "TextBox",
-            props: {
-              header: "ECONOMY",
-              body: "The economic security of individuals and families is essential to achieving the values of American society. For complex reasons, this financial security is beyond the means of many in our community."
+// dms-manager children are special
+// they are only shown when the dms-manager state === the child.props.action
+      { type: "dms-list", // generic dms component for viewing multiple data items
+        props: {
+          attributes: ["title", "bloggerId", "action:view", "action:edit", "action:delete"]
+        }
+      },
+
+      { type: "dms-card", // generic dms component for viewing a single data item
+        wrappers: [
+          { type: "falcor", options: { requests: [["..."], ["..."]] } },
+          { type: "connect",
+            options: {
+              mapStateToProps: (state, props) => ({}),
+              mapDispatchToProps: {}
             }
-          }
-        ]
+          },
+          DataFetcher
+        ],
+        props: {
+          mapDataToProps: {
+// this is used by dms-card to map data attributes to component props
+// attribute: prop
+            title: "title",
+            body: "content"
+          },
+          actions: [
+            { action: "reply",
+              seedProps: props => ({ "blog-post": props.data }) }
+          ]
+        },
       },
-      { type: "div",
-        props: { className: "col-span-4" },
-        children: [
-          { type: "h1", children: ["HEADER!!!"] }
-        ]
-      },
-      "CHILD 3",
-      Test
+
+      { type: "dms-create" },
+
+      { type: "dms-create",
+        props: {
+          action: "reply"
+        }
+      }
     ]
   }
 }
+
+//   component: {
+//     type: "div",
+//     props: {
+//       className: 'grid grid-cols-12 gap-2 p-5 max-w-7xl m-auto'
+//     },
+//     children: [
+//       { type: "div",
+//         props: { className: 'h-64 bg-white shadow col-span-12'},
+//         children: [
+//           {
+//             type: "TextBox",
+//             props: {
+//               header: "ECONOMY",
+//               body: "The economic security of individuals and families is essential to achieving the values of American society. For complex reasons, this financial security is beyond the means of many in our community."
+//             }
+//           }
+//         ]
+//       },
+//       { type: "div",
+//         props: { className: "col-span-4" },
+//         children: [
+//           { type: "h1", children: ["HEADER!!!"] }
+//         ]
+//       },
+//       "CHILD 3",
+//       Test
+//     ]
+//   }
+// }
 
       // {
       //     type:"CensusStatBox",
