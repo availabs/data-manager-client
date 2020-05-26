@@ -34,13 +34,13 @@ class Options extends React.Component {
       } }>
        <ul className="nav nav-tabs smaller">
           <li className="nav-item" style={ { margin: 0 } }>
-            <a className="nav-link" onClick={ e => this.openModal("view-data") }>View Data</a>
+            <button className="nav-link" onClick={ e => this.openModal("view-data") }>View Data</button>
           </li>
           <li className="nav-item" style={ { margin: 0 } }>
-            <a className="nav-link"  onClick={ e => this.openModal("save-image") }>Save Image</a>
+            <button className="nav-link"  onClick={ e => this.openModal("save-image") }>Save Image</button>
           </li>
           <li className="nav-item" style={ { margin: 0 } }>
-            <a className="nav-link"  onClick={ e => this.openModal("share-embed") }>Share Embed</a>
+            <button className="nav-link"  onClick={ e => this.openModal("share-embed") }>Share Embed</button>
           </li>
        </ul>
     </div>

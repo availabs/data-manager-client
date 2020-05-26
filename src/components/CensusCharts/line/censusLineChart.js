@@ -5,8 +5,8 @@ import {falcorGraph} from "store/falcorGraph";
 import { ResponsiveLine } from '@nivo/line'
 import Options from '../Options'
 import Title from "../ComponentTitle"
-import GeoName from '../geoname'
-import CensusLabel, { getCensusKeyLabel } from '../CensusLabel'
+// import GeoName from '../geoname'
+import  { getCensusKeyLabel } from '../CensusLabel'
 
 import get from 'lodash.get'
 
@@ -14,7 +14,7 @@ import { format } from "d3-format"
 
 import { getColorRange } from "../color-ranges"
 
-class CensusLineChart extends React.Component {
+class CensusLineChart extends Component {
 
   container = React.createRef();
 
@@ -73,9 +73,8 @@ class CensusLineChart extends React.Component {
     getTableData(geoid) {
       const getKeyName = key =>
         key in this.props.censusKeyLabels ? this.props.censusKeyLabels[key] :
-        getCensusKeyLabel(key, this.props.acs, this.props.removeLeading),
-
-        yFormat = format(this.props.yFormat);
+        getCensusKeyLabel(key, this.props.acs, this.props.removeLeading);
+        //yFormat = format(this.props.yFormat);
 
       const data = [];
       for (const year of this.props.years) {

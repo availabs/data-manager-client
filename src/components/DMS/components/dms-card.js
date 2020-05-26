@@ -29,7 +29,7 @@ export default class DmsCard extends React.Component {
     };
 
     for (const key in mapDataToProps) {
-      const v = data[key],
+      const v = data.data[key],
         k = mapDataToProps[key];
       mapped[k] = v;
     }

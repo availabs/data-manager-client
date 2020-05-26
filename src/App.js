@@ -35,12 +35,10 @@ class App extends Component {
                   authed={this.props.user.authed}
                   isAuthenticating={this.state.isAuthenticating}
                   key={i}
-                  layoutSettings={route.layoutSettings}
                   menus={Routes
                     .filter(r => r.mainNav)
                   }
                   router={this.props.router}
-                  routes={route.routes}
                   user={this.props.user}
                 />
               );

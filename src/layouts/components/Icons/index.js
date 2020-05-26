@@ -1,6 +1,14 @@
 import React from "react";
 
 const Icons = {
+  Blank:(
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d=""
+    />
+  ),
   HomeOutline:(
     <path
       strokeLinecap="round"
@@ -93,7 +101,7 @@ const Icons = {
 }
 
 const Icon = ({ icon, className }) => {
-  let Choice = Icons[icon] || Icons['HomeOutline']
+  let Choice = Icons[icon] || Icons['Blank']
   return (
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className={className}>
       {Choice}

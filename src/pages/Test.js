@@ -26,9 +26,8 @@ class Test extends Component {
 export default
 {
   path: '/test',
-  mainNav: false,
-  name: 'Home',
-  icon: 'HomeOutline',
+  name: 'Test',
+  mainNav: true,
   layoutSettings: {
     fixed: true,
     maxWidth: 'max-w-7xl',

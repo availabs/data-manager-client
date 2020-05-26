@@ -1,6 +1,5 @@
 import React from 'react'
-import TrackVisibility from 'react-on-screen';
-import Containers from  'layouts/components/Containers'
+// import TrackVisibility from 'react-on-screen';
 import CensusCharts from 'components/CensusCharts'
 
 import DmsComponents from "components/DMS"
@@ -57,24 +56,24 @@ export default ({ config, ...rest }) => processConfig(config, rest)
 //         : (<Container {...container.props}><Graph { ...props } /></Container>)
 // }
 
-class ComponentHider extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state={
-            show: Boolean(props.isVisible)
-        }
-    }
+// class ComponentHider extends React.Component{
+//     constructor(props) {
+//         super(props);
+//         this.state={
+//             show: Boolean(props.isVisible)
+//         }
+//     }
 
-    componentDidUpdate(prevProps, prevState) {
-    	if(this.props.isVisible && !this.state.show) {
-    		this.setState({show:true})
-    	}
-    }
+//     componentDidUpdate(prevProps, prevState) {
+//     	if(this.props.isVisible && !this.state.show) {
+//     		this.setState({show:true})
+//     	}
+//     }
 
-    render () {
-    	const { isVisible, Graph, ...rest } = this.props;
-    	return (rest.type === "CensusMap" ? this.state.show : isVisible) ?
-		    <Graph { ...rest } /> :
-		    <div>Loading...</div>
-    }
-}
+//     render () {
+//     	const { isVisible, Graph, ...rest } = this.props;
+//     	return (rest.type === "CensusMap" ? this.state.show : isVisible) ?
+// 		    <Graph { ...rest } /> :
+// 		    <div>Loading...</div>
+//     }
+// }

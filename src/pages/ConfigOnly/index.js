@@ -28,19 +28,20 @@ const DataFetcher = (WrappedComponent, options = {}) => {
 
 export default
 {
-  path: '/config',
+  path: '/',
   mainNav: true,
   exact: true,
   name: 'Config Test',
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
+    nav: 'top',
     // maxWidth: 'max-w-7xl',
     headerBar: false,
-    theme: 'flat'
-  },
-  // auth: true,
+    theme: 'light'
 
+  },
+  
   component: {
     type: "dms-manager", // top level component for managing data items
     props: {

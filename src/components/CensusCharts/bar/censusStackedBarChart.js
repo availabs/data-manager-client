@@ -8,7 +8,7 @@ import { getColorRange } from '../color-ranges'
 import Options from '../Options'
 import Title from "../ComponentTitle"
 
-import { scaleOrdinal } from "d3-scale"
+// import { scaleOrdinal } from "d3-scale"
 import { format } from "d3-format"
 
 import get from "lodash.get"

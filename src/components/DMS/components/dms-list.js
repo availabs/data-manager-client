@@ -36,7 +36,7 @@ export default class DmsList extends React.Component {
                     .filter(a => !/action:/.test(a))
                     .map(a =>
                       <td key={ a }>
-                        { d[a] }
+                        { d.data[a] }
                       </td>
                     )
                 }

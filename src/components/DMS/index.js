@@ -21,6 +21,9 @@ const DATA_FORMAT = {
 }
 const DATA_ITEM = {
   id: "unique-database-id",
+
+  app: "app-name",
+  type: "string",
   data: "jsonb",
 
   created_at: "datetime",
@@ -36,7 +39,8 @@ class DmsManager extends React.Component {
     defaultAction: "list",
     dataItems: blogs,
     app: "app-name",
-    format: blogPost
+    format: blogPost,
+    className: "pl-20 pr-20 pt-5 pb-5"
   }
   state = {
     stack: [{
@@ -105,7 +109,7 @@ console.log("INTERACT:", action, id, props)
     const { action } = this.checkStack();
 
     return (
-      <div>
+      <div className={ this.props.className }>
         <div className="mb-4">
           <div className="font-bold text-3xl mb-1">{ this.props.app } Manager</div>
           <span>

@@ -13,8 +13,8 @@ import { format } from "d3-format"
 
 import get from "lodash.get"
 
-import GeoName from '../geoname'
-import CensusLabel, { getCensusKeyLabel } from '../CensusLabel'
+//import GeoName from '../geoname'
+import  { getCensusKeyLabel } from '../CensusLabel'
 
 const DEFAULT_COLORS = getColorRange(8, "Set2")
 
@@ -46,8 +46,7 @@ class CensusBarChart extends React.Component {
     )
   }
   processDataForViewing() {
-  const fmt = format(this.props.yFormat),
-    getKeyName = key => key in this.props.censusKeyLabels ?
+    const getKeyName = key => key in this.props.censusKeyLabels ?
       this.props.censusKeyLabels[key] :
       getCensusKeyLabel(key, this.props.acsGraph, this.props.removeLeading);
 

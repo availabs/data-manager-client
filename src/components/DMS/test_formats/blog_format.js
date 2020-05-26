@@ -26,16 +26,20 @@ export const blogPost = {
 
 export const blogs = [
   { id: 1, app: "my-blog", type: "blog-post",
-    title: "Test 1",
-    body: "Test blog 1",
-    bloggerId: 123,
-    replyTo: -1
+    data: {
+      title: "Test 1",
+      body: "Test blog 1",
+      bloggerId: 123,
+      replyTo: -1
+    }
   },
   { id: 2, app: "my-blog", type: "blog-post",
-    title: "Test 2",
-    body: "Test blog 2",
-    bloggerId: 123,
-    replyTo: -1
+    data: {
+      title: "Test 2",
+      body: "Test blog 2",
+      bloggerId: 123,
+      replyTo: -1
+    }
   },
   // { id: 3, app: "my-blog", type: "blog-post",
   //   title: "reply 2-1",
