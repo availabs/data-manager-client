@@ -2,7 +2,7 @@ import React from "react"
 
 import {
   Button,
-  Title
+  // Title
 } from "./parts"
 
 import get from "lodash.get"

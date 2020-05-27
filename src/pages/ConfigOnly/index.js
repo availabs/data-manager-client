@@ -1,13 +1,13 @@
 import React from "react"
 
-class Test extends React.Component {
-  render() {
-    console.log("PROPS:", this.props);
-    return (
-      <div>TESTING!!!</div>
-    )
-  }
-}
+// class Test extends React.Component {
+//   render() {
+//     console.log("PROPS:", this.props);
+//     return (
+//       <div>TESTING!!!</div>
+//     )
+//   }
+// }
 
 const DataFetcher = (WrappedComponent, options = {}) => {
   return class Wrapper extends React.Component {

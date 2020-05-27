@@ -6,32 +6,32 @@ import { Button } from "./components/parts"
 
 import { blogPost, blogs } from "./test_formats/blog_format"
 
-const DATA_FORMAT = {
-  id: "unique-database-id",
+// const DATA_FORMAT = {
+//   id: "unique-database-id",
 
-  app: "app-name",
-  type: "string",
-  attributes: "jsonb",
+//   app: "app-name",
+//   type: "string",
+//   attributes: "jsonb",
 
-  created_at: "datetime",
-  created_by: "avail-auth-user-id",
+//   created_at: "datetime",
+//   created_by: "avail-auth-user-id",
 
-  updated_at: "datetime",
-  updated_by: "avail-auth-user-id"
-}
-const DATA_ITEM = {
-  id: "unique-database-id",
+//   updated_at: "datetime",
+//   updated_by: "avail-auth-user-id"
+// }
+// const DATA_ITEM = {
+//   id: "unique-database-id",
 
-  app: "app-name",
-  type: "string",
-  data: "jsonb",
+//   app: "app-name",
+//   type: "string",
+//   data: "jsonb",
 
-  created_at: "datetime",
-  created_by: "avail-auth-user-id",
+//   created_at: "datetime",
+//   created_by: "avail-auth-user-id",
 
-  updated_at: "datetime",
-  updated_by: "avail-auth-user-id"
-}
+//   updated_at: "datetime",
+//   updated_by: "avail-auth-user-id"
+// }
 
 class DmsManager extends React.Component {
   static defaultProps = {
@@ -92,7 +92,7 @@ console.log("INTERACT:", action, id, props)
     }
 
     const data = this.props.dataItems.reduce((a, c) =>
-      c.id == id ? c : a
+      c.id === id ? c : a
     , null)
 
     return React.cloneElement(child,

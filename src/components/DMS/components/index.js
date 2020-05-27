@@ -1,5 +1,3 @@
-import React from "react"
-
 import DmsCard from "./dms-card"
 import DmsCreate from "./dms-create"
 import DmsList from "./dms-list"
