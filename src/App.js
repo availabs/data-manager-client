@@ -4,7 +4,7 @@ import { BrowserRouter,Switch } from 'react-router-dom';
 import ScrollToTop from 'utils/ScrollToTop'
 
 import Routes from 'Routes';
-import Layout from 'layouts/DefaultLayout'
+import Layout from 'components/avl-components/DefaultLayout'
 
 import { auth } from 'store/user';
 

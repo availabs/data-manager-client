@@ -10,6 +10,10 @@ export const blogPost = {
       type: "textarea",
       required: true
     },
+    {
+      key: 'tags',
+      type: 'textArray'
+    },
     { key: "bloggerId",
       name: "Blogger ID",
       type: "text",

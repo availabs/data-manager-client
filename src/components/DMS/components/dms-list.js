@@ -40,7 +40,8 @@ export default class DmsList extends React.Component {
                       </td>
                     )
                 }
-                { this.props.attributes
+                { 
+                  this.props.attributes
                     .filter(a => /action:/.test(a))
                     .map(a => a.replace("action:", ""))
                     .map(a =>
