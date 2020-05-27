@@ -30,7 +30,7 @@ export default class DmsCreate extends React.Component {
     action: "create"
   }
   state = {}
-  handlechange(key, value) {
+  handleChange(key, value) {
     this.setState({ [key]: value });
   }
   verify() {
@@ -46,7 +46,7 @@ export default class DmsCreate extends React.Component {
 
     if (_default.includes("from:")) {
       const path = _default.slice(5);
-      return get(this.props, path, "");
+      return get(this.props, path, null);
     }
     return _default;
   }
@@ -64,7 +64,8 @@ export default class DmsCreate extends React.Component {
   }
   create() {
     const values = this.getValues();
-    alert(`Creating\n${ Object.keys(values).map(k => `${ k }: ${ values[k] }`).join("\n") }`);
+window.alert("CREATING: " + JSON.stringify(values))
+console.log("VALUES:", values)
     this.props.interact("back");
   }
   render() {
@@ -78,8 +79,8 @@ export default class DmsCreate extends React.Component {
                   <DmsInput key={ att.key } autoFocus={ i === 0 }
                     disabled={ att.editable === false }
                     att={ att }
-                    value={ values[att.key] || "" }
-                    onChange={ e => this.handlechange(att.key, e.target.value) }/>
+                    value={ values[att.key] === null ? "" : values[att.key] }
+                    onChange={ e => this.handleChange(att.key, e.target.value) }/>
                 )
             }
           </tbody>

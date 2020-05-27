@@ -20,7 +20,6 @@ const DefaultLayout = ({ component, ...rest }) => {
       </Layout>
     )
   }
-console.log("REST:", rest)
   return sendToLgin(rest) ?
   (
     <Redirect

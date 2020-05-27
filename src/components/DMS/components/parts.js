@@ -1,7 +1,9 @@
 import React from "react"
 
 export const Title = ({ children, ...props }) =>
-  <div className="font-bold text-xl mb-1">
+  <div className={ `
+    font-bold mb-1
+    ${ props.large ? "text-3xl" : "text-xl" }` }>
     { children }
   </div>
 

@@ -3,12 +3,17 @@ import React from 'react'
 import CensusCharts from 'components/CensusCharts'
 
 import DmsComponents from "components/DMS"
+import DmsWrappers from "components/DMS/wrappers"
 
 import get from "lodash.get"
 
 const ComponentLibrary = {
     ...CensusCharts,
     ...DmsComponents
+}
+
+const Wrappers = {
+  ...DmsWrappers
 }
 
 const getKey = (config, i) => get(config, "key", `key-${ i }`);
@@ -27,19 +32,31 @@ const getComponent = config =>
   get(ComponentLibrary, config.type, getBasicJSX(config));
 
 const applyWrappers = (Component, config) => {
-  const wrappers = get(config, "wrappers", []);
-console.log("WRAPPERS:", wrappers);
-  return Component;
+  return get(config, "wrappers", [])
+    .reduce((a, c) => {
+      if (typeof c === "string") {
+        return get(Wrappers, c, d => d)(a);
+      }
+      else if (typeof c === "function") {
+        return c(a);
+      }
+      else if (typeof c === "object") {
+        const { type, options } = c;
+        return get(Wrappers, type, d => d)(a, options);
+      }
+      return a;
+    }, Component);
 }
 
 const processConfig = (config, rest, i = 0) => {
   const Component = applyWrappers(getComponent(config), config),
     children = get(config, "children", []);
 
+console.log("CONFIG PROPS:", config.props)
   return React.createElement(Component,
-            { ...config.props, ...rest, key: getKey(config, i) },
-            children.map((child, i) => processConfig(child, rest, i))
-          );
+    { ...config.props, key: getKey(config, i) },
+    children.map((child, i) => processConfig(child, rest, i))
+  );
 }
 
 export default ({ config, ...rest }) => processConfig(config, rest)
