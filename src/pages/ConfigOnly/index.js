@@ -27,8 +27,10 @@ export default
       actions: ["create"],
       // filter: d => get(d, ["data", "replyTo"], null) === null
       filter: {
-        args: ["item:data.replyTo"],
-        comp: arg => arg === null,
+// TODO: streamline filter creation
+        // args: ["item:data.replyTo"],
+        // comparator: arg => arg === null,
+// END TODO
         path: ["data", "replyTo"],
         value: null,
         comparator: (data, value) => data === value
