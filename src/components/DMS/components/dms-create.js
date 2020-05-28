@@ -4,6 +4,17 @@ import { Button } from "./parts"
 
 import get from "lodash.get"
 
+const ArrayItem = ({ children, onClick, ...props }) =>
+  <div className="flex pl-4 mt-1">
+    <div className="py-1 px-2 mr-2 bg-white rounded inline-block flex-grow"
+      { ...props }>
+      { children }
+    </div>
+    <Button onClick={ onClick }>
+      remove
+    </Button>
+  </div>
+
 class ArrayInput extends React.Component {
   state = {
     value: ""
@@ -43,10 +54,10 @@ class ArrayInput extends React.Component {
         </div>
         <div className="flex-col">
           { value.map((v, i) =>
-              <div key={ v } onClick={ e => this.removeFromArray(v) }
-                className="ml-5 mt-1 mb-1">
+              <ArrayItem key={ v }
+                onClick={ e => this.removeFromArray(v) }>
                 { v }
-              </div>
+              </ArrayItem>
             )
           }
         </div>
@@ -130,7 +141,7 @@ console.log("VALUES:", values)
   }
   render() {
     const values = this.getValues();
-console.log("THEME:", this.props.theme)
+
     return (
       <div>
         <table>
