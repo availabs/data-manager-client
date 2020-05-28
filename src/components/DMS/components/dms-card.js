@@ -5,7 +5,7 @@ import {
   Title
 } from "./parts"
 
-import get from "lodash.get"
+// import get from "lodash.get"
 
 const SEED_PROPS = () => ({});
 

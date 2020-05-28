@@ -20,6 +20,13 @@ const DATA_FORMAT = {
   app: "app-name",
   type: "string",
   attributes: "jsonb",
+/*
+  attributes: [
+    { type: enum:[text, textarea, number], // required
+      key: "string" // required
+    }
+  ]
+*/
 
   created_at: "datetime",
   created_by: "avail-auth-user-id",
@@ -49,7 +56,7 @@ class DmsManager extends React.Component {
     app: "app-name",
     formatType: "format-name",
     format: {},
-    className: "ml-40 mr-40 border-2 p-5 rounded-lg",
+    className: "m-10 border-2 p-5 rounded-lg",
     dataFilter: false,
     authRules: {}
   }
@@ -100,7 +107,7 @@ class DmsManager extends React.Component {
     }
 
     const data = this.props.dataItems.reduce((a, c) =>
-      c.id == id ? c : a
+      c.id === id ? c : a
     , null)
 
     return React.cloneElement(child,

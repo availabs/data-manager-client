@@ -12,10 +12,9 @@ export default
   layoutSettings: {
     fixed: true,
     nav: 'top',
-    // maxWidth: 'max-w-7xl',
+    maxWidth: 'max-w-7xl',
     headerBar: false,
     theme: 'light'
-
   },
 
   component: {
@@ -59,6 +58,7 @@ export default
           ],
           title: "Blogs"
         }
+
       },
 
       { type: "dms-card", // generic dms component for viewing a single data item
@@ -100,7 +100,7 @@ export default
 
       { type: "dms-create",
         props: { action: "create" },
-        wrappers: ["use-auth"]
+        wrappers: ["use-auth", "with-theme"]
       },
 
       { type: "dms-create",

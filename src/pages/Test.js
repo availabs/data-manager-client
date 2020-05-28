@@ -30,7 +30,7 @@ export default
   mainNav: true,
   layoutSettings: {
     fixed: true,
-    maxWidth: 'max-w-7xl',
+    //maxWidth: 'max-w-7xl',
     headerBar: true,
     theme: 'light'
     
