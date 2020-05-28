@@ -11,18 +11,21 @@ export const Title = ({ children, ...props }) =>
     { children }
   </div>
 
-export const Button = ({ children, ...props }) =>
+export const Button = ({ children, color, large, block, ...props }) =>
   <button { ...props } disabled={ props.disabled }
     className={
       `inline-flex
-        bg-${ props.color || "blue" }-500
+        justify-center
+        items-center
+        bg-${ color || "blue" }-500
         text-white
         font-bold
-        py-1 px-4
+        ${ large ? "py-2 px-6" : "py-1 px-4" }
+        ${ block ? "w-full" : "" }
         rounded
         ${ props.disabled ?
           "cursor-not-allowed opacity-50" :
-          `hover:bg-${ props.color || "blue" }-700` }
+          `hover:bg-${ color || "blue" }-700` }
       `
     }>
     { children }

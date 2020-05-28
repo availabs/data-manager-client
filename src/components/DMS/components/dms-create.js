@@ -71,8 +71,11 @@ class ArrayInput extends React.Component {
 
 const InputRow = ({ att, children, onChange, ...props }) =>
   <tr>
-    <td className="align-top p-1">
-      <label htmlFor={ `att:${ att.key }` }>{ att.name || att.key }</label>
+    <td className="align-top p-1"
+      onClick={ e => document.getElementById(`att:${ att.key }`).focus() }>
+      <div className="w-full">
+        { att.name || att.key }
+      </div>
     </td>
     <td className="p-1">
       { att.type === "textarea" ?
@@ -168,13 +171,15 @@ export default class DmsCreate extends React.Component {
                     onChange={ value => this.handleChange(att.key, att.type, value) }/>
                 )
             }
+            <tr>
+              <td colSpan="2" className="p-1">
+                <ActionButton large block disabled={ !this.verify() }
+                  onClick={ e => this.create() }
+                  action={ this.props.action }/>
+              </td>
+            </tr>
           </tbody>
         </table>
-        <div>
-          <ActionButton disabled={ !this.verify() }
-            onClick={ e => this.create() }
-            action={ this.props.action }/>
-        </div>
       </div>
     )
   }
