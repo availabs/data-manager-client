@@ -2,14 +2,6 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { connect } from "react-redux"
-import { reduxFalcor } from "utils/redux-falcor"
-
-import {
-  fetchFalcorDeps,
-  mapStateToProps
-} from "./wrappers/dms-falcor"
-
 import { DmsButton, Title } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
 
@@ -55,7 +47,7 @@ class DmsManager extends React.Component {
     defaultAction: "list",
     dataItems: [],
     app: "app-name",
-    formatType: "format-name",
+    type: "format-type",
     format: {},
     className: "m-10 border-2 p-5 rounded-lg",
     dataFilter: false,
@@ -68,8 +60,6 @@ class DmsManager extends React.Component {
       props: {}
     }]
   }
-
-  fetchFalcorDeps
 
   interact(action, id = null, props) {
     const stack = [...this.state.stack];
@@ -98,11 +88,10 @@ class DmsManager extends React.Component {
         { ...child.props,
           ...props,
           app: this.props.app,
-          formatType: this.props.formatType,
+          type: this.props.type,
           interact: this.interact.bind(this),
           dataItems: this.props.dataItems,
-          format: this.props.format,
-          authRules: this.props.authRules
+          format: this.props.format
         }
       );
     }
@@ -115,11 +104,10 @@ class DmsManager extends React.Component {
       { ...child.props,
         ...props,
         app: this.props.app,
-        formatType: this.props.formatType,
+        type: this.props.type,
         interact: this.interact.bind(this),
         format: this.props.format,
-        type: this.props.formatType,
-        [this.props.formatType]: data
+        [this.props.type]: data
       }
     );
   }
@@ -158,5 +146,5 @@ class DmsManager extends React.Component {
 
 export default {
   ...DmsComponents,
-  "dms-manager": connect(mapStateToProps, null)(reduxFalcor(DmsManager))
+  "dms-manager": DmsManager
 }

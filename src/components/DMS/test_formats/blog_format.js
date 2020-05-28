@@ -12,9 +12,9 @@ export const blogPost = {
       type: "textarea",
       required: true
     },
-    {
-      key: 'tags',
-      type: 'array:text'
+    { key: 'tags',
+      type: 'array:text',
+      required: true
     },
     { key: "bloggerId",
       name: "Blogger ID",

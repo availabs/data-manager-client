@@ -27,16 +27,18 @@ class ArrayInput extends React.Component {
     this.setState({ value: "" });
   }
   removeFromArray(v) {
-    const value = Array.isArray(this.props.value) ? this.props.value : [];
+    let value = Array.isArray(this.props.value) ? this.props.value : [];
     if (value.includes(v)) {
-      this.props.onChange(value.filter(vv => vv !== v));
+      value = value.filter(vv => vv !== v);
     }
+    if (value.length === 0) {
+      value = null;
+    }
+    this.props.onChange(value);
   }
   render() {
-    let { att, value, children, ...props } = this.props,
+    const { att, value, children, ...props } = this.props,
       type = att.type.slice(6);
-
-    value = Array.isArray(value) ? value : [];
 
     return (
       <div>
@@ -53,7 +55,7 @@ class ArrayInput extends React.Component {
           </Button>
         </div>
         <div className="flex-col">
-          { value.map((v, i) =>
+          { !value ? null : value.map((v, i) =>
               <ArrayItem key={ v }
                 onClick={ e => this.removeFromArray(v) }>
                 { v }

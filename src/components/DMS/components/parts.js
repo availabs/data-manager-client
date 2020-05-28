@@ -11,6 +11,20 @@ export const Title = ({ children, ...props }) =>
     { children }
   </div>
 
+export const Button = ({ children, ...props }) =>
+  <button { ...props } disabled={ props.disabled }
+    className={
+      `inline-flex
+        bg-blue-500
+        text-white
+        font-bold
+        py-1 px-4
+        rounded
+        ${ props.disabled ? "cursor-not-allowed opacity-50" : "hover:bg-blue-700" }`
+    }>
+    { children }
+  </button>
+
 const checkAuth = (rule, props, item) => {
   if (!rule) return true;
 
@@ -30,20 +44,6 @@ const checkAuth = (rule, props, item) => {
   return comparator(...args);
 }
 
-export const Button = ({ children, ...props }) =>
-  <button { ...props } disabled={ props.disabled }
-    className={
-      `inline-flex
-        bg-blue-500
-        text-white
-        font-bold
-        py-1 px-4
-        rounded
-        ${ props.disabled ? "cursor-not-allowed opacity-50" : "hover:bg-blue-700" }`
-    }>
-    { children }
-  </button>
-
 const processAction = arg => {
   let response = {
     action: "unknown",
@@ -58,7 +58,7 @@ const processAction = arg => {
   return response;
 }
 
-export const DmsButton = ({ action: arg, item = {}, interact, ...props }) =>
+export const DmsButton = ({ action: arg, item, interact, ...props }) =>
   <AuthContext.Consumer>
     {
       ({ authRules, user }) => {
@@ -67,7 +67,7 @@ export const DmsButton = ({ action: arg, item = {}, interact, ...props }) =>
           hasAuth = checkAuth(authRules[action], props, item);
         return (
           <Button { ...props } disabled={ !hasAuth }
-            onClick={ e => interact(action, item.id, seedProps(props)) }>
+            onClick={ e => interact(action, get(item, "id"), seedProps(props)) }>
             { action }
           </Button>
         )
