@@ -1,29 +1,13 @@
 import React from "react"
 
-
-const DataFetcher = (WrappedComponent, options = {}) => {
-  return class Wrapper extends React.Component {
-    state = {
-      loading: false,
-      data: null
-    }
-    componentDidMount() {
-      this.setState({ loading: true });
-      new Promise(resolve => setTimeout(resolve, 2000, { data: "DATA" }))
-        .then(data => this.setState({ loading: false, data }));
-    }
-    render() {
-      return <WrappedComponent { ...this.state } { ...this.props }/>
-    }
-  }
-}
+import get from "lodash.get"
 
 export default
 {
   path: '/',
   mainNav: true,
   exact: true,
-  name: 'Config Test',
+  name: 'Blog Test',
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
@@ -31,60 +15,101 @@ export default
     maxWidth: '',
     headerBar: false,
     theme: 'light'
-
   },
-  
+
   component: {
     type: "dms-manager", // top level component for managing data items
+    wrappers: ["use-auth"],
     props: {
-      app: "blog",
-      dataFormat: "blog-post",
+      app: "my-blog",
+      formatType: "blog-post",
       defaultAction: "list",
-      actions: ["create"]
+      actions: ["create"],
+      // filter: d => get(d, ["data", "replyTo"], null) === null
+      filter: {
+        path: ["data", "replyTo"],
+        value: null,
+        comparator: (data, value) => data === value
+      },
+      title: "Blog It Up",
+      authRules: {
+        create: {
+          args: ["props:user.authLevel"],
+          comparator: al => al !== null
+        },
+        edit: {
+          args: ["item:data.bloggerId", "props:user.id"],
+          comparator: (arg1, arg2) => arg1 === arg2
+        },
+        delete: {
+          args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
+          comparator: (arg1, arg2, arg3) => (arg1 === arg2) || (arg3 === 10)
+        }
+      }
     },
     children: [
 // dms-manager children are special
-// they are only shown when the dms-manager state === the child.props.action
+// they are only shown when the dms-manager state.action === child.props.action
       { type: "dms-list", // generic dms component for viewing multiple data items
+        wrappers: ["use-auth"],
         props: {
-          attributes: ["title", "bloggerId", "action:view", "action:edit", "action:delete"]
+          action: "list",
+          attributes: [
+            "title", "bloggerId",
+            "action:view", "action:edit", "action:delete"
+          ],
+          title: "Blogs"
         }
-        
+
       },
 
       { type: "dms-card", // generic dms component for viewing a single data item
-        wrappers: [
-          { type: "falcor", options: { requests: [["..."], ["..."]] } },
-          { type: "connect",
-            options: {
-              mapStateToProps: (state, props) => ({}),
-              mapDispatchToProps: {}
-            }
-          },
-          DataFetcher
-        ],
         props: {
           mapDataToProps: {
-// this is used by dms-card to map data attributes to component props
+// mapDataToProps is used by dms-card to map data attributes to component props
 // attribute: prop
             title: "title",
             body: "content"
           },
           actions: [
             { action: "reply",
-              seedProps: props => ({ "blog-post": props.data }) }
-          ]
+// this will send the props to the dms-manager reply component
+// the props and state are pulled from the dms-card component
+// CURRENTLY DISABLED
+              // seedProps: (props, state) => ({ key: value }) }
+            }
+          ],
         },
+        children: [
+          { type: "dms-list",
+            props: {
+              attributes: ["title", "bloggerId", "body"],
+              className: "mt-5",
+              title: "Replies"
+            },
+            wrappers: [{
+              type: "dms-falcor",
+              options: {
+                filter: {
+                  path: ["data", "replyTo"], // this retrieves from a data item
+                  value: "from:blog-post.id", // this can be a value or retreives from props
+                  comparator: (d, v) => d === v
+                }
+              }
+            }]
+          }
+        ]
       },
 
-      { type: "dms-create" },
+      { type: "dms-create",
+        props: { action: "create" },
+        wrappers: ["use-auth", "with-theme"]
+      },
 
       { type: "dms-create",
-        props: {
-          action: "reply"
-        }
+        props: { action: "reply" },
+        wrappers: ["use-auth"]
       }
     ]
   }
 }
-

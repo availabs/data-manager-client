@@ -2,45 +2,64 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { Button } from "./components/parts"
+import { connect } from "react-redux"
+import { reduxFalcor } from "utils/redux-falcor"
 
-import { blogPost, blogs } from "./test_formats/blog_format"
+import {
+  fetchFalcorDeps,
+  mapStateToProps
+} from "./wrappers/dms-falcor"
 
-// const DATA_FORMAT = {
-//   id: "unique-database-id",
+import { DmsButton, Title } from "./components/parts"
+import { AuthContext } from "./components/auth-context"
 
-//   app: "app-name",
-//   type: "string",
-//   attributes: "jsonb",
+import get from "lodash.get"
 
-//   created_at: "datetime",
-//   created_by: "avail-auth-user-id",
+const DATA_FORMAT = {
+  id: "unique-database-id",
 
-//   updated_at: "datetime",
-//   updated_by: "avail-auth-user-id"
-// }
-// const DATA_ITEM = {
-//   id: "unique-database-id",
+  app: "app-name",
+  type: "string",
+  attributes: "jsonb",
+/*
+  attributes: [
+    { type: enum:[text, textarea, number], // required
+      key: "string" // required
+    }
+  ]
+*/
 
-//   app: "app-name",
-//   type: "string",
-//   data: "jsonb",
+  created_at: "datetime",
+  created_by: "avail-auth-user-id",
 
-//   created_at: "datetime",
-//   created_by: "avail-auth-user-id",
+  updated_at: "datetime",
+  updated_by: "avail-auth-user-id"
+}
+const DATA_ITEM = {
+  id: "unique-database-id",
 
-//   updated_at: "datetime",
-//   updated_by: "avail-auth-user-id"
-// }
+  app: "app-name",
+  type: "string",
+  data: "jsonb",
+
+  created_at: "datetime",
+  created_by: "avail-auth-user-id",
+
+  updated_at: "datetime",
+  updated_by: "avail-auth-user-id"
+}
 
 class DmsManager extends React.Component {
   static defaultProps = {
     actions: ["create"],
     defaultAction: "list",
-    dataItems: blogs,
+    dataItems: [],
     app: "app-name",
-    format: blogPost,
-    className: "pl-20 pr-20 pt-5 pb-5"
+    formatType: "format-name",
+    format: {},
+    className: "m-10 border-2 p-5 rounded-lg",
+    dataFilter: false,
+    authRules: {}
   }
   state = {
     stack: [{
@@ -50,13 +69,9 @@ class DmsManager extends React.Component {
     }]
   }
 
-  // fetchFalcorDeps() {
-  //   const { app, format } = this.props;
-  //   this.props.falcor.get(["dms", app, format, "length"]);
-  // }
+  fetchFalcorDeps
 
   interact(action, id = null, props = {}) {
-console.log("INTERACT:", action, id, props)
     const stack = [...this.state.stack];
     if (action === "back") {
       stack.pop();
@@ -66,15 +81,13 @@ console.log("INTERACT:", action, id, props)
     }
     this.setState({ stack });
   }
-  checkStack() {
+  getTop() {
     const stack = this.state.stack,
       length = stack.length;
     return stack[length - 1];
   }
 
-  renderChildren() {
-    const { action, id, props } = this.checkStack();
-
+  renderChildren(action, id, props) {
     const child = React.Children.toArray(this.props.children)
       .reduce((a, c) => c.props.action === action ? c : a, null);
 
@@ -84,9 +97,12 @@ console.log("INTERACT:", action, id, props)
       return React.cloneElement(child,
         { ...child.props,
           ...props,
+          app: this.props.app,
+          formatType: this.props.formatType,
           interact: this.interact.bind(this),
           dataItems: this.props.dataItems,
-          format: this.props.format
+          format: this.props.format,
+          authRules: this.props.authRules
         }
       );
     }
@@ -98,39 +114,48 @@ console.log("INTERACT:", action, id, props)
     return React.cloneElement(child,
       { ...child.props,
         ...props,
+        app: this.props.app,
+        formatType: this.props.formatType,
         interact: this.interact.bind(this),
         format: this.props.format,
-        data
+        type: this.props.formatType,
+        [this.props.formatType]: data,
+        authRules: this.props.authRules
       }
     );
   }
 
   render() {
-    const { action } = this.checkStack();
-
+    const { action, id, props } = this.getTop(),
+      { authRules, user } = this.props;
     return (
       <div className={ this.props.className }>
-        <div className="mb-4">
-          <div className="font-bold text-3xl mb-1">{ this.props.app } Manager</div>
-          <span>
-            { action === "list" ? null :
-                <Button onClick={ e => this.interact("back") }>
-                  back
-                </Button>
-            }
-            { this.props.actions
-                .filter(a => (a !== "create") || (action === "list"))
-                .map(action =>
-                  <Button key={ action } onClick={ e => this.interact(action) }>
-                    { action }
-                  </Button>
-                )
-            }
-          </span>
-        </div>
-        <div>
-          { this.renderChildren() }
-        </div>
+        <AuthContext.Provider value={ { authRules, user } }>
+          <div>
+            <Title large>
+              { this.props.title || `${ this.props.app } Manager` }
+            </Title>
+            <div className="mb-5">
+              { action === "list" ? null :
+                  <DmsButton action="back" interact={ (...args) => this.interact(...args) }>
+                    back
+                  </DmsButton>
+              }
+              { this.props.actions
+                  .filter(a => (a !== "create") || (action === "list"))
+                  .map(action =>
+                    <DmsButton key={ action } action={ action }
+                      interact={ (...args) => this.interact(...args) }>
+                      { action }
+                    </DmsButton>
+                  )
+              }
+            </div>
+          </div>
+          <div>
+            { this.renderChildren(action, id, props) }
+          </div>
+        </AuthContext.Provider>
       </div>
     )
   }
@@ -138,5 +163,5 @@ console.log("INTERACT:", action, id, props)
 
 export default {
   ...DmsComponents,
-  "dms-manager": DmsManager
+  "dms-manager": connect(mapStateToProps, null)(reduxFalcor(DmsManager))
 }

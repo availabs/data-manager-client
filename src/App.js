@@ -30,16 +30,13 @@ class App extends Component {
           <Switch>
             {Routes.map((route, i) => {
               return (
-                <Layout
-                  {...route}
-                  authed={this.props.user.authed}
-                  isAuthenticating={this.state.isAuthenticating}
-                  key={i}
-                  menus={Routes
-                    .filter(r => r.mainNav)
-                  }
-                  router={this.props.router}
-                  user={this.props.user}
+                <Layout key={ i }
+                  { ...route }
+                  authed={ this.props.user.authed }
+                  isAuthenticating={ this.state.isAuthenticating }
+                  menus={ Routes.filter(r => r.mainNav) }
+                  router={ this.props.router }
+                  user={ this.props.user }
                 />
               );
             })}

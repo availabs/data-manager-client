@@ -1,11 +1,11 @@
 import React from "react"
 
 import {
-  Button,
+  DmsButton,
   Title
 } from "./parts"
 
-// import get from "lodash.get"
+const SEED_PROPS = () => ({});
 
 export default class DmsCard extends React.Component {
   static defaultProps = {
@@ -15,13 +15,28 @@ export default class DmsCard extends React.Component {
     actions: [],
     interact: () => {},
     data: {},
-    mapDataToProps: {}
+    mapDataToProps: {},
+    seedProps: props => ({})
+  }
+  renderChildren() {
+    const { seedProps = SEED_PROPS, ...props } = this.props;
+    return React.Children.map(this.props.children, child =>
+      React.cloneElement(child,
+        { ...props,
+          ...child.props,
+          ...seedProps(props)
+        }
+      )
+    )
   }
   render() {
     const {
       actions, interact,
-      data, mapDataToProps
+      type, mapDataToProps
     } = this.props;
+
+    const item = this.props[type],
+      data = item.data;
 
     const mapped = {
       title: this.props.title,
@@ -29,7 +44,7 @@ export default class DmsCard extends React.Component {
     };
 
     for (const key in mapDataToProps) {
-      const v = data.data[key],
+      const v = data[key],
         k = mapDataToProps[key];
       mapped[k] = v;
     }
@@ -44,15 +59,15 @@ export default class DmsCard extends React.Component {
           </div>
         }
         <div>
-          { actions.map(({ action, seedProps }) =>
-              <Button key={ action }
-                onClick={ e => interact(action, data.id, seedProps(this.props)) }>
+          { actions.map(({ action }) =>
+              <DmsButton key={ action }
+                action={ action } item={ item } interact={ interact }>
                 { action }
-              </Button>
+              </DmsButton>
             )
           }
         </div>
-        { this.props.children }
+        { this.renderChildren() }
       </div>
     )
   }

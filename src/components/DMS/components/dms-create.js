@@ -1,36 +1,107 @@
 import React from "react"
 
-import {
-  Button,
-  // Title
-} from "./parts"
+import { Button } from "./parts"
 
 import get from "lodash.get"
 
-const DmsInput = ({ att, children, ...props }) =>
+const ArrayItem = ({ children, onClick, ...props }) =>
+  <div className="flex pl-4 mt-1">
+    <div className="py-1 px-2 mr-2 bg-white rounded inline-block flex-grow"
+      { ...props }>
+      { children }
+    </div>
+    <Button onClick={ onClick }>
+      remove
+    </Button>
+  </div>
+
+class ArrayInput extends React.Component {
+  state = {
+    value: ""
+  }
+  addToArray() {
+    const value = Array.isArray(this.props.value) ? this.props.value : [];
+    if (!value.includes(this.state.value)) {
+      this.props.onChange([...value, this.state.value]);
+    }
+    this.setState({ value: "" });
+  }
+  removeFromArray(v) {
+    const value = Array.isArray(this.props.value) ? this.props.value : [];
+    if (value.includes(v)) {
+      this.props.onChange(value.filter(vv => vv !== v));
+    }
+  }
+  render() {
+    let { att, value, children, ...props } = this.props,
+      type = att.type.slice(6);
+
+    value = Array.isArray(value) ? value : [];
+
+    return (
+      <div>
+        <div className="flex">
+          <input className="py-1 px-2 rounded mr-2" { ...props }
+            id={ `att:${ att.key }` } type={ type }
+            value={ this.state.value }
+            onChange={ e => this.setState({ value: e.target.value })}>
+            { children }
+          </input>
+          <Button onClick={ e => this.addToArray() }
+            disabled={ !this.state.value }>
+            add
+          </Button>
+        </div>
+        <div className="flex-col">
+          { value.map((v, i) =>
+              <ArrayItem key={ v }
+                onClick={ e => this.removeFromArray(v) }>
+                { v }
+              </ArrayItem>
+            )
+          }
+        </div>
+      </div>
+    )
+  }
+}
+
+const InputRow = ({ att, children, onChange, ...props }) =>
   <tr>
     <td className="align-top p-1">
-      <label htmlFor={ `att:${ att.key }` }
-        className="w-10">{ att.name || att.key }</label>
+      <label htmlFor={ `att:${ att.key }` }>{ att.name || att.key }</label>
     </td>
     <td className="p-1">
       { att.type === "textarea" ?
-          <textarea className="py-1 px-2 rounded" { ...props } id={ `att:${ att.key }` }>
+          <textarea className="block w-full py-1 px-2 rounded" { ...props }
+            id={ `att:${ att.key }` }
+            onChange={ e => onChange(e.target.value) }>
             { children }
           </textarea>
-        : <input className="py-1 px-2 rounded" { ...props } id={ `att:${ att.key }` } type={ att.type }>
+        : att.type.includes("array:") ?
+          <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }>
+              { children }
+          </ArrayInput>
+        : <input className="py-1 px-2 w-full rounded" { ...props }
+            id={ `att:${ att.key }` } type={ att.type }
+            onChange={ e => onChange(e.target.value) }>
             { children }
           </input>
       }
     </td>
   </tr>
 
+const getValue = (values, key) => {
+  const value = get(values, key, null);
+  return value || "";
+}
+
 export default class DmsCreate extends React.Component {
   static defaultProps = {
     action: "create"
   }
   state = {}
-  handlechange(key, value) {
+  handleChange(key, type, value) {
     this.setState({ [key]: value });
   }
   verify() {
@@ -46,7 +117,7 @@ export default class DmsCreate extends React.Component {
 
     if (_default.includes("from:")) {
       const path = _default.slice(5);
-      return get(this.props, path, "");
+      return get(this.props, path, null);
     }
     return _default;
   }
@@ -64,22 +135,24 @@ export default class DmsCreate extends React.Component {
   }
   create() {
     const values = this.getValues();
-    alert(`Creating\n${ Object.keys(values).map(k => `${ k }: ${ values[k] }`).join("\n") }`);
+window.alert("CREATING: " + JSON.stringify(values))
+console.log("VALUES:", values)
     this.props.interact("back");
   }
   render() {
     const values = this.getValues();
+
     return (
       <div>
         <table>
           <tbody>
             { get(this.props, ["format", "attributes"], [])
                 .map((att, i) =>
-                  <DmsInput key={ att.key } autoFocus={ i === 0 }
+                  <InputRow key={ att.key } autoFocus={ i === 0 }
                     disabled={ att.editable === false }
                     att={ att }
-                    value={ values[att.key] || "" }
-                    onChange={ e => this.handlechange(att.key, e.target.value) }/>
+                    value={ getValue(values, att.key) }
+                    onChange={ value => this.handleChange(att.key, att.type, value) }/>
                 )
             }
           </tbody>

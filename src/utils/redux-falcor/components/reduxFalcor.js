@@ -11,6 +11,8 @@ function noop() {}
 
 export default function reduxFalcor(WrappedComponent) {
   class ReduxFalcor extends Component {
+    wrapped = React.createRef()
+
     constructor(props, context) {
       super(props, context);
 
@@ -41,7 +43,7 @@ export default function reduxFalcor(WrappedComponent) {
     }
 
     handleChange() {
-      const { wrappedInstance } = this.refs;
+      const wrappedInstance = this.wrapped.current;
 
       if (!this.unsubscribe) return;
       if (!(typeof wrappedInstance.fetchFalcorDeps === 'function')) return;
@@ -61,7 +63,7 @@ export default function reduxFalcor(WrappedComponent) {
         <WrappedComponent
           {...this.props}
           falcor={this.falcor}
-          ref="wrappedInstance"
+          ref={ this.wrapped }
         />
       );
     }
