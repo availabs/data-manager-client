@@ -11,13 +11,13 @@ export const Title = ({ children, ...props }) =>
     { children }
   </div>
 
-export const Button = ({ children, color, large, block, ...props }) =>
-  <button { ...props } disabled={ props.disabled }
+export const Button = ({ children, color = "blue", large, block, ...props }) =>
+  <button { ...props }
     className={
       `inline-flex
         justify-center
         items-center
-        bg-${ color || "blue" }-500
+        bg-${ color }-500
         text-white
         font-bold
         ${ large ? "py-2 px-6" : "py-1 px-4" }
@@ -25,7 +25,7 @@ export const Button = ({ children, color, large, block, ...props }) =>
         rounded
         ${ props.disabled ?
           "cursor-not-allowed opacity-50" :
-          `hover:bg-${ color || "blue" }-700` }
+          `hover:bg-${ color }-700` }
       `
     }>
     { children }
