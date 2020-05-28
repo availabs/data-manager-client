@@ -27,8 +27,8 @@ export default
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
-    nav: 'top',
-    maxWidth: 'max-w-7xl',
+    nav: 'side',
+    maxWidth: '',
     headerBar: false,
     theme: 'light'
 
