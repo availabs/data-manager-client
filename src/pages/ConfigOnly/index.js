@@ -27,6 +27,10 @@ export default
       actions: ["create"],
       // filter: d => get(d, ["data", "replyTo"], null) === null
       filter: {
+// TODO: streamline filter creation
+        // args: ["item:data.replyTo"],
+        // comparator: arg => arg === null,
+// END TODO
         path: ["data", "replyTo"],
         value: null,
         comparator: (data, value) => data === value
@@ -44,6 +48,10 @@ export default
         delete: {
           args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
           comparator: (arg1, arg2, arg3) => (arg1 === arg2) || (arg3 === 10)
+        },
+        reply: {
+          args: ["props:user.authLevel"],
+          comparator: al => al !== null
         }
       }
     },
@@ -51,9 +59,9 @@ export default
 // dms-manager children are special
 // they are only shown when the dms-manager state.action === child.props.action
       { type: "dms-list", // generic dms component for viewing multiple data items
-        wrappers: ["use-auth"],
+        // wrappers: ["use-auth"],
         props: {
-          action: "list",
+          // action: "list",
           attributes: [
             "title", "bloggerId",
             "action:view", "action:edit", "action:delete"
@@ -73,10 +81,8 @@ export default
           },
           actions: [
             { action: "reply",
-// this will send the props to the dms-manager reply component
-// the props and state are pulled from the dms-card component
-// CURRENTLY DISABLED
-              // seedProps: (props, state) => ({ key: value }) }
+// this send props into the DMS Manager reply component
+              seedProps: props => ({ test: "prop" })
             }
           ],
         },
@@ -91,6 +97,7 @@ export default
               type: "dms-falcor",
               options: {
                 filter: {
+                  args: ["item:data.replyTo", "props:blog-post.id"],
                   path: ["data", "replyTo"], // this retrieves from a data item
                   value: "from:blog-post.id", // this can be a value or retreives from props
                   comparator: (d, v) => d === v

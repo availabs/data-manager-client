@@ -71,7 +71,7 @@ class DmsManager extends React.Component {
 
   fetchFalcorDeps
 
-  interact(action, id = null, props = {}) {
+  interact(action, id = null, props) {
     const stack = [...this.state.stack];
     if (action === "back") {
       stack.pop();
@@ -119,8 +119,7 @@ class DmsManager extends React.Component {
         interact: this.interact.bind(this),
         format: this.props.format,
         type: this.props.formatType,
-        [this.props.formatType]: data,
-        authRules: this.props.authRules
+        [this.props.formatType]: data
       }
     );
   }
@@ -137,17 +136,13 @@ class DmsManager extends React.Component {
             </Title>
             <div className="mb-5">
               { action === "list" ? null :
-                  <DmsButton action="back" interact={ (...args) => this.interact(...args) }>
-                    back
-                  </DmsButton>
+                  <DmsButton action="back" interact={ (...args) => this.interact(...args) }/>
               }
               { this.props.actions
                   .filter(a => (a !== "create") || (action === "list"))
                   .map(action =>
                     <DmsButton key={ action } action={ action }
-                      interact={ (...args) => this.interact(...args) }>
-                      { action }
-                    </DmsButton>
+                      interact={ (...args) => this.interact(...args) }/>
                   )
               }
             </div>
