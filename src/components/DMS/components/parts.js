@@ -15,12 +15,15 @@ export const Button = ({ children, ...props }) =>
   <button { ...props } disabled={ props.disabled }
     className={
       `inline-flex
-        bg-blue-500
+        bg-${ props.color || "blue" }-500
         text-white
         font-bold
         py-1 px-4
         rounded
-        ${ props.disabled ? "cursor-not-allowed opacity-50" : "hover:bg-blue-700" }`
+        ${ props.disabled ?
+          "cursor-not-allowed opacity-50" :
+          `hover:bg-${ props.color || "blue" }-700` }
+      `
     }>
     { children }
   </button>
@@ -58,6 +61,27 @@ const processAction = arg => {
   return response;
 }
 
+const BUTTON_COLORS = {
+  create: "green",
+  back: "teal",
+  edit: "purple",
+  delete: "red"
+}
+
+export const ButtonColorContext = React.createContext({});
+
+const getButtonColor = (action, colors) =>
+  get(colors, action, get(BUTTON_COLORS, action))
+
+export const ActionButton = ({ action, ...props }) =>
+  <ButtonColorContext.Consumer>
+    { buttonColors =>
+      <Button { ...props } color={ getButtonColor(action, buttonColors) }>
+        { action }
+      </Button>
+    }
+  </ButtonColorContext.Consumer>
+
 export const DmsButton = ({ action: arg, item, interact, ...props }) =>
   <AuthContext.Consumer>
     {
@@ -66,10 +90,8 @@ export const DmsButton = ({ action: arg, item, interact, ...props }) =>
         const { action, seedProps } = processAction(arg),
           hasAuth = checkAuth(authRules[action], props, item);
         return (
-          <Button { ...props } disabled={ !hasAuth }
-            onClick={ e => interact(action, get(item, "id"), seedProps(props)) }>
-            { action }
-          </Button>
+          <ActionButton { ...props } disabled={ !hasAuth } action={ action }
+            onClick={ e => (e.stopPropagation(), interact(action, get(item, "id"), seedProps(props))) }/>
         )
       }
     }

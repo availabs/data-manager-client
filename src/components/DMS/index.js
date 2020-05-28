@@ -2,7 +2,7 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { DmsButton, Title } from "./components/parts"
+import { DmsButton, Title, ButtonColorContext } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
 
 import get from "lodash.get"
@@ -51,7 +51,8 @@ class DmsManager extends React.Component {
     format: {},
     className: "m-10 border-2 p-5 rounded-lg",
     dataFilter: false,
-    authRules: {}
+    authRules: {},
+    buttonColors: {}
   }
   state = {
     stack: [{
@@ -63,7 +64,13 @@ class DmsManager extends React.Component {
 
   interact(action, id = null, props) {
     const stack = [...this.state.stack];
+
     if (action === "back") {
+      (stack.length > 1) && stack.pop();
+    }
+    else if (action.includes("falcor:")) {
+window.alert("DATA: " + JSON.stringify(props))
+console.log("INTERACT WITH FALCOR:", action, id, props)
       stack.pop();
     }
     else {
@@ -114,30 +121,33 @@ class DmsManager extends React.Component {
 
   render() {
     const { action, id, props } = this.getTop(),
-      { authRules, user } = this.props;
+      { authRules, user, buttonColors } = this.props;
+
     return (
       <div className={ this.props.className }>
         <AuthContext.Provider value={ { authRules, user } }>
-          <div>
-            <Title large>
-              { this.props.title || `${ this.props.app } Manager` }
-            </Title>
-            <div className="mb-5">
-              { action === "list" ? null :
-                  <DmsButton action="back" interact={ (...args) => this.interact(...args) }/>
-              }
-              { this.props.actions
-                  .filter(a => (a !== "create") || (action === "list"))
-                  .map(action =>
-                    <DmsButton key={ action } action={ action }
-                      interact={ (...args) => this.interact(...args) }/>
-                  )
-              }
+          <ButtonColorContext.Provider value={ buttonColors }>
+            <div>
+              <Title large>
+                { this.props.title || `${ this.props.app } Manager` }
+              </Title>
+              <div className="mb-5">
+                { this.state.stack.length === 1 ? null :
+                    <DmsButton action="back" interact={ (...args) => this.interact(...args) }/>
+                }
+                { this.props.actions
+                    .filter(a => (a !== "create") || (action === "list"))
+                    .map(action =>
+                      <DmsButton key={ action } action={ action }
+                        interact={ (...args) => this.interact(...args) }/>
+                    )
+                }
+              </div>
             </div>
-          </div>
-          <div>
-            { this.renderChildren(action, id, props) }
-          </div>
+            <div>
+              { this.renderChildren(action, id, props) }
+            </div>
+          </ButtonColorContext.Provider>
         </AuthContext.Provider>
       </div>
     )

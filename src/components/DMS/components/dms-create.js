@@ -1,7 +1,8 @@
 import React from "react"
 
-import { Button } from "./parts"
+import { Button, ActionButton } from "./parts"
 
+import deepequal from "deep-equal"
 import get from "lodash.get"
 
 const ArrayItem = ({ children, onClick, ...props }) =>
@@ -100,19 +101,31 @@ const getValue = (values, key) => {
 
 export default class DmsCreate extends React.Component {
   static defaultProps = {
-    action: "create"
+    action: "create",
+    falcor: "call",
+    loadStateFromData: false
   }
   state = {}
+  componentDidMount() {
+    if (this.props.loadStateFromData) {
+      const item = get(this.props, this.props.type, null),
+        data = get(item, "data");
+      data && this.setState({ ...data })
+    }
+  }
   handleChange(key, type, value) {
     this.setState({ [key]: value });
   }
   verify() {
+    const item = get(this.props, this.props.type, null),
+      data = get(item, "data");
+
     return get(this.props, ["format", "attributes"], [])
       .filter(att => att.editable !== false)
       .reduce((a, c) => {
         if (!c.required) return a;
         return a && Boolean(this.state[c.key]);
-      }, true)
+      }, !deepequal(data, this.state))
   }
   getDefaultValue(att) {
     const _default = att.default;
@@ -129,7 +142,7 @@ export default class DmsCreate extends React.Component {
     }
     get(this.props, ["format", "attributes"], [])
       .forEach(att => {
-        if (("default" in att) && !(att in values)) {
+        if (("default" in att) && !(att.key in values)) {
           values[att.key] = this.getDefaultValue(att);
         }
       })
@@ -137,9 +150,7 @@ export default class DmsCreate extends React.Component {
   }
   create() {
     const values = this.getValues();
-window.alert("CREATING: " + JSON.stringify(values))
-console.log("VALUES:", values)
-    this.props.interact("back");
+    this.props.interact(`falcor:${ this.props.falcor }`, get(this.props, ["blog-post", "id"], null), values);
   }
   render() {
     const values = this.getValues();
@@ -160,10 +171,9 @@ console.log("VALUES:", values)
           </tbody>
         </table>
         <div>
-          <Button disabled={ !this.verify() }
-            onClick={ e => this.create() }>
-            { this.props.action }
-          </Button>
+          <ActionButton disabled={ !this.verify() }
+            onClick={ e => this.create() }
+            action={ this.props.action }/>
         </div>
       </div>
     )

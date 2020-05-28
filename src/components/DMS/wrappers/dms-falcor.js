@@ -10,8 +10,7 @@ import { blogPost, blogs } from "../test_formats/blog_format"
 const ITEM_REGEX = /^item:(.+)$/,
   PROPS_REGEX = /^props:(.+)$/;
 
-const getDefaultPath = props =>
-  ["dms", "data", props.app, props.type]
+const getDefaultPath = () =>["dms", "data", "props:app", "props:type"]
 
 const processPath = (path, props) => {
   return path.map(p => {
@@ -63,7 +62,7 @@ export function makeFilter(props) {
 }
 
 export const mapStateToProps = (state, props) => {
-  const path = processPath(get(props, "path", getDefaultPath(props)), props),
+  const path = processPath(get(props, "path", getDefaultPath()), props),
     filter = makeFilter(props);
   const dataItems = getDataItems(path, state);
   return {

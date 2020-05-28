@@ -22,7 +22,7 @@ export default
     wrappers: [
       { type: "dms-falcor",
         options: {
-          path: ["dms", "data", "user", "props:user.id"],
+          // path: ["dms", "data", "user", "props:user.id", "props:app", "props:type"],
           filter: {
             args: ["item:data.replyTo"],
             comparator: arg1 => arg1 === null
@@ -37,6 +37,9 @@ export default
       defaultAction: "list",
       actions: ["create"],
       title: "Blog It Up",
+      buttonColors: {
+        reply: "green"
+      },
       authRules: {
         create: {
           args: ["props:user.authLevel"],
@@ -109,11 +112,20 @@ export default
 
       { type: "dms-create",
         props: { action: "create" },
-        wrappers: ["use-auth", "with-theme"]
+        wrappers: ["use-auth"]
       },
 
       { type: "dms-create",
         props: { action: "reply" },
+        wrappers: ["use-auth"]
+      },
+
+      { type: "dms-create",
+        props: {
+          action: "edit",
+          faclor: "set",
+          loadStateFromData: true
+        },
         wrappers: ["use-auth"]
       }
     ]
