@@ -59,11 +59,9 @@ export default class DmsCard extends React.Component {
           </div>
         }
         <div>
-          { actions.map(({ action }) =>
+          { actions.map(action =>
               <DmsButton key={ action }
-                action={ action } item={ item } interact={ interact }>
-                { action }
-              </DmsButton>
+                action={ action } item={ item } interact={ interact }/>
             )
           }
         </div>

@@ -16,7 +16,10 @@ export default class DmsList extends React.Component {
       .reduce((a, c) => c.key === att ? (c.name || c.key) : a, att)
   }
   render() {
-    const { attributes, authRules } = this.props;
+    const attributes = this.props.attributes
+      .filter(a => (typeof a === "string") && !/^action:(.+)$/.test(a));
+
+    const actions = this.props.attributes.filter(a => !attributes.includes(a));
 
     return !this.props.dataItems.length ? null : (
       <div className={ this.props.className }>
@@ -24,34 +27,25 @@ export default class DmsList extends React.Component {
         <table className="w-full text-left">
           <thead>
             <tr>
-              { attributes.filter(a => !/action:/.test(a))
-                  .map(a => <th key={ a }>{ this.getAttributeName(a) }</th>)
-              }
-              { attributes.filter(a => /action:/.test(a))
-                  .map(a => <th key={ a }/>)
-              }
+              { attributes.map(a => <th key={ a }>{ this.getAttributeName(a) }</th>) }
+              { actions.map(a => <th key={ get(a, "action", a) }/>) }
             </tr>
           </thead>
           <tbody>
             { this.props.dataItems.map(d =>
                 <tr key={ d.id }>
-                  { attributes.filter(a => !/action:/.test(a))
-                      .map(a =>
-                        <td key={ a }>
-                          { d.data[a] }
-                        </td>
-                      )
+                  { attributes.map(a =>
+                      <td key={ a }>
+                        { d.data[a] }
+                      </td>
+                    )
                   }
-                  { attributes.filter(a => /action:/.test(a))
-                      .map(a => a.replace("action:", ""))
-                      .map(a =>
-                        <td key={ a }>
-                          <DmsButton action={ a } item={ d }
-                            interact={ this.props.interact }>
-                            { a }
-                          </DmsButton>
-                        </td>
-                      )
+                  { actions.map(a =>
+                      <td key={ get(a, "action", a) }>
+                        <DmsButton action={ a } item={ d }
+                          interact={ this.props.interact }/>
+                      </td>
+                    )
                   }
                 </tr>
               )

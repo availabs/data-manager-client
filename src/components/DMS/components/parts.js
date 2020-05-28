@@ -15,7 +15,7 @@ const checkAuth = (rule, props, item) => {
   if (!rule) return true;
 
   let { args, comparator } = rule;
-  
+
   args = args.map(a => {
     if (typeof a === "string") {
       if (a.includes("props:")) {
@@ -44,15 +44,31 @@ export const Button = ({ children, ...props }) =>
     { children }
   </button>
 
-export const DmsButton = ({ children, action, item = {}, interact, ...props }) =>
+const processAction = arg => {
+  let response = {
+    action: "unknown",
+    seedProps: () => ({})
+  };
+  if (typeof arg === "string") {
+    response.action = arg.replace(/^action:(.+)$/, (m, p) => p);
+  }
+  else {
+    response = { ...response, ...arg };
+  }
+  return response;
+}
+
+export const DmsButton = ({ action: arg, item = {}, interact, ...props }) =>
   <AuthContext.Consumer>
     {
       ({ authRules, user }) => {
-        const hasAuth = checkAuth(authRules[action], { user, ...props }, item);
+        props = { user, ...props };
+        const { action, seedProps } = processAction(arg),
+          hasAuth = checkAuth(authRules[action], props, item);
         return (
           <Button { ...props } disabled={ !hasAuth }
-            onClick={ e => interact(action, item.id) }>
-            { children }
+            onClick={ e => interact(action, item.id, seedProps(props)) }>
+            { action }
           </Button>
         )
       }
