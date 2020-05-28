@@ -1,11 +1,9 @@
 import React from "react"
 
 import {
-  Button,
+  DmsButton,
   Title
 } from "./parts"
-
-// import get from "lodash.get"
 
 const SEED_PROPS = () => ({});
 
@@ -61,16 +59,11 @@ export default class DmsCard extends React.Component {
           </div>
         }
         <div>
-          { actions.map(({ action, seedProps = SEED_PROPS }) =>
-              <Button key={ action }
-                onClick={
-                  e => {
-                    e.stopPropagation();
-                    interact(action, item.id, seedProps(this.props, this.state));
-                  }
-                }>
+          { actions.map(({ action }) =>
+              <DmsButton key={ action }
+                action={ action } item={ item } interact={ interact }>
                 { action }
-              </Button>
+              </DmsButton>
             )
           }
         </div>

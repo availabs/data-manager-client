@@ -1,19 +1,8 @@
 import React from "react"
 
-import { Button, Title } from "./parts"
+import { DmsButton, Title } from "./parts"
 
 import get from "lodash.get"
-
-const makeAuthRule = (rule, props, item) => {
-  let { path, args, comparator } = rule;
-  args = args.map(a => {
-    if ((typeof a === "string") && a.includes("from:")) {
-      return get(props, a.slice(5));
-    }
-    return a;
-  })
-  return comparator(get(item, path, item), ...args);
-}
 
 export default class DmsList extends React.Component {
   static defaultProps = {
@@ -57,10 +46,10 @@ export default class DmsList extends React.Component {
                       .map(a => a.replace("action:", ""))
                       .map(a =>
                         <td key={ a }>
-                          <Button onClick={ e => this.props.interact(a, d.id) }
-                            disabled={ a in authRules ? !makeAuthRule(authRules[a], this.props, d) : false }>
+                          <DmsButton action={ a } item={ d }
+                            interact={ this.props.interact }>
                             { a }
-                          </Button>
+                          </DmsButton>
                         </td>
                       )
                   }

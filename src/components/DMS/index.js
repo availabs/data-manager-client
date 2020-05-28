@@ -10,7 +10,8 @@ import {
   mapStateToProps
 } from "./wrappers/dms-falcor"
 
-import { Button, Title } from "./components/parts"
+import { DmsButton, Title } from "./components/parts"
+import { AuthContext } from "./components/auth-context"
 
 import get from "lodash.get"
 
@@ -125,32 +126,36 @@ class DmsManager extends React.Component {
   }
 
   render() {
-    const { action, id, props } = this.getTop();
+    const { action, id, props } = this.getTop(),
+      { authRules, user } = this.props;
     return (
       <div className={ this.props.className }>
-        <div>
-          <Title large>
-            { this.props.title || `${ this.props.app } Manager` }
-          </Title>
-          <div className="mb-5">
-            { action === "list" ? null :
-                <Button onClick={ e => (e.stopPropagation(), this.interact("back")) }>
-                  back
-                </Button>
-            }
-            { this.props.actions
-                .filter(a => (a !== "create") || (action === "list"))
-                .map(action =>
-                  <Button key={ action } onClick={ e => (e.stopPropagation(), this.interact(action)) }>
-                    { action }
-                  </Button>
-                )
-            }
+        <AuthContext.Provider value={ { authRules, user } }>
+          <div>
+            <Title large>
+              { this.props.title || `${ this.props.app } Manager` }
+            </Title>
+            <div className="mb-5">
+              { action === "list" ? null :
+                  <DmsButton action="back" interact={ (...args) => this.interact(...args) }>
+                    back
+                  </DmsButton>
+              }
+              { this.props.actions
+                  .filter(a => (a !== "create") || (action === "list"))
+                  .map(action =>
+                    <DmsButton key={ action } action={ action }
+                      interact={ (...args) => this.interact(...args) }>
+                      { action }
+                    </DmsButton>
+                  )
+              }
+            </div>
           </div>
-        </div>
-        <div>
-          { this.renderChildren(action, id, props) }
-        </div>
+          <div>
+            { this.renderChildren(action, id, props) }
+          </div>
+        </AuthContext.Provider>
       </div>
     )
   }

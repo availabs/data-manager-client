@@ -7,7 +7,7 @@ export default
   path: '/',
   mainNav: true,
   exact: true,
-  name: 'Config Test',
+  name: 'Blog Test',
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
@@ -33,15 +33,17 @@ export default
       },
       title: "Blog It Up",
       authRules: {
+        create: {
+          args: ["props:user.authLevel"],
+          comparator: al => al !== null
+        },
         edit: {
-          path: ["data", "bloggerId"],
-          args: ["from:user.id"],
-          comparator: (d, v) => d === v
+          args: ["item:data.bloggerId", "props:user.id"],
+          comparator: (arg1, arg2) => arg1 === arg2
         },
         delete: {
-          path: ["data", "bloggerId"],
-          args: ["from:user.id", "from:user.authLevel"],
-          comparator: (d, v1, v2) => (d === v1) || (v2 > 5)
+          args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
+          comparator: (arg1, arg2, arg3) => (arg1 === arg2) || (arg3 === 10)
         }
       }
     },
@@ -73,6 +75,7 @@ export default
             { action: "reply",
 // this will send the props to the dms-manager reply component
 // the props and state are pulled from the dms-card component
+// CURRENTLY DISABLED
               // seedProps: (props, state) => ({ key: value }) }
             }
           ],
