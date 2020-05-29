@@ -2,15 +2,7 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { connect } from "react-redux"
-import { reduxFalcor } from "utils/redux-falcor"
-
-import {
-  fetchFalcorDeps,
-  mapStateToProps
-} from "./wrappers/dms-falcor"
-
-import { DmsButton, Title } from "./components/parts"
+import { DmsButton, Title, ButtonColorContext } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
 
 import get from "lodash.get"
@@ -55,11 +47,12 @@ class DmsManager extends React.Component {
     defaultAction: "list",
     dataItems: [],
     app: "app-name",
-    formatType: "format-name",
+    type: "format-type",
     format: {},
     className: "m-10 border-2 p-5 rounded-lg",
     dataFilter: false,
-    authRules: {}
+    authRules: {},
+    buttonColors: {}
   }
   state = {
     stack: [{
@@ -69,11 +62,15 @@ class DmsManager extends React.Component {
     }]
   }
 
-  fetchFalcorDeps
-
   interact(action, id = null, props) {
     const stack = [...this.state.stack];
+
     if (action === "back") {
+      (stack.length > 1) && stack.pop();
+    }
+    else if (action.includes("falcor:")) {
+window.alert("DATA: " + JSON.stringify(props))
+console.log("INTERACT WITH FALCOR:", action, id, props)
       stack.pop();
     }
     else {
@@ -98,11 +95,10 @@ class DmsManager extends React.Component {
         { ...child.props,
           ...props,
           app: this.props.app,
-          formatType: this.props.formatType,
+          type: this.props.type,
           interact: this.interact.bind(this),
           dataItems: this.props.dataItems,
-          format: this.props.format,
-          authRules: this.props.authRules
+          format: this.props.format
         }
       );
     }
@@ -115,41 +111,43 @@ class DmsManager extends React.Component {
       { ...child.props,
         ...props,
         app: this.props.app,
-        formatType: this.props.formatType,
+        type: this.props.type,
         interact: this.interact.bind(this),
         format: this.props.format,
-        type: this.props.formatType,
-        [this.props.formatType]: data
+        [this.props.type]: data
       }
     );
   }
 
   render() {
     const { action, id, props } = this.getTop(),
-      { authRules, user } = this.props;
+      { authRules, user, buttonColors } = this.props;
+
     return (
       <div className={ this.props.className }>
         <AuthContext.Provider value={ { authRules, user } }>
-          <div>
-            <Title large>
-              { this.props.title || `${ this.props.app } Manager` }
-            </Title>
-            <div className="mb-5">
-              { action === "list" ? null :
-                  <DmsButton action="back" interact={ (...args) => this.interact(...args) }/>
-              }
-              { this.props.actions
-                  .filter(a => (a !== "create") || (action === "list"))
-                  .map(action =>
-                    <DmsButton key={ action } action={ action }
-                      interact={ (...args) => this.interact(...args) }/>
-                  )
-              }
+          <ButtonColorContext.Provider value={ buttonColors }>
+            <div>
+              <Title large>
+                { this.props.title || `${ this.props.app } Manager` }
+              </Title>
+              <div className="mb-5">
+                { this.state.stack.length === 1 ? null :
+                    <DmsButton action="back" interact={ (...args) => this.interact(...args) }/>
+                }
+                { this.props.actions
+                    .filter(a => (a !== "create") || (action === "list"))
+                    .map(action =>
+                      <DmsButton key={ action } action={ action }
+                        interact={ (...args) => this.interact(...args) }/>
+                    )
+                }
+              </div>
             </div>
-          </div>
-          <div>
-            { this.renderChildren(action, id, props) }
-          </div>
+            <div>
+              { this.renderChildren(action, id, props) }
+            </div>
+          </ButtonColorContext.Provider>
         </AuthContext.Provider>
       </div>
     )
@@ -158,5 +156,5 @@ class DmsManager extends React.Component {
 
 export default {
   ...DmsComponents,
-  "dms-manager": connect(mapStateToProps, null)(reduxFalcor(DmsManager))
+  "dms-manager": DmsManager
 }

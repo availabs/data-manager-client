@@ -12,8 +12,7 @@ export const blogPost = {
       type: "textarea",
       required: true
     },
-    {
-      key: 'tags',
+    { key: 'tags',
       type: 'array:text'
     },
     { key: "bloggerId",
@@ -31,36 +30,40 @@ export const blogPost = {
 }
 
 export const blogs = [
-  { id: 1, app: "my-blog", type: "blog-post",
+  { id: "blog-1", app: "my-blog", type: "blog-post",
     data: {
       title: "Test 1",
       body: "Test blog 1",
+      tags: null,
       bloggerId: "fake-user-id",
       replyTo: null
     }
   },
-  { id: 2, app: "my-blog", type: "blog-post",
+  { id: "blog-2", app: "my-blog", type: "blog-post",
     data: {
       title: "Test 2",
       body: "Test blog 2",
+      tags: null,
       bloggerId: 123,
       replyTo: null
     }
   },
-  { id: 3, app: "my-blog", type: "blog-post",
+  { id: "blog-3", app: "my-blog", type: "blog-post",
     data: {
       title: "reply 2-1",
       body: "Reply 1 to test blog 2",
+      tags: null,
       bloggerId: 456,
-      replyTo: 2
+      replyTo: "blog-2"
     }
   },
-  { id: 4, app: "my-blog", type: "blog-post",
+  { id: "blog-4", app: "my-blog", type: "blog-post",
     data: {
       title: "Reply 2-2",
       body: "Reply 2 to test blog 2",
+      tags: null,
       bloggerId: 789,
-      replyTo: 2
+      replyTo: "blog-2"
     }
   }
 ]

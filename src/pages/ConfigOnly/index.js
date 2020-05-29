@@ -19,23 +19,27 @@ export default
 
   component: {
     type: "dms-manager", // top level component for managing data items
-    wrappers: ["use-auth"],
+    wrappers: [
+      { type: "dms-falcor",
+        options: {
+          // path: ["dms", "data", "user", "props:user.id", "props:app", "props:type"],
+          filter: {
+            args: ["item:data.replyTo"],
+            comparator: arg1 => arg1 === null
+          },
+        }
+      },
+      "use-auth"
+    ],
     props: {
       app: "my-blog",
-      formatType: "blog-post",
+      type: "blog-post",
       defaultAction: "list",
       actions: ["create"],
-      // filter: d => get(d, ["data", "replyTo"], null) === null
-      filter: {
-// TODO: streamline filter creation
-        // args: ["item:data.replyTo"],
-        // comparator: arg => arg === null,
-// END TODO
-        path: ["data", "replyTo"],
-        value: null,
-        comparator: (data, value) => data === value
-      },
       title: "Blog It Up",
+      buttonColors: {
+        reply: "green"
+      },
       authRules: {
         create: {
           args: ["props:user.authLevel"],
@@ -81,7 +85,7 @@ export default
           },
           actions: [
             { action: "reply",
-// this send props into the DMS Manager reply component
+// this send props into the DMS Manager reply component from the dms-card component
               seedProps: props => ({ test: "prop" })
             }
           ],
@@ -98,9 +102,7 @@ export default
               options: {
                 filter: {
                   args: ["item:data.replyTo", "props:blog-post.id"],
-                  path: ["data", "replyTo"], // this retrieves from a data item
-                  value: "from:blog-post.id", // this can be a value or retreives from props
-                  comparator: (d, v) => d === v
+                  comparator: (arg1, arg2) => arg1 === arg2
                 }
               }
             }]
@@ -110,11 +112,20 @@ export default
 
       { type: "dms-create",
         props: { action: "create" },
-        wrappers: ["use-auth", "with-theme"]
+        wrappers: ["use-auth"]
       },
 
       { type: "dms-create",
         props: { action: "reply" },
+        wrappers: ["use-auth"]
+      },
+
+      { type: "dms-create",
+        props: {
+          action: "edit",
+          faclor: "set",
+          loadStateFromData: true
+        },
         wrappers: ["use-auth"]
       }
     ]

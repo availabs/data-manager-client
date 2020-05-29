@@ -7,16 +7,14 @@ import get from "lodash.get"
 
 import { blogPost, blogs } from "../test_formats/blog_format"
 
-const getDefaultPath = props =>
-  ["dms", "data", props.app, props.formatType]
+const ITEM_REGEX = /^item:(.+)$/,
+  PROPS_REGEX = /^props:(.+)$/;
 
-const regex = /^from:(.+)$/;
+const getDefaultPath = () =>["dms", "data", "props:app", "props:type"]
+
 const processPath = (path, props) => {
-  if (typeof path === "string") {
-    path = path.split(".");
-  }
   return path.map(p => {
-    const match = regex.exec(p);
+    const match = PROPS_REGEX.exec(p);
     if (match) {
       return get(props, match[1], null);
     }
@@ -30,28 +28,45 @@ const getDataItems = (path, state) => {
   return [];
 }
 
-export function makeFilter(options, props) {
-  if (arguments.length === 1) props = options;
-
-  const filter = get(options, "filter", false);
+export function makeFilter(props) {
+  const filter = get(props, "filter", false);
 
   if (filter === false) return false;
   if (typeof filter === "function") return filter;
-  let { path, value, comparator } = filter;
+  let { args, comparator } = filter;
 
-  path = processPath(path, props);
-  value = processPath([value], props).pop();
+  args = args.map(arg => {
+    if (typeof arg === "string") {
+      if (ITEM_REGEX.test(arg)) {
+        return {
+          type: "item",
+          path: arg.slice(5)
+        }
+      }
+      if (PROPS_REGEX.test(arg)) {
+        return {
+          type: "value",
+          value: get(props, arg.slice(6))
+        }
+      }
+    }
+    return { type: "value", value: arg };
+  })
 
-  return d => comparator(get(d, path), value);
+  return d =>
+    comparator(
+      ...args.map(({ type, path, value }) =>
+        type === "item" ? get(d, path) : value
+      )
+    );
 }
 
 export const mapStateToProps = (state, props) => {
-  const path = processPath(get(props, "path", getDefaultPath(props))),
+  const path = processPath(get(props, "path", getDefaultPath()), props),
     filter = makeFilter(props);
-  let dataItems = getDataItems(path, state);
-  filter && (dataItems = dataItems.filter(filter));
+  const dataItems = getDataItems(path, state);
   return {
-    // format: get(state, ["graph", "dms", "format", props.app, props.formatType], null),
+    // format: get(state, ["graph", "dms", "format", props.app, props.type], null),
     // dataItems,
     path,
     format: blogPost,
@@ -60,9 +75,9 @@ export const mapStateToProps = (state, props) => {
 }
 
 export function fetchFalcorDeps() {
-  const { app, formatType, path } = this.props;
+  const { app, type, path } = this.props;
   return this.props.falcor.get(
-    ["dms", "format", app, formatType],
+    ["dms", "format", app, type],
     [...path, "length"]
   ).then(res => {
     const length = get(res, ["json", ...path, "length"], 0);
