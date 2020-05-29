@@ -94,7 +94,11 @@ export const DmsButton = ({ action: arg, item, interact, ...props }) =>
           hasAuth = checkAuth(authRules[action], props, item);
         return (
           <ActionButton { ...props } disabled={ !hasAuth } action={ action }
-            onClick={ e => (e.stopPropagation(), interact(action, get(item, "id"), seedProps(props))) }/>
+            onClick={ e => {
+              e.stopPropagation() 
+              interact(action, get(item, "id"), seedProps(props))
+            }
+          }/>
         )
       }
     }
