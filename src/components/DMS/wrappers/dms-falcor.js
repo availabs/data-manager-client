@@ -10,8 +10,6 @@ import { blogPost, blogs } from "../test_formats/blog_format"
 const ITEM_REGEX = /^item:(.+)$/,
   PROPS_REGEX = /^props:(.+)$/;
 
-const getDefaultPath = () =>["dms", "data", "props:app", "props:type"]
-
 const processPath = (path, props) => {
   return path.map(p => {
     const match = PROPS_REGEX.exec(p);
@@ -22,10 +20,19 @@ const processPath = (path, props) => {
   })
 }
 
-const getDataItems = (path, state) => {
+const getDataItems = (path, state, filter = false) => {
   const length = get(state, ["graph", ...path, "length"], 0);
 
-  return [];
+  const dataItems = [];
+  for (let i = 0; i < length; ++i) {
+    const p = get(state, ["graph", ...path, "byIndex", i, "value"], null);
+    if (p) {
+      const dataItem = JSON.parse(JSON.stringify(get(state, ["graph", ...p], {})));
+      dataItem.data = get(dataItem, ["data", "value"], {});
+      dataItems.push(dataItem);
+    }
+  }
+  return filter ? dataItems.filter(filter) : dataItems;
 }
 
 export function makeFilter(props) {
@@ -61,41 +68,113 @@ export function makeFilter(props) {
     );
 }
 
-export const mapStateToProps = (state, props) => {
-  const path = processPath(get(props, "path", getDefaultPath()), props),
-    filter = makeFilter(props);
-  const dataItems = getDataItems(path, state);
-  return {
-    // format: get(state, ["graph", "dms", "format", props.app, props.type], null),
-    // dataItems,
-    path,
-    format: blogPost,
-    dataItems: filter ? blogs.filter(filter) : blogs
-  }
-}
+const getFormat = (app, type, state) => {
+  const key = `${ app }+${ type }`,
+    format = JSON.parse(JSON.stringify(get(state, ["graph", "dms", "format", key], {})));
 
-export function fetchFalcorDeps() {
-  const { app, type, path } = this.props;
-  return this.props.falcor.get(
-    ["dms", "format", app, type],
-    [...path, "length"]
-  ).then(res => {
-    const length = get(res, ["json", ...path, "length"], 0);
-    if (length) {
-      return this.props.falcor.get(
-        [...path, "byIndex", { from: 0, to: --length },
-          ["id", "app", "type", "attributes"]
-        ]
-      )
-    }
-  })
+  format.attributes = get(format, ["attributes", "value"], {});
+
+  return format;
 }
 
 export default (WrappedComponent, options = {}) => {
   class Wrapper extends React.Component {
-    fetchFalcorDeps
-    render = () => <WrappedComponent { ...this.props }/>
+    state = { loading: false };
+
+    MOUNTED = false;
+    componentDidMount() {
+      this.MOUNTED = true;
+    }
+    componentWillUnmount() {
+      this.MOUNTED = false;
+    }
+    setState(...args) {
+      this.MOUNTED && super.setState(...args);
+    }
+
+    startLoading() {
+      this.setState(state => ({ loading: ++state.loading }));
+    }
+    stopLoading() {
+      this.setState(state => ({ loading: --state.loading }));
+    }
+
+    fetchFalcorDeps() {
+      this.startLoading();
+      const { app, type, path } = this.props;
+      return this.props.falcor.get(
+        ["dms", "format", `${ app }+${ type }`, ["app", "type", "attributes"]],
+        [...path, "length"],
+      ).then(res => {
+        let length = get(res, ["json", ...path, "length"], 0);
+        if (length) {
+          return this.props.falcor.get(
+            [...path, "byIndex", { from: 0, to: --length },
+              ["id", "app", "type", "data", "updated_at"]
+            ]
+          )
+        }
+      }).then(() => this.stopLoading())
+    }
+    apiInteract(action, id, data) {
+      let falcorAction = null;
+
+      switch (action) {
+        case "api:edit":
+          falcorAction = this.falcorSet;
+          break;
+        case "api:create":
+          falcorAction = this.falcorCall;
+          break;
+      }
+
+      if (falcorAction) {
+        this.startLoading();
+        return falcorAction.call(this, action, id, data)
+          .then(() => this.stopLoading());
+      }
+      return Promise.resolve();
+    }
+    falcorSet(action, id, data) {
+      return this.props.falcor.set({
+          paths: [["dms", "data", "byId", id, "data"]],
+          jsonGraph: {
+            dms: {
+              data: {
+                byId: {
+                  [id]: { data: JSON.stringify(data) }
+                }
+              }
+            }
+          }
+        })
+        .then(res => console.log("SET RES:", res));
+    }
+    falcorCall(action, id, data) {
+      const args = [this.props.app, this.props.type, data];
+      return this.props.falcor.call(["dms", "data", "create"], args)
+        .then(res => console.log("CALL RES:", res));
+    }
+    render() {
+      return (
+        <WrappedComponent { ...this.props } { ...this.state }
+          apiInteract={ (...args) => this.apiInteract(...args) }/>
+      )
+    }
+  }
+  const mapStateToProps = (state, props) => {
+    const defaultPath = ["dms", "data", `${ props.app }+${ props.type }`],
+      path = processPath(get(props, "path", defaultPath), props),
+      filter = makeFilter(props);
+    const format = getFormat(props.app, props.type, state),
+      dataItems = getDataItems(path, state, filter);
+    return {
+      format,
+      dataItems,
+      path
+    }
   }
   const mS2P = (state, props) => mapStateToProps(state, { ...props, ...options });
+
   return connect(mS2P, null)(reduxFalcor(Wrapper));
 }

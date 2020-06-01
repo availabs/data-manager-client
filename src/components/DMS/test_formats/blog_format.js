@@ -30,16 +30,16 @@ export const blogPost = {
 }
 
 export const blogs = [
-  { id: "blog-1", app: "my-blog", type: "blog-post",
+  { id: 1, app: "my-blog", type: "blog-post",
     data: {
       title: "Test 1",
       body: "Test blog 1",
       tags: null,
-      bloggerId: "fake-user-id",
+      bloggerId: 389,
       replyTo: null
     }
   },
-  { id: "blog-2", app: "my-blog", type: "blog-post",
+  { id: 2, app: "my-blog", type: "blog-post",
     data: {
       title: "Test 2",
       body: "Test blog 2",
@@ -48,22 +48,22 @@ export const blogs = [
       replyTo: null
     }
   },
-  { id: "blog-3", app: "my-blog", type: "blog-post",
+  { id: 3, app: "my-blog", type: "blog-post",
     data: {
       title: "reply 2-1",
       body: "Reply 1 to test blog 2",
       tags: null,
       bloggerId: 456,
-      replyTo: "blog-2"
+      replyTo: 2
     }
   },
-  { id: "blog-4", app: "my-blog", type: "blog-post",
+  { id: 4, app: "my-blog", type: "blog-post",
     data: {
       title: "Reply 2-2",
       body: "Reply 2 to test blog 2",
       tags: null,
       bloggerId: 789,
-      replyTo: "blog-2"
+      replyTo: 2
     }
   }
 ]

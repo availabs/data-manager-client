@@ -104,19 +104,10 @@ const getValue = (values, key) => {
 
 export default class DmsCreate extends React.Component {
   static defaultProps = {
-    action: "create",
-    falcor: "call",
-    loadStateFromData: false
+    dmsAction: "create"
   }
   state = {}
-  componentDidMount() {
-    if (this.props.loadStateFromData) {
-      const item = get(this.props, this.props.type, null),
-        data = get(item, "data");
-      data && this.setState({ ...data })
-    }
-  }
-  handleChange(key, type, value) {
+  handleChange(key, value) {
     this.setState({ [key]: value });
   }
   verify() {
@@ -153,11 +144,10 @@ export default class DmsCreate extends React.Component {
   }
   create() {
     const values = this.getValues();
-    this.props.interact(`falcor:${ this.props.falcor }`, get(this.props, ["blog-post", "id"], null), values);
+    this.props.interact(`api:create`, null, values);
   }
   render() {
     const values = this.getValues();
-
     return (
       <div>
         <table>
@@ -168,14 +158,14 @@ export default class DmsCreate extends React.Component {
                     disabled={ att.editable === false }
                     att={ att }
                     value={ getValue(values, att.key) }
-                    onChange={ value => this.handleChange(att.key, att.type, value) }/>
+                    onChange={ value => this.handleChange(att.key, value) }/>
                 )
             }
             <tr>
               <td colSpan="2" className="p-1">
                 <ActionButton large block disabled={ !this.verify() }
                   onClick={ e => this.create() }
-                  action={ this.props.action }/>
+                  action={ this.props.dmsAction }/>
               </td>
             </tr>
           </tbody>

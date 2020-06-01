@@ -11,21 +11,24 @@ export const Title = ({ children, ...props }) =>
     { children }
   </div>
 
-export const Button = ({ children, color = "blue", large, block, ...props }) =>
+export const Button = ({ children, color = "blue", large, small, block, ...props }) =>
   <button { ...props }
     className={
-      `inline-flex
+      ` focus:outline-none
+        bg-${ color }-500
         justify-center
         items-center
-        bg-${ color }-500
+        inline-flex
         text-white
         font-bold
-        ${ large ? "py-2 px-6" : "py-1 px-4" }
+        ${ large ? "py-2 px-6" : small ? "py-0 px-2" : "py-1 px-4" }
+        ${ large ? "text-lg" : small ? "text-sm" : "" }
+        ${ large ? "rounded-lg" : "rounded" }
         ${ block ? "w-full" : "" }
-        rounded
         ${ props.disabled ?
           "cursor-not-allowed opacity-50" :
-          `hover:bg-${ color }-700` }
+          `hover:bg-${ color }-700`
+        }
       `
     }>
     { children }
@@ -64,14 +67,14 @@ const processAction = arg => {
   return response;
 }
 
+export const ButtonColorContext = React.createContext({});
+
 const BUTTON_COLORS = {
   create: "green",
   back: "teal",
   edit: "purple",
   delete: "red"
 }
-
-export const ButtonColorContext = React.createContext({});
 
 const getButtonColor = (action, colors) =>
   get(colors, action, get(BUTTON_COLORS, action))
@@ -85,16 +88,19 @@ export const ActionButton = ({ action, ...props }) =>
     }
   </ButtonColorContext.Consumer>
 
-export const DmsButton = ({ action: arg, item, interact, ...props }) =>
+export const DmsButton = ({ action: arg, item, ...props }) =>
   <AuthContext.Consumer>
     {
-      ({ authRules, user }) => {
-        props = { user, ...props };
+      ({ authRules, user, interact }) => {
         const { action, seedProps } = processAction(arg),
-          hasAuth = checkAuth(authRules[action], props, item);
+          hasAuth = checkAuth(authRules[action], { user, ...props }, item);
         return (
           <ActionButton { ...props } disabled={ !hasAuth } action={ action }
-            onClick={ e => (e.stopPropagation(), interact(action, get(item, "id"), seedProps(props))) }/>
+            onClick={ !hasAuth ? null :
+              e => (e.stopPropagation(),
+                interact(action, get(item, "id"), seedProps({ user, ...props }))
+              )
+            }/>
         )
       }
     }
