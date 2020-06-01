@@ -1,6 +1,5 @@
-import React from "react"
-
-import get from "lodash.get"
+// import React from "react"
+// import get from "lodash.get"
 
 export default
 {
@@ -11,8 +10,8 @@ export default
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
-    nav: 'top',
-    maxWidth: 'max-w-7xl',
+    nav: 'side',
+    maxWidth: '',
     headerBar: false,
     theme: 'light'
   },

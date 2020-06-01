@@ -5,41 +5,41 @@ import DmsComponents from "./components"
 import { Button, DmsButton, Title, ButtonColorContext } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
 
-import get from "lodash.get"
+// import get from "lodash.get"
 
-const DATA_FORMAT = {
-  id: "unique-database-id",
+// const DATA_FORMAT = {
+//   id: "unique-database-id",
 
-  app: "app-name",
-  type: "string",
-  attributes: "jsonb",
-/*
-  attributes: [
-    { type: enum:[text, textarea, number], // required
-      key: "string" // required
-    }
-  ]
-*/
+//   app: "app-name",
+//   type: "string",
+//   attributes: "jsonb",
+// /*
+//   attributes: [
+//     { type: enum:[text, textarea, number], // required
+//       key: "string" // required
+//     }
+//   ]
+// */
 
-  created_at: "datetime",
-  created_by: "avail-auth-user-id",
+//   created_at: "datetime",
+//   created_by: "avail-auth-user-id",
 
-  updated_at: "datetime",
-  updated_by: "avail-auth-user-id"
-}
-const DATA_ITEM = {
-  id: "unique-database-id",
+//   updated_at: "datetime",
+//   updated_by: "avail-auth-user-id"
+// }
+// const DATA_ITEM = {
+//   id: "unique-database-id",
 
-  app: "app-name",
-  type: "string",
-  data: "jsonb",
+//   app: "app-name",
+//   type: "string",
+//   data: "jsonb",
 
-  created_at: "datetime",
-  created_by: "avail-auth-user-id",
+//   created_at: "datetime",
+//   created_by: "avail-auth-user-id",
 
-  updated_at: "datetime",
-  updated_by: "avail-auth-user-id"
-}
+//   updated_at: "datetime",
+//   updated_by: "avail-auth-user-id"
+// }
 
 class DmsManager extends React.Component {
   static defaultProps = {
