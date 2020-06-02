@@ -38,8 +38,10 @@ const getDataItems = (path, state, filter = false) => {
 export function makeFilter(props) {
   const filter = get(props, "filter", false);
 
-  if (filter === false) return false;
+  if (!filter) return false;
+
   if (typeof filter === "function") return filter;
+
   let { args, comparator } = filter;
 
   args = args.map(arg => {
@@ -103,8 +105,8 @@ export default (WrappedComponent, options = {}) => {
       this.startLoading();
       const { app, type, path } = this.props;
       return this.props.falcor.get(
-        ["dms", "format", `${ app }+${ type }`, ["app", "type", "attributes"]],
-        [...path, "length"],
+        // ["dms", "format", `${ app }+${ type }`, ["app", "type", "attributes"]],
+        [...path, "length"]
       ).then(res => {
         let length = get(res, ["json", ...path, "length"], 0);
         if (length) {
@@ -125,6 +127,9 @@ export default (WrappedComponent, options = {}) => {
           break;
         case "api:create":
           falcorAction = this.falcorCreate;
+          break;
+        case "api:delete":
+          falcorAction = this.falcorDelete;
           break;
       }
 
@@ -149,12 +154,20 @@ console.log("API ACTION:", action, id, data)
             }
           }
         })
-        .then(res => console.log("SET RES:", res));
+        .then(res => console.log("EDIT RES:", res));
     }
     falcorCreate(action, id, data) {
       const args = [this.props.app, this.props.type, data];
       return this.props.falcor.call(["dms", "data", "create"], args)
-        .then(res => console.log("CALL RES:", res));
+        .then(res => console.log("CREATE RES:", res));
+    }
+    falcorDelete(action, id, data) {
+console.log("FALCOR DELETE:", data);
+      return Promise.resolve();
+      // const ids = data ? [...data, id],
+      // args = [this.props.format.app, this.props.format.type, ids];
+      // return this.props.falcor.call(["dms", "data", "delete"], args)
+      //   .then(res => console.log("DELETE RES:", res));
     }
     render() {
       return (
@@ -164,18 +177,20 @@ console.log("API ACTION:", action, id, data)
     }
   }
   const mapStateToProps = (state, props) => {
-    const defaultPath = ["dms", "data", `${ props.app }+${ props.type }`],
+    const { format: { app, type } } = props,
+      defaultPath = ["dms", "data", `${ app }+${ type }`],
       path = processPath(get(props, "path", defaultPath), props),
       filter = makeFilter(props);
-    const format = getFormat(props.app, props.type, state),
-      dataItems = getDataItems(path, state, filter);
+    const dataItems = getDataItems(path, state, filter);
     return {
-      format,
       dataItems,
-      path
+      path,
+      app,
+      type
     }
   }
-  const mS2P = (state, props) => mapStateToProps(state, { ...props, ...options });
+  const mS2P = (state, props) =>
+    mapStateToProps(state, { ...props, ...options });
 
   return connect(mS2P, null)(reduxFalcor(Wrapper));
 }

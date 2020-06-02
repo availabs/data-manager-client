@@ -4,12 +4,15 @@ import { DmsButton, Title } from "./parts"
 
 import get from "lodash.get"
 
+import { makeFilter } from "../wrappers/dms-falcor"
+
 export default class DmsList extends React.Component {
   static defaultProps = {
     dmsAction: "list",
     dataItems: [],
     attributes: [],
-    format: {}
+    format: {},
+    filter: false
   }
   getAttributeName(att) {
     return get(this.props, ["format", "attributes"], [])
@@ -20,6 +23,9 @@ export default class DmsList extends React.Component {
       .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
 
     const actions = this.props.attributes.filter(a => !attributes.includes(a));
+
+    const filter = makeFilter(this.props),
+      dataItems = filter ? this.props.dataItems.filter(filter) : this.props.dataItems;
 
     return !this.props.dataItems.length ? null : (
       <div className={ this.props.className }>
@@ -37,7 +43,7 @@ export default class DmsList extends React.Component {
             </tr>
           </thead>
           <tbody>
-            { this.props.dataItems.map(d =>
+            { dataItems.map(d =>
                 <tr key={ d.id }>
                   { attributes.map(a =>
                       <td key={ a } className="p-1">

@@ -73,7 +73,7 @@ const InputRow = ({ att, children, onChange, ...props }) =>
   <tr>
     <td className="align-top p-1"
       onClick={ e => document.getElementById(`att:${ att.key }`).focus() }>
-      <div className="w-full">
+      <div className="w-full py-1">
         { att.name || att.key }
       </div>
     </td>

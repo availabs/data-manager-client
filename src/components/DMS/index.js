@@ -5,45 +5,9 @@ import DmsComponents from "./components"
 import { Button, DmsButton, Title, ButtonColorContext } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
 
-// import get from "lodash.get"
-
-// const DATA_FORMAT = {
-//   id: "unique-database-id",
-
-//   app: "app-name",
-//   type: "string",
-//   attributes: "jsonb",
-// /*
-//   attributes: [
-//     { type: enum:[text, textarea, number], // required
-//       key: "string" // required
-//     }
-//   ]
-// */
-
-//   created_at: "datetime",
-//   created_by: "avail-auth-user-id",
-
-//   updated_at: "datetime",
-//   updated_by: "avail-auth-user-id"
-// }
-// const DATA_ITEM = {
-//   id: "unique-database-id",
-
-//   app: "app-name",
-//   type: "string",
-//   data: "jsonb",
-
-//   created_at: "datetime",
-//   created_by: "avail-auth-user-id",
-
-//   updated_at: "datetime",
-//   updated_by: "avail-auth-user-id"
-// }
-
 class DmsManager extends React.Component {
   static defaultProps = {
-    actions: ["create"],
+    actions: ["dms:create"],
     defaultAction: "list",
     dataItems: [],
     app: "app-name",
@@ -54,21 +18,25 @@ class DmsManager extends React.Component {
     buttonColors: {},
     apiInteract: () => Promise.resolve()
   }
-  state = {
-    stack: [{
-      dmsAction: this.props.defaultAction,
-      id: null,
-      props: {}
-    }]
+  constructor(...args) {
+    super(...args)
+    this.state = {
+      stack: [{
+        dmsAction: this.props.defaultAction,
+        id: null,
+        props: null
+      }]
+    }
+    this.interact = this.interact.bind(this);
   }
 
-  async interact(dmsAction, id, props) {
+  interact(dmsAction, id, props) {
     if (dmsAction === "back") {
       this.popAction();
     }
     else if (/^api:/.test(dmsAction)) {
-      await this.props.apiInteract(dmsAction, id, props);
-      this.popAction();
+      this.props.apiInteract(dmsAction, id, props)
+        .then(() => this.popAction());
     }
     else {
       this.pushAction(dmsAction, id, props);
@@ -103,9 +71,9 @@ class DmsManager extends React.Component {
           ...props,
           app: this.props.app,
           type: this.props.type,
-          interact: this.interact.bind(this),
+          format: this.props.format,
           dataItems: this.props.dataItems,
-          format: this.props.format
+          [this.props.type]: null
         }
       );
     }
@@ -119,8 +87,8 @@ class DmsManager extends React.Component {
         ...props,
         app: this.props.app,
         type: this.props.type,
-        interact: this.interact.bind(this),
         format: this.props.format,
+        dataItems: this.props.dataItems,
         [this.props.type]: data
       }
     );
@@ -132,7 +100,7 @@ class DmsManager extends React.Component {
 
     return (
       <div className={ this.props.className }>
-        <AuthContext.Provider value={ { authRules, user, interact: (...args) => this.interact(...args) } }>
+        <AuthContext.Provider value={ { authRules, user, interact: this.interact } }>
           <ButtonColorContext.Provider value={ buttonColors }>
             <div>
               <Title large>
@@ -140,10 +108,10 @@ class DmsManager extends React.Component {
               </Title>
               <div className="mb-5">
                 { this.state.stack.length === 1 ? null :
-                    <DmsButton action="back"/>
+                    <DmsButton action="back" key={ "back" }/>
                 }
                 { this.props.actions
-                    .filter(a => (a !== "create") || (dmsAction === "list"))
+                    .filter(a => ((a !== "create") && (a !== "dms:create")) || (dmsAction === "list"))
                     .map(action =>
                       <DmsButton key={ action } action={ action }/>
                     )

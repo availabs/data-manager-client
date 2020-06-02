@@ -29,6 +29,7 @@ export const Button = ({ children, color = "blue", large, small, block, ...props
           "cursor-not-allowed opacity-50" :
           `hover:bg-${ color }-700`
         }
+        ${ get(props, "className", "") }
       `
     }>
     { children }
@@ -57,7 +58,7 @@ const processAction = arg => {
   let response = {
     action: "unknown",
     label: "unknown",
-    seedProps: () => ({})
+    seedProps: () => null
   };
   if (typeof arg === "string") {
     response.action = arg;
@@ -91,14 +92,14 @@ export const ActionButton = ({ action, label, ...props }) =>
     }
   </ButtonColorContext.Consumer>
 
-export const DmsButton = ({ action: arg, item, ...props }) =>
+export const DmsButton = ({ action: arg, item, props = {}, ...rest }) =>
   <AuthContext.Consumer>
     {
       ({ authRules, user, interact }) => {
         const { action, seedProps, label } = processAction(arg),
           hasAuth = checkAuth(authRules[action], { user, ...props }, item);
         return (
-          <ActionButton { ...props } disabled={ !hasAuth }
+          <ActionButton { ...rest } disabled={ !hasAuth }
             action={ action } label={ label }
             onClick={ !hasAuth ? null :
               e => (e.stopPropagation(),

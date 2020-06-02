@@ -1,5 +1,4 @@
-// import React from "react"
-// import get from "lodash.get"
+import { BLOG_POST } from "components/DMS/test_formats/blog_format"
 
 export default
 {
@@ -22,19 +21,12 @@ export default
       { type: "dms-falcor",
         options: {
           // path: ["dms", "data", "user", "props:user.id", "props:app", "props:type"],
-          filter: {
-            args: ["item:data.replyTo"],
-            comparator: arg1 => arg1 === null
-          },
         }
       },
       "use-auth"
     ],
     props: {
-      app: "my-blog",
-      type: "blog-post",
-      defaultAction: "list",
-      actions: ["create"],
+      format: BLOG_POST,
       title: "Blog It Up",
       buttonColors: {
         reply: "green"
@@ -68,7 +60,11 @@ export default
             "title", "bloggerId",
             "dms:view", "dms:edit", "dms:delete"
           ],
-          title: "Blogs"
+          title: "Blogs",
+          filter: {
+            args: ["item:data.replyTo"],
+            comparator: arg1 => arg1 === null
+          }
         }
 
       },
@@ -79,7 +75,7 @@ export default
           { type: "dms-view",
             options: {
               mapDataToProps: {
-// mapDataToProps is used by dms-view to map data items to component props
+// mapDataToProps is used by dms-view to map data items to wrapped component props
 // prop: [...attributes]
                 title: "item:data.title",
                 body: [
@@ -91,8 +87,8 @@ export default
                 ]
               },
               actions: [
-                { action: "reply",
-// this sends props into the DMS Manager reply component from the dms-card component
+                { action: "dms:reply",
+// this sends props into the DMS Manager reply component from the dms-view wrapper
                   seedProps: props => ({ test: "prop" })
                 }
               ]
@@ -150,7 +146,14 @@ export default
                   "props:user.id"
                 ]
               },
-              actions: ["api:delete"]
+              actions: [{
+                action: "api:delete",
+                seedProps: props =>
+// these props are sent to the api:delete function
+                  props.dataItems.reduce((a, c) =>
+                    c.data.replyTo == props["blog-post"].id ? [...a, c.id] : a
+                  , [])
+              }]
             }
           },
           "use-auth"
