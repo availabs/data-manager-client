@@ -12,7 +12,7 @@ class DmsManager extends React.Component {
     dataItems: [],
     app: "app-name",
     type: "format-type",
-    format: {},
+    format: null,
     className: "m-10 border-2 p-5 rounded-lg",
     authRules: {},
     buttonColors: {},
@@ -98,35 +98,37 @@ class DmsManager extends React.Component {
     const { dmsAction, id, props } = this.getTop(),
       { authRules, user, buttonColors } = this.props;
 
-    return (
-      <div className={ this.props.className }>
-        <AuthContext.Provider value={ { authRules, user, interact: this.interact } }>
-          <ButtonColorContext.Provider value={ buttonColors }>
-            <div>
-              <Title large>
-                { this.props.title || `${ this.props.app } Manager` }
-              </Title>
-              <div className="mb-5">
-                { this.state.stack.length === 1 ? null :
-                    <DmsButton action="back" key={ "back" }/>
-                }
-                { this.props.actions
-                    .filter(a => ((a !== "create") && (a !== "dms:create")) || (dmsAction === "list"))
-                    .map(action =>
-                      <DmsButton key={ action } action={ action }/>
-                    )
-                }
+    return !this.props.format ? <NoFormat /> :
+      ( <div className={ this.props.className }>
+          <AuthContext.Provider value={ { authRules, user, interact: this.interact } }>
+            <ButtonColorContext.Provider value={ buttonColors }>
+              <div>
+                <Title large>
+                  { this.props.title || `${ this.props.app } Manager` }
+                </Title>
+                <div className="mb-5">
+                  { this.state.stack.length === 1 ? null :
+                      <DmsButton action="back" key={ "back" }/>
+                  }
+                  { this.props.actions
+                      .filter(a => ((a !== "create") && (a !== "dms:create")) || (dmsAction === "list"))
+                      .map(action =>
+                        <DmsButton key={ action } action={ action }/>
+                      )
+                  }
+                </div>
               </div>
-            </div>
-            <div>
-              { this.renderChildren(dmsAction, id, props) }
-            </div>
-          </ButtonColorContext.Provider>
-        </AuthContext.Provider>
-      </div>
-    )
+              <div>
+                { this.renderChildren(dmsAction, id, props) }
+              </div>
+            </ButtonColorContext.Provider>
+          </AuthContext.Provider>
+        </div>
+      )
   }
 }
+
+const NoFormat = () => <Title large className="p-5">No format supplied!!!</Title>;
 
 export default {
   ...DmsComponents,
