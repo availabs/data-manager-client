@@ -11,21 +11,24 @@ export const Title = ({ children, ...props }) =>
     { children }
   </div>
 
-export const Button = ({ children, color = "blue", large, block, ...props }) =>
+export const Button = ({ children, color = "blue", large, small, block, ...props }) =>
   <button { ...props }
     className={
-      `inline-flex
+      ` focus:outline-none
+        bg-${ color }-500
         justify-center
         items-center
-        bg-${ color }-500
+        inline-flex
         text-white
         font-bold
-        ${ large ? "py-2 px-6" : "py-1 px-4" }
+        ${ large ? "py-2 px-6" : small ? "py-0 px-2" : "py-1 px-4" }
+        ${ large ? "text-lg" : small ? "text-sm" : "" }
+        ${ large ? "rounded-lg" : "rounded" }
         ${ block ? "w-full" : "" }
-        rounded
         ${ props.disabled ?
           "cursor-not-allowed opacity-50" :
-          `hover:bg-${ color }-700` }
+          `hover:bg-${ color }-700`
+        }
       `
     }>
     { children }
@@ -53,16 +56,21 @@ const checkAuth = (rule, props, item) => {
 const processAction = arg => {
   let response = {
     action: "unknown",
+    label: "unknown",
     seedProps: () => ({})
   };
   if (typeof arg === "string") {
-    response.action = arg.replace(/^action:(.+)$/, (m, p) => p);
+    response.action = arg;
   }
   else {
     response = { ...response, ...arg };
   }
+  response.action = response.action.replace(/^(dms):(.+)$/, (m, c1, c2) => c2);
+  response.label = response.action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
   return response;
 }
+
+export const ButtonColorContext = React.createContext({});
 
 const BUTTON_COLORS = {
   create: "green",
@@ -71,34 +79,32 @@ const BUTTON_COLORS = {
   delete: "red"
 }
 
-export const ButtonColorContext = React.createContext({});
+const getButtonColor = (label, colors) =>
+  get(colors, label, get(BUTTON_COLORS, label))
 
-const getButtonColor = (action, colors) =>
-  get(colors, action, get(BUTTON_COLORS, action))
-
-export const ActionButton = ({ action, ...props }) =>
+export const ActionButton = ({ action, label, ...props }) =>
   <ButtonColorContext.Consumer>
     { buttonColors =>
-      <Button { ...props } color={ getButtonColor(action, buttonColors) }>
-        { action }
+      <Button { ...props } color={ getButtonColor(label, buttonColors) }>
+        { label || action }
       </Button>
     }
   </ButtonColorContext.Consumer>
 
-export const DmsButton = ({ action: arg, item, interact, ...props }) =>
+export const DmsButton = ({ action: arg, item, ...props }) =>
   <AuthContext.Consumer>
     {
-      ({ authRules, user }) => {
-        props = { user, ...props };
-        const { action, seedProps } = processAction(arg),
-          hasAuth = checkAuth(authRules[action], props, item);
+      ({ authRules, user, interact }) => {
+        const { action, seedProps, label } = processAction(arg),
+          hasAuth = checkAuth(authRules[action], { user, ...props }, item);
         return (
-          <ActionButton { ...props } disabled={ !hasAuth } action={ action }
-            onClick={ e => {
-              e.stopPropagation() 
-              interact(action, get(item, "id"), seedProps(props))
-            }
-          }/>
+          <ActionButton { ...props } disabled={ !hasAuth }
+            action={ action } label={ label }
+            onClick={ !hasAuth ? null :
+              e => (e.stopPropagation(),
+                interact(action, get(item, "id"), seedProps({ user, ...props }))
+              )
+            }/>
         )
       }
     }

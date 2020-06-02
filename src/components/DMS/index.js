@@ -2,7 +2,7 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { DmsButton, Title, ButtonColorContext } from "./components/parts"
+import { Button, DmsButton, Title, ButtonColorContext } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
 
 // import get from "lodash.get"
@@ -50,47 +50,54 @@ class DmsManager extends React.Component {
     type: "format-type",
     format: {},
     className: "m-10 border-2 p-5 rounded-lg",
-    dataFilter: false,
     authRules: {},
-    buttonColors: {}
+    buttonColors: {},
+    apiInteract: () => Promise.resolve()
   }
   state = {
     stack: [{
-      action: this.props.defaultAction,
+      dmsAction: this.props.defaultAction,
       id: null,
       props: {}
     }]
   }
 
-  interact(action, id = null, props) {
-    const stack = [...this.state.stack];
-
-    if (action === "back") {
-      (stack.length > 1) && stack.pop();
+  async interact(dmsAction, id, props) {
+    if (dmsAction === "back") {
+      this.popAction();
     }
-    else if (action.includes("falcor:")) {
-window.alert("DATA: " + JSON.stringify(props))
-console.log("INTERACT WITH FALCOR:", action, id, props)
-      stack.pop();
+    else if (/^api:/.test(dmsAction)) {
+      await this.props.apiInteract(dmsAction, id, props);
+      this.popAction();
     }
     else {
-      stack.push({ action, id, props });
+      this.pushAction(dmsAction, id, props);
     }
+  }
+  pushAction(dmsAction, id, props) {
+    const stack = [...this.state.stack];
+    stack.push({ dmsAction, id, props });
     this.setState({ stack });
   }
+  popAction() {
+    if (this.state.stack.length > 1) {
+      const stack = [...this.state.stack];
+      stack.pop();
+      this.setState({ stack });
+    }
+  }
   getTop() {
-    const stack = this.state.stack,
-      length = stack.length;
-    return stack[length - 1];
+    const { stack } = this.state;
+    return stack[stack.length - 1];
   }
 
-  renderChildren(action, id, props) {
+  renderChildren(dmsAction, id, props) {
     const child = React.Children.toArray(this.props.children)
-      .reduce((a, c) => c.props.action === action ? c : a, null);
+      .reduce((a, c) => c.props.dmsAction === dmsAction ? c : a, null);
 
     if (child === null) return child;
 
-    if (action === "list") {
+    if (dmsAction === "list") {
       return React.cloneElement(child,
         { ...child.props,
           ...props,
@@ -120,12 +127,12 @@ console.log("INTERACT WITH FALCOR:", action, id, props)
   }
 
   render() {
-    const { action, id, props } = this.getTop(),
+    const { dmsAction, id, props } = this.getTop(),
       { authRules, user, buttonColors } = this.props;
 
     return (
       <div className={ this.props.className }>
-        <AuthContext.Provider value={ { authRules, user } }>
+        <AuthContext.Provider value={ { authRules, user, interact: (...args) => this.interact(...args) } }>
           <ButtonColorContext.Provider value={ buttonColors }>
             <div>
               <Title large>
@@ -133,19 +140,18 @@ console.log("INTERACT WITH FALCOR:", action, id, props)
               </Title>
               <div className="mb-5">
                 { this.state.stack.length === 1 ? null :
-                    <DmsButton action="back" interact={ (...args) => this.interact(...args) }/>
+                    <DmsButton action="back"/>
                 }
                 { this.props.actions
-                    .filter(a => (a !== "create") || (action === "list"))
+                    .filter(a => (a !== "create") || (dmsAction === "list"))
                     .map(action =>
-                      <DmsButton key={ action } action={ action }
-                        interact={ (...args) => this.interact(...args) }/>
+                      <DmsButton key={ action } action={ action }/>
                     )
                 }
               </div>
             </div>
             <div>
-              { this.renderChildren(action, id, props) }
+              { this.renderChildren(dmsAction, id, props) }
             </div>
           </ButtonColorContext.Provider>
         </AuthContext.Provider>

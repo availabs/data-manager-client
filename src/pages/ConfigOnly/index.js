@@ -6,7 +6,7 @@ export default
   path: '/',
   mainNav: true,
   exact: true,
-  name: 'Blog Test',
+  name: 'Blog It Up',
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
@@ -46,11 +46,11 @@ export default
         },
         edit: {
           args: ["item:data.bloggerId", "props:user.id"],
-          comparator: (arg1, arg2) => arg1 === arg2
+          comparator: (arg1, arg2) => +arg1 === +arg2
         },
         delete: {
           args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
-          comparator: (arg1, arg2, arg3) => (arg1 === arg2) || (arg3 === 10)
+          comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
         },
         reply: {
           args: ["props:user.authLevel"],
@@ -60,14 +60,13 @@ export default
     },
     children: [
 // dms-manager children are special
-// they are only shown when the dms-manager state.action === child.props.action
+// they are only shown when the dms-manager state.dmsAction === child.props.dmsAction
       { type: "dms-list", // generic dms component for viewing multiple data items
         // wrappers: ["use-auth"],
         props: {
-          // action: "list",
           attributes: [
             "title", "bloggerId",
-            "action:view", "action:edit", "action:delete"
+            "dms:view", "dms:edit", "dms:delete"
           ],
           title: "Blogs"
         }
@@ -75,20 +74,32 @@ export default
       },
 
       { type: "dms-card", // generic dms component for viewing a single data item
-        props: {
-          mapDataToProps: {
-// mapDataToProps is used by dms-card to map data attributes to component props
-// attribute: prop
-            title: "title",
-            body: "content"
-          },
-          actions: [
-            { action: "reply",
-// this send props into the DMS Manager reply component from the dms-card component
-              seedProps: props => ({ test: "prop" })
+        props: { dmsAction: "view" },
+        wrappers: [
+          { type: "dms-view",
+            options: {
+              mapDataToProps: {
+// mapDataToProps is used by dms-view to map data items to component props
+// prop: [...attributes]
+                title: "item:data.title",
+                body: [
+                  "item:data.bloggerId",
+                  "item:data.body",
+                  "item:data.tags",
+                  "item:updated_at",
+                  "props:user.id"
+                ]
+              },
+              actions: [
+                { action: "reply",
+// this sends props into the DMS Manager reply component from the dms-card component
+                  seedProps: props => ({ test: "prop" })
+                }
+              ]
             }
-          ],
-        },
+          },
+          "use-auth"
+        ],
         children: [
           { type: "dms-list",
             props: {
@@ -101,7 +112,7 @@ export default
               options: {
                 filter: {
                   args: ["item:data.replyTo", "props:blog-post.id"],
-                  comparator: (arg1, arg2) => arg1 === arg2
+                  comparator: (arg1, arg2) => +arg1 === +arg2
                 }
               }
             }]
@@ -110,22 +121,40 @@ export default
       },
 
       { type: "dms-create",
-        props: { action: "create" },
+        props: { dmsAction: "create" },
         wrappers: ["use-auth"]
       },
 
       { type: "dms-create",
-        props: { action: "reply" },
+        props: { dmsAction: "reply" },
         wrappers: ["use-auth"]
       },
 
-      { type: "dms-create",
-        props: {
-          action: "edit",
-          faclor: "set",
-          loadStateFromData: true
-        },
+      { type: "dms-edit",
+        props: { dmsAction: "edit" },
         wrappers: ["use-auth"]
+      },
+
+      { type: "dms-card",
+        props: { dmsAction: "delete" },
+        wrappers: [
+          { type: "dms-view",
+            options: {
+              mapDataToProps: {
+                title: "item:data.title",
+                body: [
+                  "item:data.bloggerId",
+                  "item:data.body",
+                  "item:data.tags",
+                  "item:updated_at",
+                  "props:user.id"
+                ]
+              },
+              actions: ["api:delete"]
+            }
+          },
+          "use-auth"
+        ]
       }
     ]
   }

@@ -8,9 +8,8 @@ import NoMatch from 'pages/404';
 export default [
 	// -- public
 	ConfigOnly,
-	ConfigSimple,
+	// ConfigSimple,
 	Test,
 	// -- util
 	NoMatch
 ];
-
