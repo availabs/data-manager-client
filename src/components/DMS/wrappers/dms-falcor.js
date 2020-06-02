@@ -121,13 +121,14 @@ export default (WrappedComponent, options = {}) => {
 
       switch (action) {
         case "api:edit":
-          falcorAction = this.falcorSet;
+          falcorAction = this.falcorEdit;
           break;
         case "api:create":
-          falcorAction = this.falcorCall;
+          falcorAction = this.falcorCreate;
           break;
       }
 
+console.log("API ACTION:", action, id, data)
       if (falcorAction) {
         this.startLoading();
         return falcorAction.call(this, action, id, data)
@@ -135,7 +136,7 @@ export default (WrappedComponent, options = {}) => {
       }
       return Promise.resolve();
     }
-    falcorSet(action, id, data) {
+    falcorEdit(action, id, data) {
       return this.props.falcor.set({
           paths: [["dms", "data", "byId", id, "data"]],
           jsonGraph: {
@@ -150,7 +151,7 @@ export default (WrappedComponent, options = {}) => {
         })
         .then(res => console.log("SET RES:", res));
     }
-    falcorCall(action, id, data) {
+    falcorCreate(action, id, data) {
       const args = [this.props.app, this.props.type, data];
       return this.props.falcor.call(["dms", "data", "create"], args)
         .then(res => console.log("CALL RES:", res));

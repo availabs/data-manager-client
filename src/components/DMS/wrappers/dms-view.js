@@ -1,9 +1,7 @@
 import React from "react"
 
 import {
-  Button,
   DmsButton,
-  ActionButton,
   Title
 } from "../components/parts"
 
@@ -110,6 +108,7 @@ export default (Component, options = {}) => {
         }
       }
 
+console.log("DMS VIEW:", item)
       return (
         <div>
           <Component { ...props }/>

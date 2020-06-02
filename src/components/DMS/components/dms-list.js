@@ -17,7 +17,7 @@ export default class DmsList extends React.Component {
   }
   render() {
     const attributes = this.props.attributes
-      .filter(a => (typeof a === "string") && !/^action:(.+)$/.test(a));
+      .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
 
     const actions = this.props.attributes.filter(a => !attributes.includes(a));
 

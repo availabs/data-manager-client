@@ -63,19 +63,28 @@ class DmsManager extends React.Component {
   }
 
   async interact(dmsAction, id, props) {
-    const stack = [...this.state.stack];
-
     if (dmsAction === "back") {
-      (stack.length > 1) && stack.pop();
+      this.popAction();
     }
     else if (/^api:/.test(dmsAction)) {
       await this.props.apiInteract(dmsAction, id, props);
-      stack.pop();
+      this.popAction();
     }
     else {
-      stack.push({ dmsAction, id, props });
+      this.pushAction(dmsAction, id, props);
     }
+  }
+  pushAction(dmsAction, id, props) {
+    const stack = [...this.state.stack];
+    stack.push({ dmsAction, id, props });
     this.setState({ stack });
+  }
+  popAction() {
+    if (this.state.stack.length > 1) {
+      const stack = [...this.state.stack];
+      stack.pop();
+      this.setState({ stack });
+    }
   }
   getTop() {
     const { stack } = this.state;

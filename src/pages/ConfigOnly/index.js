@@ -66,7 +66,7 @@ export default
         props: {
           attributes: [
             "title", "bloggerId",
-            "action:view", "action:edit", "action:delete"
+            "dms:view", "dms:edit", "dms:delete"
           ],
           title: "Blogs"
         }
@@ -95,7 +95,7 @@ export default
 // this sends props into the DMS Manager reply component from the dms-card component
                   seedProps: props => ({ test: "prop" })
                 }
-              ],
+              ]
             }
           },
           "use-auth"
@@ -133,6 +133,28 @@ export default
       { type: "dms-edit",
         props: { dmsAction: "edit" },
         wrappers: ["use-auth"]
+      },
+
+      { type: "dms-card",
+        props: { dmsAction: "delete" },
+        wrappers: [
+          { type: "dms-view",
+            options: {
+              mapDataToProps: {
+                title: "item:data.title",
+                body: [
+                  "item:data.bloggerId",
+                  "item:data.body",
+                  "item:data.tags",
+                  "item:updated_at",
+                  "props:user.id"
+                ]
+              },
+              actions: ["api:delete"]
+            }
+          },
+          "use-auth"
+        ]
       }
     ]
   }

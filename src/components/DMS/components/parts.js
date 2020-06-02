@@ -56,14 +56,17 @@ const checkAuth = (rule, props, item) => {
 const processAction = arg => {
   let response = {
     action: "unknown",
+    label: "unknown",
     seedProps: () => ({})
   };
   if (typeof arg === "string") {
-    response.action = arg.replace(/^action:(.+)$/, (m, p) => p);
+    response.action = arg;
   }
   else {
     response = { ...response, ...arg };
   }
+  response.action = response.action.replace(/^(dms):(.+)$/, (m, c1, c2) => c2);
+  response.label = response.action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
   return response;
 }
 
@@ -76,14 +79,14 @@ const BUTTON_COLORS = {
   delete: "red"
 }
 
-const getButtonColor = (action, colors) =>
-  get(colors, action, get(BUTTON_COLORS, action))
+const getButtonColor = (label, colors) =>
+  get(colors, label, get(BUTTON_COLORS, label))
 
-export const ActionButton = ({ action, ...props }) =>
+export const ActionButton = ({ action, label, ...props }) =>
   <ButtonColorContext.Consumer>
     { buttonColors =>
-      <Button { ...props } color={ getButtonColor(action, buttonColors) }>
-        { action }
+      <Button { ...props } color={ getButtonColor(label, buttonColors) }>
+        { label || action }
       </Button>
     }
   </ButtonColorContext.Consumer>
@@ -92,10 +95,11 @@ export const DmsButton = ({ action: arg, item, ...props }) =>
   <AuthContext.Consumer>
     {
       ({ authRules, user, interact }) => {
-        const { action, seedProps } = processAction(arg),
+        const { action, seedProps, label } = processAction(arg),
           hasAuth = checkAuth(authRules[action], { user, ...props }, item);
         return (
-          <ActionButton { ...props } disabled={ !hasAuth } action={ action }
+          <ActionButton { ...props } disabled={ !hasAuth }
+            action={ action } label={ label }
             onClick={ !hasAuth ? null :
               e => (e.stopPropagation(),
                 interact(action, get(item, "id"), seedProps({ user, ...props }))
