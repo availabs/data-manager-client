@@ -10,7 +10,7 @@ export default
   icon: 'HomeOutline',
   layoutSettings: {
     fixed: true,
-    nav: 'side',
+    nav: 'top',
     maxWidth: '',
     headerBar: false,
     theme: 'light'
