@@ -177,11 +177,10 @@ console.log("FALCOR DELETE:", data);
     }
   }
   const mapStateToProps = (state, props) => {
-    const { format: { app, type } } = props,
+    const { app, type } = get(props, "format", props),
       defaultPath = ["dms", "data", `${ app }+${ type }`],
       path = processPath(get(props, "path", defaultPath), props),
-      filter = makeFilter(props);
-    const dataItems = getDataItems(path, state, filter);
+      dataItems = getDataItems(path, state, makeFilter(props));
     return {
       dataItems,
       path,
