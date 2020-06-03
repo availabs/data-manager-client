@@ -5,8 +5,6 @@ import { reduxFalcor } from "utils/redux-falcor"
 
 import get from "lodash.get"
 
-import { blogPost, blogs } from "../test_formats/blog_format"
-
 const ITEM_REGEX = /^item:(.+)$/,
   PROPS_REGEX = /^props:(.+)$/;
 

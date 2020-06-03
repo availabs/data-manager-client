@@ -5,6 +5,10 @@ import DmsComponents from "./components"
 import { Button, DmsButton, Title, ButtonColorContext } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
 
+import { useLocation } from "react-router"
+
+import get from "lodash.get"
+
 class DmsManager extends React.Component {
   static defaultProps = {
     actions: ["dms:create"],
@@ -30,6 +34,16 @@ class DmsManager extends React.Component {
     this.interact = this.interact.bind(this);
   }
 
+  componentDidMount() {
+    if (this.props.useRouter) {
+      const { action, id } = get(this.props, "params", {});
+      if (action) {
+console.log("<componentDidMount>", action, id, this.props)
+        this.pushAction(action, id, null);
+      }
+    }
+  }
+
   interact(dmsAction, id, props) {
     if (dmsAction === "back") {
       this.popAction();
@@ -40,6 +54,9 @@ class DmsManager extends React.Component {
     }
     else {
       this.pushAction(dmsAction, id, props);
+      if (this.props.history && id) {
+        this.props.history.push(`/${ dmsAction.replace("dms:", "") }/${ id }`)
+      }
     }
   }
   pushAction(dmsAction, id, props) {
@@ -61,9 +78,9 @@ class DmsManager extends React.Component {
 
   renderChildren(dmsAction, id, props) {
     const child = React.Children.toArray(this.props.children)
-      .reduce((a, c) => c.props.dmsAction === dmsAction ? c : a, null);
+      .reduce((a, c) => this.compareActions(c.props.dmsAction, dmsAction) ? c : a, null);
 
-    if (child === null) return child;
+    if (child === null) return null;
 
     if (dmsAction === "list") {
       return React.cloneElement(child,
@@ -78,8 +95,8 @@ class DmsManager extends React.Component {
       );
     }
 
-    const data = this.props.dataItems.reduce((a, c) =>
-      c.id === id ? c : a
+    const item = this.props.dataItems.reduce((a, c) =>
+      c.id == id ? c : a
     , null)
 
     return React.cloneElement(child,
@@ -89,18 +106,22 @@ class DmsManager extends React.Component {
         type: this.props.type,
         format: this.props.format,
         dataItems: this.props.dataItems,
-        [this.props.type]: data
+        [this.props.type]: item
       }
     );
   }
 
+  compareActions(action1, action2) {
+    return action1.replace("dms:", "") == action2.replace("dms:", "");
+  }
+
   render() {
     const { dmsAction, id, props } = this.getTop(),
-      { authRules, user, buttonColors } = this.props;
+      { authRules, user, buttonColors, history, match, useRouter, basePath } = this.props;
 
     return !this.props.format ? <NoFormat /> :
       ( <div className={ this.props.className }>
-          <AuthContext.Provider value={ { authRules, user, interact: this.interact } }>
+          <AuthContext.Provider value={ { authRules, user, useRouter, basePath, interact: this.interact } }>
             <ButtonColorContext.Provider value={ buttonColors }>
               <div>
                 <Title large>
@@ -111,7 +132,7 @@ class DmsManager extends React.Component {
                       <DmsButton action="back" key={ "back" }/>
                   }
                   { this.props.actions
-                      .filter(a => ((a !== "create") && (a !== "dms:create")) || (dmsAction === "list"))
+                      .filter(a => !this.compareActions(a, "create") || (dmsAction === "list"))
                       .map(action =>
                         <DmsButton key={ action } action={ action }/>
                       )

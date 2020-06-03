@@ -7,7 +7,7 @@ import NoMatch from 'pages/404';
 
 export default [
 	// -- public
-	ConfigOnly,
+	...ConfigOnly,
 	// ConfigSimple,
 	Test,
 	// -- util
