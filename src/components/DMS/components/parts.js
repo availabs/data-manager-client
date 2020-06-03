@@ -50,8 +50,7 @@ const LinkButton = ({ children, href, large, small, block, color = "blue", class
 const processAction = arg => {
   let response = {
     action: "unknown",
-    seedProps: () => null,
-    baseAction: "unknown"
+    seedProps: () => null
   };
   if (typeof arg === "string") {
     response.action = arg;
@@ -59,7 +58,6 @@ const processAction = arg => {
   else {
     response = { ...response, ...arg };
   }
-  response.baseAction = response.action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
   return response;
 }
 const getLabel = action =>
@@ -110,8 +108,8 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
   return (
     <AuthContext.Consumer>
       { ({ authRules, user, interact, useRouter, basePath }) => {
-          const { action, seedProps, baseAction } = processAction(arg),
-            hasAuth = checkAuth(authRules[baseAction], { user, ...props }, item),
+          const { action, seedProps } = processAction(arg),
+            hasAuth = checkAuth(authRules, action, { user, ...props }, item),
             id = get(item, "id", null);
           return useRouter && hasAuth && !disabled ?
             ( ["back", "dms:back"].includes(action) ?

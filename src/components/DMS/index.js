@@ -9,6 +9,8 @@ import { useLocation } from "react-router"
 
 import get from "lodash.get"
 
+import { checkAuth } from "./components/auth-context"
+
 class DmsManager extends React.Component {
   static defaultProps = {
     actions: ["dms:create"],
@@ -80,7 +82,7 @@ class DmsManager extends React.Component {
 
     if (child === null) return null;
 
-    if (dmsAction === "list") {
+    if (/^(list|dms:list)$/.test(dmsAction)) {
       return React.cloneElement(child,
         { ...child.props,
           ...props,
@@ -96,6 +98,9 @@ class DmsManager extends React.Component {
     const item = this.props.dataItems.reduce((a, c) =>
       c.id == id ? c : a
     , null)
+
+    const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
+    if (!hasAuth) return null;
 
     return React.cloneElement(child,
       { ...child.props,

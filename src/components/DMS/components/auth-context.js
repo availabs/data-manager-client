@@ -2,7 +2,10 @@ import React from "react"
 
 import get from "lodash.get"
 
-export const checkAuth = (rule, props, item) => {
+export const checkAuth = (rules, action, props, item) => {
+  action = action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
+  const rule = rules[action];
+  
   if (!rule) return true;
 
   let { args, comparator } = rule;
