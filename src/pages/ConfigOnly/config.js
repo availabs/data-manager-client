@@ -1,13 +1,15 @@
 import { BLOG_POST } from "./blog_post"
 
+import get from "lodash.get"
+
 export default ({
   type: "dms-manager", // top level component for managing data items
   wrappers: [
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-falcor",
     "dms-router",
+    "dms-falcor",
     "use-auth"
   ],
   props: {
@@ -135,9 +137,9 @@ export default ({
             actions: [{
               action: "api:delete",
               seedProps: props =>
-// these props are sent to the api:delete function
-                props.dataItems.reduce((a, c) =>
-                  c.data.replyTo == props["blog-post"].id ? [...a, c.id] : a
+// these ids are sent to the api:delete function
+                get(props, "dataItems", []).reduce((a, c) =>
+                  get(c, ["data", "replyTo"]) == get(props, ["blog-post", "id"]) ? [...a, c.id] : a
                 , [])
             }]
           }

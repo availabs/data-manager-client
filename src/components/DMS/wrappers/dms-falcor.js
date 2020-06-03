@@ -160,12 +160,13 @@ console.log("API ACTION:", action, id, data)
         .then(res => console.log("CREATE RES:", res));
     }
     falcorDelete(action, id, data) {
-console.log("FALCOR DELETE:", data);
-      return Promise.resolve();
-      // const ids = data ? [...data, id],
-      // args = [this.props.format.app, this.props.format.type, ids];
-      // return this.props.falcor.call(["dms", "data", "delete"], args)
-      //   .then(res => console.log("DELETE RES:", res));
+      // return Promise.resolve();
+      const ids = data ? [...data, id] : [id],
+        args = [this.props.format.app, this.props.format.type, ids];
+console.log("FALCOR DELETE:", args);
+// return Promise.resolve();
+      return this.props.falcor.call(["dms", "data", "delete"], args)
+        .then(res => console.log("DELETE RES:", res));
     }
     render() {
       return (

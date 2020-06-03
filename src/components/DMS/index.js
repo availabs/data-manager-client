@@ -44,12 +44,11 @@ class DmsManager extends React.Component {
   }
 
   interact(dmsAction, id, props) {
-    if (dmsAction === "back") {
+    if (["back", "dms:back"].includes(dmsAction)) {
       this.popAction();
     }
     else if (/^api:/.test(dmsAction)) {
-      this.props.apiInteract(dmsAction, id, props)
-        .then(() => this.popAction());
+      return this.props.apiInteract(dmsAction, id, props);
     }
     else {
       this.pushAction(dmsAction, id, props);
@@ -128,7 +127,7 @@ class DmsManager extends React.Component {
                 </Title>
                 <div className="mb-5">
                   { this.state.stack.length === 1 ? null :
-                      <DmsButton action="back" key={ "back" }/>
+                      <DmsButton action="dms:back" key={ "dms:back" }/>
                   }
                   { this.props.actions
                       .filter(a => !this.compareActions(a, "create") || (dmsAction === "list"))

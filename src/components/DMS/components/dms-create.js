@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Button, ActionButton } from "./parts"
+import { Button, DmsButton } from "./parts"
 
 import deepequal from "deep-equal"
 import get from "lodash.get"
@@ -163,9 +163,12 @@ export default class DmsCreate extends React.Component {
             }
             <tr>
               <td colSpan="2" className="p-1">
-                <ActionButton large block disabled={ !this.verify() }
-                  onClick={ e => this.create() }
-                  action={ this.props.dmsAction }/>
+                <DmsButton large block disabled={ !this.verify() }
+                  label={ this.props.dmsAction }
+                  action={ {
+                    action: "api:create",
+                    seedProps: () => values
+                  } }/>
               </td>
             </tr>
           </tbody>

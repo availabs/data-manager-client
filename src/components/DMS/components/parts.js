@@ -77,26 +77,35 @@ const BUTTON_COLORS = {
 const getButtonColor = (label, colors) =>
   get(colors, label, get(BUTTON_COLORS, label))
 
-export const ActionButton = ({ action, ...props }) =>
-  <ButtonColorContext.Consumer>
-    { buttonColors =>
-      <Button { ...props } color={ getButtonColor(getLabel(action), buttonColors) }>
-        { getLabel(action) }
-      </Button>
-    }
-  </ButtonColorContext.Consumer>
+export const ActionButton = ({ action, label, ...props }) => {
+  label = label || getLabel(action);
+  return (
+    <ButtonColorContext.Consumer>
+      { buttonColors =>
+        <Button { ...props } color={ getButtonColor(label, buttonColors) }>
+          { label }
+        </Button>
+      }
+    </ButtonColorContext.Consumer>
+  )
+}
 
-export const ActionLink = ({ action, ...props }) =>
-  <ButtonColorContext.Consumer>
-    { buttonColors =>
-      <LinkButton { ...props } color={ getButtonColor(getLabel(action), buttonColors) }>
-        { getLabel(action) }
-      </LinkButton>
-    }
-  </ButtonColorContext.Consumer>
+export const ActionLink = ({ action, label, ...props }) => {
+  label = label || getLabel(action);
+  return (
+    <ButtonColorContext.Consumer>
+      { buttonColors =>
+        <LinkButton { ...props } color={ getButtonColor(label, buttonColors) }>
+          { label  }
+        </LinkButton>
+      }
+    </ButtonColorContext.Consumer>
+  )
+}
 
-export const DmsButton = ({ action: arg, item, props = {}, ...rest }) => {
+export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...rest }) => {
   const { pathname, state = [] } = useLocation(),
+    { push } = useHistory(),
     length = state.length;
   return (
     <AuthContext.Consumer>
@@ -104,25 +113,36 @@ export const DmsButton = ({ action: arg, item, props = {}, ...rest }) => {
           const { action, seedProps, baseAction } = processAction(arg),
             hasAuth = checkAuth(authRules[baseAction], { user, ...props }, item),
             id = get(item, "id", null);
-          return useRouter && hasAuth ?
-            ( action.includes("back") ?
+          return useRouter && hasAuth && !disabled ?
+            ( ["back", "dms:back"].includes(action) ?
                 <ActionLink { ...rest } action={ action }
                   to={ {
                     pathname: get(state, [length - 1], basePath),
                     state: state.slice(0, length - 1)
                   } }/>
-              :
-                <ActionLink { ...rest } action={ action }
+              : /^api:/.test(action) ?
+                <ActionButton { ...rest } action={ action }
+                  onClick={ !hasAuth ? null :
+                    e => (e.stopPropagation(),
+                      Promise.resolve(interact(action, id, seedProps({ user, ...props })))
+                        .then(() => push({
+                          pathname: get(state, [length - 1], basePath),
+                          state: state.slice(0, length - 1)
+                        }))
+                    )
+                  }/>
+              : <ActionLink { ...rest } action={ action }
                   to={ {
                     pathname: id ? `${ basePath }/${ action }/${ id }` : `${ basePath }/${ action }`,
                     state: [...state, pathname]
                   } }/>
             ) :
             (
-              <ActionButton { ...rest } disabled={ !hasAuth } action={ action }
-                onClick={ !hasAuth ? null :
+              <ActionButton { ...rest } disabled={ disabled || !hasAuth } action={ action }
+                onClick={ (!hasAuth || disabled) ? null :
                   e => (e.stopPropagation(),
-                    interact(action, id, seedProps({ user, ...props }))
+                    Promise.resolve(interact(action, id, seedProps({ user, ...props })))
+                      .then(() => action.includes("api:") && interact("dms:back"))
                   )
                 }/>
             )
