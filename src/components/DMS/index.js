@@ -38,7 +38,6 @@ class DmsManager extends React.Component {
     if (this.props.useRouter) {
       const { action, id } = get(this.props, "params", {});
       if (action) {
-console.log("<componentDidMount>", action, id, this.props)
         this.pushAction(action, id, null);
       }
     }

@@ -5,8 +5,8 @@ import {
   Switch, Route, Redirect
 } from "react-router-dom"
 
-const GetParams = ({ Component, path, ...props }) =>
-  <Component { ...props } useRouter={ true } basePath={ path } params={ useParams() }/>;
+const GetParams = ({ Component, basePath, ...props }) =>
+  <Component { ...props } useRouter={ true } basePath={ basePath } params={ useParams() }/>;
 
 export default (Component, options = {}) => {
   return ({ ...props }) => {
@@ -19,7 +19,7 @@ export default (Component, options = {}) => {
           <Component { ...props } useRouter={ true } basePath={ path }/>
         </Route>
         <Route exact path={ [alt1, alt2] }>
-          <GetParams Component={ Component } path={ path } { ...props }/>
+          <GetParams Component={ Component } basePath={ path } { ...props }/>
         </Route>
       </Switch>
     )

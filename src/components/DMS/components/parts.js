@@ -96,8 +96,8 @@ export const ActionLink = ({ action, ...props }) =>
   </ButtonColorContext.Consumer>
 
 export const DmsButton = ({ action: arg, item, props = {}, ...rest }) => {
-  const { pathname, state } = useLocation(),
-    { goBack } = useHistory();
+  const { pathname, state = [] } = useLocation(),
+    length = state.length;
   return (
     <AuthContext.Consumer>
       { ({ authRules, user, interact, useRouter, basePath }) => {
@@ -106,13 +106,16 @@ export const DmsButton = ({ action: arg, item, props = {}, ...rest }) => {
             id = get(item, "id", null);
           return useRouter && hasAuth ?
             ( action.includes("back") ?
-                <ActionButton { ...rest } action={ action }
-                  onClick={ e => (e.stopPropagation(), goBack()) }/>
+                <ActionLink { ...rest } action={ action }
+                  to={ {
+                    pathname: get(state, [length - 1], basePath),
+                    state: state.slice(0, length - 1)
+                  } }/>
               :
-                <ActionLink { ...rest }  disabled={ !hasAuth } action={ action }
+                <ActionLink { ...rest } action={ action }
                   to={ {
                     pathname: id ? `${ basePath }/${ action }/${ id }` : `${ basePath }/${ action }`,
-                    state: { from: pathname }
+                    state: [...state, pathname]
                   } }/>
             ) :
             (
