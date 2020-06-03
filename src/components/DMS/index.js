@@ -77,6 +77,8 @@ class DmsManager extends React.Component {
   }
 
   renderChildren(dmsAction, id, props) {
+    if (!this.props.format) return <NoFormat />;
+
     const child = React.Children.toArray(this.props.children)
       .reduce((a, c) => this.compareActions(c.props.dmsAction, dmsAction) ? c : a, null);
 
@@ -100,7 +102,7 @@ class DmsManager extends React.Component {
     , null)
 
     const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
-    if (!hasAuth) return null;
+    if (!hasAuth) return <NoAuth />;
 
     return React.cloneElement(child,
       { ...child.props,
@@ -122,37 +124,39 @@ class DmsManager extends React.Component {
     const { dmsAction, id, props } = this.getTop(),
       { authRules, user, buttonColors, history, match, useRouter, basePath } = this.props;
 
-    return !this.props.format ? <NoFormat /> :
-      ( <div className={ this.props.className }>
-          <AuthContext.Provider value={ { authRules, user, useRouter, basePath, interact: this.interact } }>
-            <ButtonColorContext.Provider value={ buttonColors }>
-              <div>
-                <Title large>
-                  { this.props.title || `${ this.props.app } Manager` }
-                </Title>
-                <div className="mb-5">
-                  { this.state.stack.length === 1 ? null :
-                      <DmsButton action="dms:back" key={ "dms:back" }/>
-                  }
-                  { this.props.actions
-                      .filter(a => !this.compareActions(a, "create") || (dmsAction === "list"))
-                      .map(action =>
-                        <DmsButton key={ action } action={ action }/>
-                      )
-                  }
-                </div>
+    return (
+      <div className={ this.props.className }>
+        <AuthContext.Provider value={ { authRules, user, useRouter, basePath, interact: this.interact } }>
+          <ButtonColorContext.Provider value={ buttonColors }>
+            <div>
+              <Title large>
+                { this.props.title || `${ this.props.app } Manager` }
+              </Title>
+              <div className="mb-5">
+                { ((this.state.stack.length === 1) || !this.props.format) ? null :
+                    <DmsButton action="dms:back" key={ "dms:back" }/>
+                }
+                { this.props.actions
+                    .filter(a => Boolean(this.props.format))
+                    .filter(a => !this.compareActions(a, "create") || (dmsAction === "list"))
+                    .map(action =>
+                      <DmsButton key={ action } action={ action }/>
+                    )
+                }
               </div>
-              <div>
-                { this.renderChildren(dmsAction, id, props) }
-              </div>
-            </ButtonColorContext.Provider>
-          </AuthContext.Provider>
-        </div>
-      )
+            </div>
+            <div>
+              { this.renderChildren(dmsAction, id, props) }
+            </div>
+          </ButtonColorContext.Provider>
+        </AuthContext.Provider>
+      </div>
+    )
   }
 }
 
 const NoFormat = () => <Title large className="p-5">No format supplied!!!</Title>;
+const NoAuth = () => <Title large className="p-5">You do not have authorization for this action!!!</Title>;
 
 export default {
   ...DmsComponents,

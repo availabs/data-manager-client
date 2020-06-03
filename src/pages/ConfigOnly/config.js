@@ -14,7 +14,6 @@ export default ({
   ],
   props: {
     format: BLOG_POST,
-    // useRouter: true,
     title: "Blog It Up",
     buttonColors: {
       reply: "green"
