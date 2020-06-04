@@ -36,7 +36,7 @@ const DmsList = ({ theme = {}, ...props }) => {
         </thead>
         <tbody>
           { dataItems
-              .sort((a, b) => new Date(a.update_at) - new Date(b.updated_at))
+              .sort((a, b) => new Date(b.updated_at).valueOf() - new Date(a.updated_at).valueOf())
               .map(d =>
                 <tr key={ d.id } className={  theme.contentBgHover }>
                   { attributes.map(a =>
