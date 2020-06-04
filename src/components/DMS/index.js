@@ -116,7 +116,7 @@ class DmsManager extends React.Component {
     );
   }
 
-  compareActions(action1, action2) {
+  compareActions(action1 = "", action2 = "") {
     return action1.replace("dms:", "") == action2.replace("dms:", "");
   }
 

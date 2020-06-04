@@ -29,6 +29,12 @@ export default class DmsEdit extends DmsCreate {
       id = get(this.props, [this.props.type, "id"], null);
     this.props.interact("api:edit", id, values);
   }
+  getButtonAction(values) {
+    return {
+      action: "api:edit",
+      seedProps: () => values
+    }
+  }
   render() {
     return !this.INITIALIZED ? null : super.render();
   }

@@ -19,7 +19,7 @@ export default [
   { path: "/dms",
     mainNav: true,
     // exact: true,
-    // auth: true,
+    auth: true,
     name: 'Blog It Up',
     icon: 'HomeOutline',
     layoutSettings: {

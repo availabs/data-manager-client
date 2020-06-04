@@ -146,8 +146,15 @@ export default class DmsCreate extends React.Component {
     const values = this.getValues();
     this.props.interact(`api:create`, null, values);
   }
+  getButtonAction(values) {
+    return {
+      action: "api:create",
+      seedProps: () => values
+    }
+  }
   render() {
-    const values = this.getValues();
+    const values = this.getValues(),
+      item = get(this.props, this.props.type, null);
     return (
       <div>
         <table>
@@ -164,11 +171,8 @@ export default class DmsCreate extends React.Component {
             <tr>
               <td colSpan="2" className="p-1">
                 <DmsButton large block disabled={ !this.verify() }
-                  label={ this.props.dmsAction }
-                  action={ {
-                    action: "api:create",
-                    seedProps: () => values
-                  } }/>
+                  label={ this.props.dmsAction } item={ item }
+                  action={ this.getButtonAction(values) }/>
               </td>
             </tr>
           </tbody>

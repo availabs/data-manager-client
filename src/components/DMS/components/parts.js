@@ -111,6 +111,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
           const { action, seedProps } = processAction(arg),
             hasAuth = checkAuth(authRules, action, { user, ...props }, item),
             id = get(item, "id", null);
+
           return useRouter && hasAuth && !disabled ?
             ( ["back", "dms:back"].includes(action) ?
                 <ActionLink { ...rest } action={ action }
@@ -140,7 +141,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
                 onClick={ (!hasAuth || disabled) ? null :
                   e => (e.stopPropagation(),
                     Promise.resolve(interact(action, id, seedProps({ user, ...props })))
-                      .then(() => action.includes("api:") && interact("dms:back"))
+                      .then(() => /^api:/.test(action) && interact("dms:back"))
                   )
                 }/>
             )

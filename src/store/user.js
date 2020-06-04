@@ -70,9 +70,8 @@ export const login = ({ email, password }) => dispatch =>
       }
     });
 
-export const auth = () => dispatch => {
-  const token = getUserToken();
-  console.log('auth attempt', token, `${AUTH_HOST}/auth`)
+export const auth = (token = null) => dispatch => {
+  token = token || getUserToken();
   if (token) {
     return fetch(`${AUTH_HOST}/auth`, {
       method: 'POST',
@@ -95,32 +94,9 @@ export const auth = () => dispatch => {
         }
       });
   } else {
-    // return Promise.resolve();
-    console.log('no auth')
     return dispatch({ type: AUTH_FAILURE });
   }
 };
-
-export const authWithToken = token => dispatch =>
-  token ?
-    fetch(`${AUTH_HOST}/auth`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ token, project: AUTH_PROJECT_NAME })
-    })
-    .then(res => res.json())
-    .then(res => {
-      if (res.error) {
-        dispatch({ type: AUTH_FAILURE });
-        dispatch(sendSystemMessage(res.error));
-      } else {
-        dispatch(receiveAuthResponse(res.user));
-      }
-    })
-  : Promise.resolve(dispatch({ type: AUTH_FAILURE }))
 
 export const passwordSet = password =>
   (dispatch, getState) => {
@@ -144,7 +120,7 @@ export const passwordSet = password =>
           if (res.message) {
             dispatch(sendSystemMessage(res.message));
           }
-          return dispatch(authWithToken(res.token));
+          return dispatch(auth(res.token));
         }
       });
     }

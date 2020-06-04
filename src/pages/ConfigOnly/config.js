@@ -8,7 +8,7 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-router",
+    // "dms-router",
     "dms-falcor",
     "use-auth"
   ],
@@ -43,6 +43,7 @@ export default ({
     { type: "dms-list", // generic dms component for viewing multiple data items
       // wrappers: ["use-auth"],
       props: {
+        dmsAction: "list",
         attributes: [
           "title", "bloggerId",
           "dms:view", "dms:edit", "dms:delete"
@@ -52,8 +53,8 @@ export default ({
           args: ["item:data.replyTo"],
           comparator: arg1 => arg1 === null
         }
-      }
-
+      },
+      wrappers: ["with-theme"]
     },
 
     { type: "dms-card", // generic dms component for viewing a single data item
