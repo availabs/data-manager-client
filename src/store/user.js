@@ -87,9 +87,8 @@ export const auth = (token = null) => dispatch => {
         if (res.error) {
           dispatch({ type: AUTH_FAILURE });
           dispatch(sendSystemMessage(res.error));
-        } else {
-          console.log('receiveAuthResponse', res.user)
-
+        }
+        else {
           dispatch(receiveAuthResponse(res.user));
         }
       });
@@ -111,7 +110,6 @@ export const passwordSet = password =>
         body: JSON.stringify({ token, password })
       })
       .then(res => res.json())
-      // return postJson("/password/set", { token, password })
       .then(res => {
         if (res.error) {
           dispatch(sendSystemMessage(res.error));
@@ -132,7 +130,6 @@ export const passwordSet = password =>
 const NEW_USER_GROUP = "candidate";
 
 export const signup = (email, password, office) => dispatch => {
-  console.log('project', AUTH_PROJECT_NAME)
   return fetch(`${AUTH_HOST}/signup`, {
     method: 'POST',
     headers: {
@@ -144,10 +141,8 @@ export const signup = (email, password, office) => dispatch => {
     .then(res => res.json())
     .then(res => {
       if (res.error) {
-        console.log('error',res.error)
         return dispatch(sendSystemMessage(res.error, {type: 'SIGNUP ERROR'}));
       } else {
-        console.log('signup response', res)
         dispatch(sendSystemMessage(res.message));
         return dispatch(receiveAuthResponse(res.user));
       }

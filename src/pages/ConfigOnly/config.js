@@ -8,7 +8,7 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    // "dms-router",
+    "dms-router",
     "dms-falcor",
     "use-auth"
   ],
@@ -24,8 +24,8 @@ export default ({
         comparator: al => al !== null
       },
       edit: {
-        args: ["item:data.bloggerId", "props:user.id"],
-        comparator: (arg1, arg2) => +arg1 === +arg2
+        args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
+        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
       },
       delete: {
         args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
@@ -46,7 +46,11 @@ export default ({
         dmsAction: "list",
         attributes: [
           "title", "bloggerId",
-          "dms:view", "dms:edit", "dms:delete"
+          "dms:view", "dms:edit", "dms:delete",
+          { action: "api:delete",
+            label: "API delete",
+            color: "red",
+            showConfirm: true }
         ],
         title: "Blogs",
         filter: {
@@ -136,6 +140,7 @@ export default ({
             },
             actions: [{
               action: "api:delete",
+              showConfirm: true,
               seedProps: props =>
 // these ids are sent to the api:delete function
                 get(props, "dataItems", []).reduce((a, c) =>

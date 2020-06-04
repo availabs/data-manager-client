@@ -114,7 +114,7 @@ export default (Component, options = {}) => {
           { !actions.length ? null :
             <div className="mt-2">
               { actions.map(a =>
-                  <DmsButton key={ a } item={ item } action={ a } props={ this.props }/>
+                  <DmsButton key={ get(a, "action", a) } item={ item } action={ a } props={ this.props }/>
                 )
               }
             </div>

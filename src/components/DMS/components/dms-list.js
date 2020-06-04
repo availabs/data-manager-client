@@ -46,7 +46,7 @@ const DmsList = ({ theme = {}, ...props }) => {
                     )
                   }
                   { actions.map(a =>
-                      <td key={ get(a, "action", a) } className="text-center p-1">
+                      <td key={ get(a, "action", a) } className="text-right p-1">
                         <DmsButton action={ a } item={ d } small/>
                       </td>
                     )

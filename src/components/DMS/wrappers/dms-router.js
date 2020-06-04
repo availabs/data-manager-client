@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 
 import {
   useRouteMatch, useParams,
-  Switch, Route, Redirect
+  Switch, Route
 } from "react-router-dom"
 
 const GetParams = ({ Component, ...props }) =>

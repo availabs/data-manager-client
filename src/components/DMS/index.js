@@ -19,7 +19,7 @@ class DmsManager extends React.Component {
     app: "app-name",
     type: "format-type",
     format: null,
-    className: "m-10 border-2 p-5 rounded-lg",
+    className: "border-2 p-5 rounded-lg",
     authRules: {},
     buttonColors: {},
     apiInteract: () => Promise.resolve()
@@ -80,7 +80,7 @@ class DmsManager extends React.Component {
     if (!this.props.format) return <NoFormat />;
 
     const child = React.Children.toArray(this.props.children)
-      .reduce((a, c) => this.compareActions(c.props.dmsAction, dmsAction) ? c : a, null);
+      .reduce((a, c) => this.compareActions(get(c, ["props", "dmsAction"], ""), dmsAction) ? c : a, null);
 
     if (child === null) return null;
 
@@ -125,31 +125,33 @@ class DmsManager extends React.Component {
       { authRules, user, buttonColors, history, match, useRouter, basePath } = this.props;
 
     return (
-      <div className={ this.props.className }>
-        <AuthContext.Provider value={ { authRules, user, useRouter, basePath, interact: this.interact } }>
-          <ButtonColorContext.Provider value={ buttonColors }>
-            <div>
-              <Title large>
-                { this.props.title || `${ this.props.app } Manager` }
-              </Title>
-              <div className="mb-5">
-                { ((this.state.stack.length === 1) || !this.props.format) ? null :
-                    <DmsButton action="dms:back" key={ "dms:back" }/>
-                }
-                { this.props.actions
-                    .filter(a => Boolean(this.props.format))
-                    .filter(a => !this.compareActions(a, "create") || (dmsAction === "list"))
-                    .map(action =>
-                      <DmsButton key={ action } action={ action }/>
-                    )
-                }
+      <div className="p-20">
+        <div className={ this.props.className }>
+          <AuthContext.Provider value={ { authRules, user, useRouter, basePath, interact: this.interact } }>
+            <ButtonColorContext.Provider value={ buttonColors }>
+              <div>
+                <Title large>
+                  { this.props.title || `${ this.props.app } Manager` }
+                </Title>
+                <div className="mb-5">
+                  { ((this.state.stack.length === 1) || !this.props.format) ? null :
+                      <DmsButton action="dms:back" key={ "dms:back" }/>
+                  }
+                  { this.props.actions
+                      .filter(a => Boolean(this.props.format))
+                      .filter(a => !this.compareActions(a, "create") || (dmsAction === "list"))
+                      .map(action =>
+                        <DmsButton key={ action } action={ action }/>
+                      )
+                  }
+                </div>
               </div>
-            </div>
-            <div>
-              { this.renderChildren(dmsAction, id, props) }
-            </div>
-          </ButtonColorContext.Provider>
-        </AuthContext.Provider>
+              <div>
+                { this.renderChildren(dmsAction, id, props) }
+              </div>
+            </ButtonColorContext.Provider>
+          </AuthContext.Provider>
+        </div>
       </div>
     )
   }
