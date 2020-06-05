@@ -134,7 +134,9 @@ export default class DmsCreate extends React.Component {
     const values = {
       ...this.state
     }
-    get(this.props, ["format", "attributes"], [])
+    let attributes = get(this.props, ["format", "attributes"], [])
+    console.log('<dms-create> attributes', attributes)
+    attributes
       .forEach(att => {
         if (("default" in att) && !(att.key in values)) {
           values[att.key] = this.getDefaultValue(att);

@@ -1,4 +1,5 @@
 
+
 import DmsComponents from "components/DMS"
 import DmsWrappers from "components/DMS/wrappers"
 
@@ -26,6 +27,7 @@ export default [
       maxWidth: '',
       headerBar: false,
       theme: 'flat'
+
     },
     component: config
   }
