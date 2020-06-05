@@ -25,7 +25,7 @@ export default [
       nav: 'side',
       maxWidth: '',
       headerBar: false,
-      theme: 'light'
+      theme: 'flat'
     },
     component: config
   }
