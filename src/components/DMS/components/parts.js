@@ -1,63 +1,59 @@
-import React from "react"
+import React, { useState } from "react"
 
-import { AuthContext } from "./auth-context"
+import { Link } from "react-router-dom"
+import { useLocation, useHistory } from "react-router-dom"
+
+import { AuthContext, checkAuth } from "./auth-context"
 
 import get from "lodash.get"
 
 export const Title = ({ children, ...props }) =>
   <div className={ `
-    font-bold mb-1
-    ${ props.large ? "text-3xl" : "text-xl" }` }>
+      font-bold mb-1
+      ${ props.large ? "text-3xl" : "text-xl" }
+      ${ get(props, "className", "") }
+    ` }>
     { children }
   </div>
 
-export const Button = ({ children, color = "blue", large, small, block, ...props }) =>
-  <button { ...props }
-    className={
-      ` focus:outline-none
-        bg-${ color }-500
-        justify-center
-        items-center
-        inline-flex
-        text-white
-        font-bold
-        ${ large ? "py-2 px-6" : small ? "py-0 px-2" : "py-1 px-4" }
-        ${ large ? "text-lg" : small ? "text-sm" : "" }
-        ${ large ? "rounded-lg" : "rounded" }
-        ${ block ? "w-full" : "" }
-        ${ props.disabled ?
-          "cursor-not-allowed opacity-50" :
-          `hover:bg-${ color }-700`
-        }
-      `
-    }>
+const getButtonClassName = ({ color, large, small, block, className, disabled }) =>
+  ` focus:outline-none
+    bg-${ color }-500
+    justify-center
+    items-center
+    inline-flex
+    text-white
+    font-bold
+    ${ large ? "py-2 px-6" : small ? "py-0 px-2" : "py-1 px-4" }
+    ${ large ? "text-lg" : small ? "text-sm" : "" }
+    ${ large ? "rounded-lg" : "rounded" }
+    ${ block ? "w-full" : "" }
+    ${ disabled ?
+      "cursor-not-allowed opacity-50" :
+      `hover:bg-${ color }-700`
+    }
+    ${ className }
+  `
+
+export const Button = ({ children, large, small, block, color = "blue", className = "", disabled = false, type = "button", ...props }) =>
+  <button { ...props } type={ type }
+    className={ getButtonClassName({ color, large, small, block, className, disabled })}>
     { children }
   </button>
 
-const checkAuth = (rule, props, item) => {
-  if (!rule) return true;
-
-  let { args, comparator } = rule;
-
-  args = args.map(a => {
-    if (typeof a === "string") {
-      if (a.includes("props:")) {
-        return get(props, a.slice(6));
-      }
-      if (a.includes("item:")) {
-        return get(item, a.slice(5));
-      }
-    }
-    return a;
-  })
-  return comparator(...args);
-}
+const LinkButton = ({ children, href, large, small, block, color = "blue", className = "", disabled = false, ...props }) =>
+  <Link { ...props }
+    className={ getButtonClassName({ color, large, small, block, className, disabled })}>
+    { children }
+  </Link>
 
 const processAction = arg => {
   let response = {
     action: "unknown",
-    label: "unknown",
-    seedProps: () => ({})
+    seedProps: () => null,
+    showConfirm: false,
+    label: null,
+    color: null
   };
   if (typeof arg === "string") {
     response.action = arg;
@@ -65,10 +61,10 @@ const processAction = arg => {
   else {
     response = { ...response, ...arg };
   }
-  response.action = response.action.replace(/^(dms):(.+)$/, (m, c1, c2) => c2);
-  response.label = response.action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
   return response;
 }
+const getLabel = action =>
+  action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
 
 export const ButtonColorContext = React.createContext({});
 
@@ -82,30 +78,100 @@ const BUTTON_COLORS = {
 const getButtonColor = (label, colors) =>
   get(colors, label, get(BUTTON_COLORS, label))
 
-export const ActionButton = ({ action, label, ...props }) =>
-  <ButtonColorContext.Consumer>
-    { buttonColors =>
-      <Button { ...props } color={ getButtonColor(label, buttonColors) }>
-        { label || action }
-      </Button>
-    }
-  </ButtonColorContext.Consumer>
-
-export const DmsButton = ({ action: arg, item, ...props }) =>
-  <AuthContext.Consumer>
-    {
-      ({ authRules, user, interact }) => {
-        const { action, seedProps, label } = processAction(arg),
-          hasAuth = checkAuth(authRules[action], { user, ...props }, item);
-        return (
-          <ActionButton { ...props } disabled={ !hasAuth }
-            action={ action } label={ label }
-            onClick={ !hasAuth ? null :
-              e => (e.stopPropagation(),
-                interact(action, get(item, "id"), seedProps({ user, ...props }))
-              )
-            }/>
-        )
+export const ActionButton = ({ action, label, color, ...props }) => {
+  label = label || getLabel(action);
+  return (
+    <ButtonColorContext.Consumer>
+      { buttonColors =>
+        <Button { ...props } color={ color || getButtonColor(label, buttonColors) }>
+          { label }
+        </Button>
       }
-    }
-  </AuthContext.Consumer>
+    </ButtonColorContext.Consumer>
+  )
+}
+
+export const ActionLink = ({ action, label, color, ...props }) => {
+  label = label || getLabel(action);
+  return (
+    <ButtonColorContext.Consumer>
+      { buttonColors =>
+        <LinkButton { ...props } color={ color || getButtonColor(label, buttonColors) }>
+          { label  }
+        </LinkButton>
+      }
+    </ButtonColorContext.Consumer>
+  )
+}
+
+export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...rest }) => {
+  const { pathname, state = [] } = useLocation(),
+    { push } = useHistory(),
+    length = state.length,
+
+    itemId = get(item, "id", null),
+
+    { action, seedProps, showConfirm, ...fromAction } = processAction(arg);
+
+// RENDER BUTTON START
+  const RenderButton = () =>
+    <AuthContext.Consumer>
+      { ({ authRules, user, interact, useRouter, basePath }) => {
+
+          const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
+
+          return useRouter && hasAuth && !disabled ?
+            ( ["back", "dms:back"].includes(action) ?
+                <ActionLink { ...rest } action={ action } { ...fromAction }
+                  to={ {
+                    pathname: get(state, [length - 1], basePath),
+                    state: state.slice(0, length - 1)
+                  } }/>
+              : /^api:/.test(action) ?
+                <ActionButton { ...rest } action={ action } { ...fromAction }
+                  onClick={ !hasAuth ? null :
+                    e => (e.stopPropagation(),
+                      Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                        .then(() => push({
+                          pathname: get(state, [length - 1], basePath),
+                          state: state.slice(0, length - 1)
+                        }))
+                    )
+                  }/>
+              : <ActionLink { ...rest } action={ action } { ...fromAction }
+                  to={ {
+                    pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
+                    state: [...state, pathname]
+                  } }/>
+            ) :
+            (
+              <ActionButton { ...rest } disabled={ disabled || !hasAuth } action={ action } { ...fromAction }
+                onClick={ (!hasAuth || disabled) ? null :
+                  e => (e.stopPropagation(),
+                    Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                      .then(() => /^api:/.test(action) && interact("dms:back"))
+                  )
+                }/>
+            )
+        }
+      }
+    </AuthContext.Consumer>
+// RENDER BUTTON END
+
+  const [openConfirm, setState] = useState(!showConfirm)
+
+  if (showConfirm) {
+    return openConfirm ?
+      <div className="flex flex-row items-center justify-end">
+        <RenderButton />
+        <ActionButton className="ml-1" { ...rest } action="cancel"
+          onClick={ e => setState(false) }/>
+      </div>
+    :
+      <div className="flex flex-row items-center justify-end">
+        <ActionButton { ...rest } action={ action } { ...fromAction }
+          onClick={ e => setState(true) }/>
+      </div>
+  }
+  return <RenderButton />;
+}

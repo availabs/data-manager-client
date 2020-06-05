@@ -10,7 +10,6 @@ class NoMatch extends Component {
             <h1>404</h1>
             <h5>Page not Found</h5>
             <h4>Oops, Something went missing...</h4>
-            
           </div>
         </div>
       </div>
@@ -23,5 +22,9 @@ export default
 {
   mainNav: false,
   component: NoMatch,
-  menuSettings: {image: 'none', 'scheme': 'color-scheme-light'}
+  layoutSettings: {
+    fixed: true,
+    headerBar: true,
+    theme: 'light'
+  }
 }

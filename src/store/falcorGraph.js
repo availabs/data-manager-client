@@ -15,11 +15,12 @@ console.log("API HOST:", host)
 
 class CustomSource extends HttpDataSource {
   onBeforeRequest (config) {
-    // var token = ''
-    // if (localStorage) {
-    //   token = localStorage.getItem('token')
-    // }
-    // config.headers['Authorization'] = `${token}`
+    if (window.localStorage) {
+      const userToken = window.localStorage.getItem('userToken');
+      if (userToken) {
+        config.headers['Authorization'] = userToken;
+      }
+    }
     // // console.log('header', config.headers)
     // config.url = config.url.replace(/%22/g, '%27')
     // // config.url = config.url.replace(/"/g, "'")

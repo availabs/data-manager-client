@@ -1,11 +1,7 @@
 import React from "react"
 
-import {
-  DmsButton,
-  Title
-} from "../components/parts"
+import { DmsButton } from "../components/parts"
 
-import deepequal from "deep-equal"
 import get from "lodash.get"
 
 const SEED_PROPS = () => ({});
@@ -62,7 +58,7 @@ export default (Component, options = {}) => {
 
       if (!match) return null;
 
-      const [, from, p] = match;
+      const [,, p] = match;
 
       if (match[1] === "item") {
         return this.renderItem(p, item);
@@ -108,13 +104,15 @@ export default (Component, options = {}) => {
         }
       }
 
-console.log("DMS VIEW:", item)
       return (
         <div>
-          <Component { ...props }/>
+          <Component { ...props } { ...this.props }/>
           { !actions.length ? null :
             <div className="mt-2">
-              { actions.map(a => <DmsButton key={ a } item={ item } action={ a }/>) }
+              { actions.map(a =>
+                  <DmsButton key={ get(a, "action", a) } item={ item } action={ a } props={ this.props }/>
+                )
+              }
             </div>
           }
           <div>{ this.renderChildren() }</div>

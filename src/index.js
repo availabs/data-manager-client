@@ -5,17 +5,18 @@ import * as serviceWorker from './serviceWorker';
 
 import { Provider } from 'react-redux';
 import store from 'store';
-import { FalcorProvider } from 'utils/redux-falcor'
-import { falcorGraph } from 'store/falcorGraph'
+// import { FalcorProvider } from 'utils/redux-falcor'
+import { FalcorProvider } from 'utils/redux-falcor-new'
+import { falcorGraph } from 'store/falcorGraphNew'
 
 import 'styles/tailwind.css';
 
 ReactDOM.render(
   <React.StrictMode>
-   	<Provider store={store}>
-  		<FalcorProvider store={store} falcor={falcorGraph}>
-	    	<App /> 
-		</FalcorProvider>
+   	<Provider store={ store }>
+  		<FalcorProvider falcor={ falcorGraph }>
+	    	<App />
+      </FalcorProvider>
   	</Provider>
   </React.StrictMode>,
   document.getElementById('root')

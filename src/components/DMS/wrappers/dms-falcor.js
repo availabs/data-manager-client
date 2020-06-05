@@ -1,11 +1,10 @@
 import React from "react"
 
 import { connect } from "react-redux"
-import { reduxFalcor } from "utils/redux-falcor"
+// import { reduxFalcor } from "utils/redux-falcor"
+import { reduxFalcor } from "utils/redux-falcor-new"
 
 import get from "lodash.get"
-
-import { blogPost, blogs } from "../test_formats/blog_format"
 
 const ITEM_REGEX = /^item:(.+)$/,
   PROPS_REGEX = /^props:(.+)$/;
@@ -21,13 +20,13 @@ const processPath = (path, props) => {
 }
 
 const getDataItems = (path, state, filter = false) => {
-  const length = get(state, ["graph", ...path, "length"], 0);
+  const length = get(state, ["falcorCache", ...path, "length"], 0);
 
   const dataItems = [];
   for (let i = 0; i < length; ++i) {
-    const p = get(state, ["graph", ...path, "byIndex", i, "value"], null);
+    const p = get(state, ["falcorCache", ...path, "byIndex", i, "value"], null);
     if (p) {
-      const dataItem = JSON.parse(JSON.stringify(get(state, ["graph", ...p], {})));
+      const dataItem = JSON.parse(JSON.stringify(get(state, ["falcorCache", ...p], {})));
       dataItem.data = get(dataItem, ["data", "value"], {});
       dataItems.push(dataItem);
     }
@@ -38,8 +37,10 @@ const getDataItems = (path, state, filter = false) => {
 export function makeFilter(props) {
   const filter = get(props, "filter", false);
 
-  if (filter === false) return false;
+  if (!filter) return false;
+
   if (typeof filter === "function") return filter;
+
   let { args, comparator } = filter;
 
   args = args.map(arg => {
@@ -70,7 +71,7 @@ export function makeFilter(props) {
 
 const getFormat = (app, type, state) => {
   const key = `${ app }+${ type }`,
-    format = JSON.parse(JSON.stringify(get(state, ["graph", "dms", "format", key], {})));
+    format = JSON.parse(JSON.stringify(get(state, ["falcorCache", "dms", "format", key], {})));
 
   format.attributes = get(format, ["attributes", "value"], {});
 
@@ -101,14 +102,14 @@ export default (WrappedComponent, options = {}) => {
 
     fetchFalcorDeps() {
       this.startLoading();
-      const { app, type, path } = this.props;
+      const { /*app, type,*/ path } = this.props;
       return this.props.falcor.get(
-        ["dms", "format", `${ app }+${ type }`, ["app", "type", "attributes"]],
-        [...path, "length"],
+        // ["dms", "format", `${ app }+${ type }`, ["app", "type", "attributes"]],
+        [...path, "length"]
       ).then(res => {
         let length = get(res, ["json", ...path, "length"], 0);
         if (length) {
-          return this.props.falcor.get(
+          return this.props.falcor.chunk(
             [...path, "byIndex", { from: 0, to: --length },
               ["id", "app", "type", "data", "updated_at"]
             ]
@@ -126,9 +127,11 @@ export default (WrappedComponent, options = {}) => {
         case "api:create":
           falcorAction = this.falcorCreate;
           break;
+        case "api:delete":
+          falcorAction = this.falcorDelete;
+          break;
       }
 
-console.log("API ACTION:", action, id, data)
       if (falcorAction) {
         this.startLoading();
         return falcorAction.call(this, action, id, data)
@@ -137,6 +140,8 @@ console.log("API ACTION:", action, id, data)
       return Promise.resolve();
     }
     falcorEdit(action, id, data) {
+      if (!(id && data)) return Promise.resolve();
+
       return this.props.falcor.set({
           paths: [["dms", "data", "byId", id, "data"]],
           jsonGraph: {
@@ -148,13 +153,22 @@ console.log("API ACTION:", action, id, data)
               }
             }
           }
-        })
-        .then(res => console.log("SET RES:", res));
+        });
     }
     falcorCreate(action, id, data) {
-      const args = [this.props.app, this.props.type, data];
-      return this.props.falcor.call(["dms", "data", "create"], args)
-        .then(res => console.log("CALL RES:", res));
+      const args = [this.props.app, this.props.type, data].filter(Boolean);
+
+      if (args.length < 3) return Promise.resolve();
+
+      return this.props.falcor.call(["dms", "data", "create"], args);
+    }
+    falcorDelete(action, id, ids) {
+      ids = ids || [];
+      const args = [this.props.app, this.props.type, id, ...ids].filter(Boolean);
+
+      if (args.length < 3) return Promise.resolve();
+
+      return this.props.falcor.call(["dms", "data", "delete"], args);
     }
     render() {
       return (
@@ -164,18 +178,19 @@ console.log("API ACTION:", action, id, data)
     }
   }
   const mapStateToProps = (state, props) => {
-    const defaultPath = ["dms", "data", `${ props.app }+${ props.type }`],
+    const { app, type } = get(props, "format", props),
+      defaultPath = ["dms", "data", `${ app }+${ type }`],
       path = processPath(get(props, "path", defaultPath), props),
-      filter = makeFilter(props);
-    const format = getFormat(props.app, props.type, state),
-      dataItems = getDataItems(path, state, filter);
+      dataItems = getDataItems(path, state, makeFilter(props));
     return {
-      format,
       dataItems,
-      path
+      path,
+      app,
+      type
     }
   }
-  const mS2P = (state, props) => mapStateToProps(state, { ...props, ...options });
+  const mS2P = (state, props) =>
+    mapStateToProps(state, { ...props, ...options });
 
   return connect(mS2P, null)(reduxFalcor(Wrapper));
 }

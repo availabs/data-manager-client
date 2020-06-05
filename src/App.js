@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter,Switch } from 'react-router-dom';
+// import { Switch } from "react-router"
+import { BrowserRouter, Switch } from 'react-router-dom';
 import ScrollToTop from 'utils/ScrollToTop'
 
 import Routes from 'Routes';
@@ -8,28 +9,15 @@ import Layout from 'components/avl-components/DefaultLayout'
 
 import { auth } from 'store/user';
 
-import {
-  addComponents,
-  addWrappers
-} from "components/avl-components/ComponentFactory"
-
-import DmsComponents from "components/DMS"
-import DmsWrappers from "components/DMS/wrappers"
-
-addComponents(DmsComponents)
-addWrappers(DmsWrappers)
-
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isAuthenticating: true
-    }
+  state = {
+    isAuthenticating: true
+  }
+  componentDidMount() {
     this.props.auth();
   }
-
   componentDidUpdate(prevProps) {
-    if (this.state.isAuthenticating && this.props.user.attempts ) {
+    if (this.state.isAuthenticating && this.props.user.attempts) {
       this.setState({ isAuthenticating: false });
     }
   }
@@ -37,33 +25,27 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <ScrollToTop>
-          <Switch>
-            {Routes.map((route, i) => {
-              return (
-                <Layout key={ i }
-                  { ...route }
-                  authed={ this.props.user.authed }
-                  isAuthenticating={ this.state.isAuthenticating }
-                  menus={ Routes.filter(r => r.mainNav) }
-                  router={ this.props.router }
-                  user={ this.props.user }
-                />
-              );
-            })}
-          </Switch>
-        </ScrollToTop>
+        <ScrollToTop />
+        <Switch>
+          {Routes.map((route, i) => {
+            return (
+              <Layout key={ i }
+                { ...route }
+                authed={ this.props.user.authed }
+                isAuthenticating={ this.state.isAuthenticating }
+                menus={ Routes.filter(r => r.mainNav) }
+                router={ this.props.router }
+                user={ this.props.user }
+              />
+            );
+          })}
+        </Switch>
       </BrowserRouter>
     );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    user: state.user,
-    router: state.router
-  };
-};
+const mapStateToProps = state => ({ user: state.user });
 
 const mapDispatchToProps = { auth };
 
