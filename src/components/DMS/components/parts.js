@@ -1,7 +1,7 @@
-import React, { useState, useEffect, createRef } from "react"
+import React, { useState } from "react"
 
 import { Link } from "react-router-dom"
-import { useLocation, useHistory } from "react-router"
+import { useLocation, useHistory } from "react-router-dom"
 
 import { AuthContext, checkAuth } from "./auth-context"
 
@@ -35,8 +35,8 @@ const getButtonClassName = ({ color, large, small, block, className, disabled })
     ${ className }
   `
 
-export const Button = ({ children, large, small, block, color = "blue", className = "", disabled = false, ...props }) =>
-  <button { ...props }
+export const Button = ({ children, large, small, block, color = "blue", className = "", disabled = false, type = "button", ...props }) =>
+  <button { ...props } type={ type }
     className={ getButtonClassName({ color, large, small, block, className, disabled })}>
     { children }
   </button>

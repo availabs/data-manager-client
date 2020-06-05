@@ -157,26 +157,28 @@ export default class DmsCreate extends React.Component {
       item = get(this.props, this.props.type, null);
     return (
       <div>
-        <table>
-          <tbody>
-            { get(this.props, ["format", "attributes"], [])
-                .map((att, i) =>
-                  <InputRow key={ att.key } autoFocus={ i === 0 }
-                    disabled={ att.editable === false }
-                    att={ att }
-                    value={ getValue(values, att.key) }
-                    onChange={ value => this.handleChange(att.key, value) }/>
-                )
-            }
-            <tr>
-              <td colSpan="2" className="p-1">
-                <DmsButton large block disabled={ !this.verify() }
-                  label={ this.props.dmsAction } item={ item }
-                  action={ this.getButtonAction(values) }/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <form onSubmit={ e => e.preventDefault() }>
+          <table>
+            <tbody>
+              { get(this.props, ["format", "attributes"], [])
+                  .map((att, i) =>
+                    <InputRow key={ att.key } autoFocus={ i === 0 }
+                      disabled={ att.editable === false }
+                      att={ att }
+                      value={ getValue(values, att.key) }
+                      onChange={ value => this.handleChange(att.key, value) }/>
+                  )
+              }
+              <tr>
+                <td colSpan="2" className="p-1">
+                  <DmsButton large block disabled={ !this.verify() } type="submit"
+                    label={ this.props.dmsAction } item={ item }
+                    action={ this.getButtonAction(values) }/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
       </div>
     )
   }

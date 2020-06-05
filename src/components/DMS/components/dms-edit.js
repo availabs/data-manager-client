@@ -1,5 +1,3 @@
-import React from "react"
-
 import DmsCreate from "./dms-create"
 
 import get from "lodash.get"

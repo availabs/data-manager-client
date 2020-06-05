@@ -1,11 +1,7 @@
 import React from "react"
 
-import {
-  DmsButton,
-  Title
-} from "../components/parts"
+import { DmsButton } from "../components/parts"
 
-import deepequal from "deep-equal"
 import get from "lodash.get"
 
 const SEED_PROPS = () => ({});
@@ -62,7 +58,7 @@ export default (Component, options = {}) => {
 
       if (!match) return null;
 
-      const [, from, p] = match;
+      const [,, p] = match;
 
       if (match[1] === "item") {
         return this.renderItem(p, item);

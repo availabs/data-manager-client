@@ -19,25 +19,7 @@ function debounce(func, wait) {
 }
 
 function attachOnChange(falcor, store) {
-  // TODO: Throttle requests here
-  const handler = debounce(() => {
-    // console.log('attachOnChange', expandCache(falcor.getCache()), falcor.getCache())
-    // store.trigger(expandCache(falcor.getCache()))
-    // expand cache is designed for falcor v0.1.* 
-    store.trigger(falcor.getCache());
-  }, 50);
-
-  const root = falcor._root;
-  if (!root.onChange) {
-    root.onChange = handler;
-    return;
-  }
-
-  const oldOnChange = root.onChange;
-  root.onChange = () => {
-    oldOnChange();
-    handler();
-  };
+  falcor.onChange(this, () => store.trigger(falcor.getCache()));
 }
 
 export default class FalcorProvider extends Component {
@@ -56,7 +38,7 @@ export default class FalcorProvider extends Component {
     super(props, context);
     this.falcor = props.falcor;
     this.falcorStore = createStore(props.store);
-    attachOnChange(props.falcor, this.falcorStore);
+    attachOnChange.call(this, props.falcor, this.falcorStore);
   }
 
   getChildContext() {

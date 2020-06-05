@@ -2,10 +2,8 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { Button, DmsButton, Title, ButtonColorContext } from "./components/parts"
+import { DmsButton, Title, ButtonColorContext } from "./components/parts"
 import { AuthContext } from "./components/auth-context"
-
-import { useLocation } from "react-router"
 
 import get from "lodash.get"
 
@@ -122,7 +120,7 @@ class DmsManager extends React.Component {
 
   render() {
     const { dmsAction, id, props } = this.getTop(),
-      { authRules, user, buttonColors, history, match, useRouter, basePath } = this.props;
+      { authRules, user, buttonColors, useRouter, basePath } = this.props;
 
     return (
       <div className="p-20">

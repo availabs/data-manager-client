@@ -1,10 +1,7 @@
-import React from "react"
-import { Redirect } from "react-router-dom"
-
 import DmsComponents from "components/DMS"
 import DmsWrappers from "components/DMS/wrappers"
 
-import Factory, {
+import {
   addComponents,
   addWrappers
 } from "components/avl-components/ComponentFactory"

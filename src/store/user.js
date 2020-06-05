@@ -61,11 +61,9 @@ export const login = ({ email, password }) => dispatch =>
     .then(res => res.json())
     .then(res => {
       if (res.error) {
-        console.log('LOGIN Error',res.error)
         dispatch({ type: AUTH_FAILURE });
         dispatch(sendSystemMessage(res.error, {type: 'LOGIN ERROR'}));
       } else {
-        console.log('login response', res.user)
         dispatch(receiveAuthResponse(res.user));
       }
     });
@@ -83,7 +81,6 @@ export const auth = (token = null) => dispatch => {
     })
       .then(res => res.json())
       .then(res => {
-        console.log('auth happened', res)
         if (res.error) {
           dispatch({ type: AUTH_FAILURE });
           dispatch(sendSystemMessage(res.error));
