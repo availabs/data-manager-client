@@ -80,7 +80,7 @@ const getFormat = (app, type, state) => {
 
 export default (WrappedComponent, options = {}) => {
   class Wrapper extends React.Component {
-    state = { loading: false };
+    state = { loading: 0 };
 
     MOUNTED = false;
     componentDidMount() {

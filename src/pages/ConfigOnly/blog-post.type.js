@@ -15,6 +15,9 @@ export const BLOG_POST = {
     { key: 'tags',
       type: 'array:text'
     },
+    { key: "image",
+      type: "img"
+    },
     { key: "bloggerId",
       name: "Blogger ID",
       type: "text",

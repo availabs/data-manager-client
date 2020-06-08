@@ -16,7 +16,7 @@ export const Title = ({ children, ...props }) =>
     { children }
   </div>
 
-const getButtonClassName = ({ color, large, small, block, className, disabled }) =>
+export const getButtonClassName = ({ color = "blue", large, small, block, className, disabled }) =>
   ` focus:outline-none
     bg-${ color }-500
     justify-center
@@ -30,39 +30,23 @@ const getButtonClassName = ({ color, large, small, block, className, disabled })
     ${ block ? "w-full" : "" }
     ${ disabled ?
       "cursor-not-allowed opacity-50" :
-      `hover:bg-${ color }-700`
+      `cursor-pointer hover:bg-${ color }-700`
     }
     ${ className }
   `
 
 export const Button = ({ children, large, small, block, color = "blue", className = "", disabled = false, type = "button", ...props }) =>
-  <button { ...props } type={ type }
+  <button { ...props } type={ type } disabled={ disabled }
     className={ getButtonClassName({ color, large, small, block, className, disabled })}>
     { children }
   </button>
 
 const LinkButton = ({ children, href, large, small, block, color = "blue", className = "", disabled = false, ...props }) =>
-  <Link { ...props }
+  <Link { ...props } disabled={ disabled }
     className={ getButtonClassName({ color, large, small, block, className, disabled })}>
     { children }
   </Link>
 
-const processAction = arg => {
-  let response = {
-    action: "unknown",
-    seedProps: () => null,
-    showConfirm: false,
-    label: null,
-    color: null
-  };
-  if (typeof arg === "string") {
-    response.action = arg;
-  }
-  else {
-    response = { ...response, ...arg };
-  }
-  return response;
-}
 const getLabel = action =>
   action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
 
@@ -104,6 +88,23 @@ export const ActionLink = ({ action, label, color, ...props }) => {
   )
 }
 
+const processAction = arg => {
+  let response = {
+    action: "unknown",
+    seedProps: () => null,
+    showConfirm: false,
+    label: null,
+    color: null
+  };
+  if (typeof arg === "string") {
+    response.action = arg;
+  }
+  else {
+    response = { ...response, ...arg };
+  }
+  return response;
+}
+
 export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...rest }) => {
   const { pathname, state = [] } = useLocation(),
     { push } = useHistory(),
@@ -129,14 +130,12 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
                   } }/>
               : /^api:/.test(action) ?
                 <ActionButton { ...rest } action={ action } { ...fromAction }
-                  onClick={ !hasAuth ? null :
-                    e => (e.stopPropagation(),
-                      Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
-                        .then(() => push({
-                          pathname: get(state, [length - 1], basePath),
-                          state: state.slice(0, length - 1)
-                        }))
-                    )
+                  onClick={ e => (e.stopPropagation(),
+                    Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                      .then(() => push({
+                        pathname: get(state, [length - 1], basePath),
+                        state: state.slice(0, length - 1)
+                      })))
                   }/>
               : <ActionLink { ...rest } action={ action } { ...fromAction }
                   to={ {
@@ -144,8 +143,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
                     state: [...state, pathname]
                   } }/>
             ) :
-            (
-              <ActionButton { ...rest } disabled={ disabled || !hasAuth } action={ action } { ...fromAction }
+            ( <ActionButton { ...rest } disabled={ disabled || !hasAuth } action={ action } { ...fromAction }
                 onClick={ (!hasAuth || disabled) ? null :
                   e => (e.stopPropagation(),
                     Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
@@ -162,16 +160,14 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
 
   if (showConfirm) {
     return openConfirm ?
-      <div className="flex flex-row items-center justify-end">
+      <>
         <RenderButton />
         <ActionButton className="ml-1" { ...rest } action="cancel"
           onClick={ e => setState(false) }/>
-      </div>
+      </>
     :
-      <div className="flex flex-row items-center justify-end">
-        <ActionButton { ...rest } action={ action } { ...fromAction }
-          onClick={ e => setState(true) }/>
-      </div>
+      <ActionButton { ...rest } action={ action } { ...fromAction }
+        onClick={ e => setState(true) }/>
   }
   return <RenderButton />;
 }

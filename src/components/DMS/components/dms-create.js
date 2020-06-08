@@ -1,13 +1,15 @@
 import React from "react"
 
-import { Button, DmsButton } from "./parts"
+import { Button, DmsButton, getButtonClassName } from "./parts"
 
 import deepequal from "deep-equal"
 import get from "lodash.get"
 
+import "./style.css"
+
 const ArrayItem = ({ children, onClick, ...props }) =>
   <div className="flex pl-4 mt-1">
-    <div className="py-1 px-2 mr-2 bg-white rounded inline-block flex-grow"
+    <div className="py-1 px-2 mr-1 bg-white rounded inline-block flex-grow"
       { ...props }>
       { children }
     </div>
@@ -26,6 +28,7 @@ class ArrayInput extends React.Component {
       this.props.onChange([...value, this.state.value]);
     }
     this.setState({ value: "" });
+    document.getElementById(`att:${ this.props.att.key }`).focus();
   }
   removeFromArray(v) {
     let value = Array.isArray(this.props.value) ? this.props.value : [];
@@ -42,9 +45,9 @@ class ArrayInput extends React.Component {
       type = att.type.slice(6);
 
     return (
-      <div>
+      <div className="w-full">
         <div className="flex">
-          <input className="py-1 px-2 rounded mr-2" { ...props }
+          <input className="p-1 px-2 rounded mr-1 w-full" { ...props }
             id={ `att:${ att.key }` } type={ type }
             value={ this.state.value }
             onChange={ e => this.setState({ value: e.target.value })}>
@@ -55,7 +58,7 @@ class ArrayInput extends React.Component {
             add
           </Button>
         </div>
-        <div className="flex-col">
+        <div className="flex flex-col">
           { !value ? null : value.map((v, i) =>
               <ArrayItem key={ v }
                 onClick={ e => this.removeFromArray(v) }>
@@ -69,9 +72,123 @@ class ArrayInput extends React.Component {
   }
 }
 
+class ImgInput extends React.Component {
+  state = {
+    value: "",
+    hovering: false,
+    message: ""
+  }
+  dragEnter(e) {
+    this.stopIt(e);
+
+    this.setState({ hovering: true });
+  }
+  onDragExit(e) {
+    this.stopIt(e);
+
+    this.setState({ hovering: false });
+  }
+  stopIt(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  async dropIt(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.setState({ hovering: false });
+
+    await this.loadImage(get(e, ["dataTransfer", "files", 0], null));
+  }
+  async handleChange(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    await this.loadImage(get(e, ["target", "files", 0], null));
+  }
+  async loadImage(file) {
+    if (!file) return;
+    if (!/^image[/]/.test(file.type)) {
+      this.setState({ message: "File was not an image." });
+      return;
+    }
+    if (file.size > 10000000) {
+      this.setState({ message: "File was too large." });
+      return;
+    }
+
+    this.setState({ message: "" });
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    const result = await new Promise(resolve => {
+      reader.addEventListener("load", (...args) => {
+        resolve(reader.result);
+      })
+    })
+    this.props.onChange(result);
+  }
+  removeImage(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.setState({ message: "" });
+    this.props.onChange(null);
+  }
+  render() {
+    const { att, onChange, value, ...props } = this.props;
+
+    return (
+      <div className={ `
+          w-full h-64 border-2 rounded p-2 border-dashed
+          flex items-center justify-center relative
+          ${ this.state.hovering ? "border-gray-500" : "" }
+          load-image-input
+        ` }
+        onDragEnter={ e => this.dragEnter(e) }
+        onDragLeave={ e => this.onDragExit(e) }
+        onDragOver={ e => this.stopIt(e) }
+        onDrop={ e => this.dropIt(e) }>
+
+        { value ?
+            <img src={ value } className="max-w-full max-h-full"/>
+          :
+            <div className="flex flex-col items-center">
+              <div>
+                <label className={ getButtonClassName({}) }
+                  htmlFor="choose-image">Select an image file...</label>
+                <input className="py-1 px-2 w-full rounded hidden" id="choose-image"
+                  type="file" accept="image/*" placeholder="..."
+                  onChange={ e => this.handleChange(e) }/>
+              </div>
+              <div>...or drag and drop.</div>
+              <div>{ this.state.message }</div>
+            </div>
+        }
+        { !value ? null :
+          <div className={ `
+              absolute right-2 top-2 z-10
+              rounded bg-red-500 p-1
+              cursor-pointer
+              flex justify-center items-center
+              remove-image-button
+            ` }
+            onClick={ e => this.removeImage(e) }>
+            <svg width="20" height="20">
+              <line x2="20" y2="20" style={ { stroke: "#fff", strokeWidth: 4 } }/>
+              <line y1="20" x2="20" style={ { stroke: "#fff", strokeWidth: 4 } }/>
+            </svg>
+          </div>
+        }
+      </div>
+    )
+  }
+}
+
 const InputRow = ({ att, children, onChange, ...props }) =>
   <tr>
-    <td className="align-top p-1"
+    <td className="align-top py-1 pl-1 pr-5"
       onClick={ e => document.getElementById(`att:${ att.key }`).focus() }>
       <div className="w-full py-1">
         { att.name || att.key }
@@ -84,6 +201,8 @@ const InputRow = ({ att, children, onChange, ...props }) =>
             onChange={ e => onChange(e.target.value) }>
             { children }
           </textarea>
+        : att.type === "img" ?
+          <ImgInput { ...props } att={ att } onChange={ v => onChange(v) }/>
         : att.type.includes("array:") ?
           <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }>
               { children }
@@ -96,11 +215,6 @@ const InputRow = ({ att, children, onChange, ...props }) =>
       }
     </td>
   </tr>
-
-const getValue = (values, key) => {
-  const value = get(values, key, null);
-  return value || "";
-}
 
 export default class DmsCreate extends React.Component {
   static defaultProps = {
@@ -155,6 +269,12 @@ export default class DmsCreate extends React.Component {
   render() {
     const values = this.getValues(),
       item = get(this.props, this.props.type, null);
+
+    const getValue = key => {
+      const value = get(values, key, null);
+      return value || "";
+    }
+
     return (
       <div>
         <form onSubmit={ e => e.preventDefault() }>
@@ -165,12 +285,12 @@ export default class DmsCreate extends React.Component {
                     <InputRow key={ att.key } autoFocus={ i === 0 }
                       disabled={ att.editable === false }
                       att={ att }
-                      value={ getValue(values, att.key) }
+                      value={ getValue(att.key) }
                       onChange={ value => this.handleChange(att.key, value) }/>
                   )
               }
               <tr>
-                <td colSpan="2" className="p-1">
+                <td colSpan={ 2 } className="p-1">
                   <DmsButton large block disabled={ !this.verify() } type="submit"
                     label={ this.props.dmsAction } item={ item }
                     action={ this.getButtonAction(values) }/>

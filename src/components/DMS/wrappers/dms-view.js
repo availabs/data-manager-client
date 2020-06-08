@@ -6,10 +6,16 @@ import get from "lodash.get"
 
 const SEED_PROPS = () => ({});
 
-const ViewRow = ({ name, value }) =>
+const ViewItem = ({ value, type }) =>
+  type !== "img" ? <div>{ value }</div> :
+  <div className="h-64"><img src={ value } className="max-h-full"/></div>
+
+const ViewRow = ({ name, children }) =>
   <div className="grid grid-cols-4 my-2">
     <div className="col-span-1 font-bold">{ name }</div>
-    <div className="col-span-3">{ value }</div>
+    <div className="col-span-3">
+      { children }
+    </div>
   </div>
 
 export default (Component, options = {}) => {
@@ -41,16 +47,24 @@ export default (Component, options = {}) => {
         type = attribute.type,
         value = get(item, path, null);
 
+      if (!value) return null;
+
       if (key === "updated_at") {
         name = "Updated At";
         value = (new Date(value)).toLocaleString();
       }
       if (/^array:/.test(type)) {
-        if (!value) return null;
-        value = value.map(v => <div key={ v }>{ v }</div>)
+        value = value.map((v, i) => <ViewItem key={ i } type={ type } value={ v }/>)
+      }
+      else {
+        value = <ViewItem type={ type } value={ value }/>
       }
 
-      return <ViewRow key={ path } name={ name } value={ value }/>;
+      return (
+        <ViewRow key={ path } name={ name }>
+          { value }
+        </ViewRow>
+      );
     }
     renderRow(path, item) {
       const regex = /^(item|props):(.+)$/,
@@ -65,7 +79,11 @@ export default (Component, options = {}) => {
       }
 
       const value = get(this.props, p, null);
-      return <ViewRow key={ p } name={ p } value={ value }/>;
+      return (
+        <ViewRow key={ p } name={ p }>
+          { value }
+        </ViewRow>
+      );
     }
     getValue(path, item) {
       const regex = /^(item|props):(.+)$/,

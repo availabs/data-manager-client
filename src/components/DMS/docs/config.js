@@ -1,4 +1,4 @@
-import { BLOG_POST } from "./blog-post.type"
+import { DMS_DOCS } from "./dms-docs.type"
 
 import get from "lodash.get"
 
@@ -14,27 +14,23 @@ export default ({
     "use-auth"
   ],
   props: {
-    format: BLOG_POST,
-    title: "Blog It Up",
+    format: DMS_DOCS,
+    title: "DMS Docs",
     buttonColors: {
       reply: "green"
     },
     authRules: {
       create: {
         args: ["props:user.authLevel"],
-        comparator: al => al !== null
+        comparator: al => +al === 10
       },
       edit: {
-        args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
+        args: ["props:user.authLevel"],
+        comparator: al => +al === 10
       },
       delete: {
-        args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
-      },
-      reply: {
         args: ["props:user.authLevel"],
-        comparator: al => al !== null
+        comparator: al => +al === 10
       }
     }
   },
@@ -45,18 +41,14 @@ export default ({
       props: {
         dmsAction: "list",
         attributes: [
-          "title", "bloggerId",
+          "title", "body",
           "dms:view", "dms:edit", "dms:delete",
           { action: "api:delete",
             label: "API delete",
             color: "red",
             showConfirm: true }
         ],
-        title: "Blogs",
-        filter: {
-          args: ["item:data.replyTo"],
-          comparator: arg1 => arg1 === null
-        }
+        title: "DMS Docs"
       },
       wrappers: ["with-theme"]
     },
@@ -71,51 +63,18 @@ export default ({
 // prop: [...attributes]
               title: "item:data.title",
               body: [
-                "item:data.bloggerId",
                 "item:data.body",
                 "item:data.tags",
-                "item:data.image",
-                "item:updated_at",
-                "props:user.id"
+                "item:updated_at"
               ]
-            },
-            actions: [
-              { action: "dms:reply",
-// this sends props into the DMS Manager reply component from the dms-view wrapper
-                seedProps: props => ({ test: "prop" })
-              }
-            ]
-          }
-        },
-        "use-auth"
-      ],
-      children: [
-        { type: "dms-list",
-          props: {
-            attributes: ["title", "bloggerId", "body"],
-            className: "mt-5",
-            title: "Replies"
-          },
-          wrappers: [{
-            type: "dms-falcor",
-            options: {
-              filter: {
-                args: ["item:data.replyTo", "props:blog-post.id"],
-                comparator: (arg1, arg2) => +arg1 === +arg2
-              }
             }
-          }]
+          }
         }
       ]
     },
 
     { type: "dms-create",
       props: { dmsAction: "create" },
-      wrappers: ["use-auth"]
-    },
-
-    { type: "dms-create",
-      props: { dmsAction: "reply" },
       wrappers: ["use-auth"]
     },
 
@@ -132,26 +91,17 @@ export default ({
             mapDataToProps: {
               title: "item:data.title",
               body: [
-                "item:data.bloggerId",
                 "item:data.body",
                 "item:data.tags",
-                "item:data.image",
-                "item:updated_at",
-                "props:user.id"
+                "item:updated_at"
               ]
             },
             actions: [{
               action: "api:delete",
-              showConfirm: true,
-              seedProps: props =>
-// these ids are sent to the api:delete function
-                get(props, "dataItems", []).reduce((a, c) =>
-                  get(c, ["data", "replyTo"]) == get(props, ["blog-post", "id"]) ? [...a, c.id] : a
-                , [])
+              showConfirm: true
             }]
           }
-        },
-        "use-auth"
+        }
       ]
     }
   ]

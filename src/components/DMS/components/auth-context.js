@@ -5,7 +5,7 @@ import get from "lodash.get"
 export const checkAuth = (rules, action, props, item) => {
   action = action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
   const rule = rules[action];
-  
+
   if (!rule) return true;
 
   let { args, comparator } = rule;
@@ -24,4 +24,7 @@ export const checkAuth = (rules, action, props, item) => {
   return comparator(...args);
 }
 
-export const AuthContext = React.createContext({ authRules: null, user: null, interact: null });
+export const AuthContext = React.createContext({
+  authRules: null, user: null, interact: null,
+  useRouter: false, basePath: null
+});

@@ -1,0 +1,6 @@
+.load-image-input .remove-image-button {
+  display: none;
+}
+.load-image-input:hover .remove-image-button {
+  display: block;
+}

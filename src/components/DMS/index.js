@@ -122,6 +122,7 @@ class DmsManager extends React.Component {
     const { dmsAction, id, props } = this.getTop(),
       { authRules, user, buttonColors, useRouter, basePath } = this.props;
 
+console.log("LOADING:", this.props.loading)
     return (
       <div className="p-20">
         <div className={ this.props.className }>
@@ -154,6 +155,12 @@ class DmsManager extends React.Component {
     )
   }
 }
+
+const LoadingIndicator = () =>
+  <div className="fixed z-50 left-0 top-0 w-full h-full flex justify-center items-center"
+    style={ { backgroundColor: "rgba(0, 0, 0, 0.5)" } }>
+    LOADING!!!!
+  </div>
 
 const NoFormat = () => <Title large className="p-5">No format supplied!!!</Title>;
 const NoAuth = () => <Title large className="p-5">You do not have authorization for this action!!!</Title>;
