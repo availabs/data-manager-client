@@ -4,6 +4,8 @@ import { DmsButton } from "../components/parts"
 
 import get from "lodash.get"
 
+import { prettyKey } from "../utils"
+
 const SEED_PROPS = () => ({});
 
 const ViewItem = ({ value, type }) =>
@@ -43,14 +45,13 @@ export default (Component, options = {}) => {
         key = path.split(".").pop(),
         attributes = get(format, "attributes", []),
         attribute = attributes.reduce((a, c) => c.key === key ? c: a, {}),
-        name = attribute.name || key,
+        name = attribute.name || prettyKey(key),
         type = attribute.type,
         value = get(item, path, null);
 
       if (!value) return null;
 
       if (key === "updated_at") {
-        name = "Updated At";
         value = (new Date(value)).toLocaleString();
       }
       if (/^array:/.test(type)) {

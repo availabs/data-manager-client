@@ -8,8 +8,8 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "show-loading",
-    "dms-router",
+    "show-loading", // receives loading prop
+    "dms-router", // generates loading prop and passes to children
     "dms-falcor",
     "use-auth"
   ],
@@ -40,9 +40,12 @@ export default ({
     { type: "dms-list", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
+        sortBy: "data.chapter",
+        sortOrder: "asc",
+        filter: d => !d.data.chapter.includes("."),
         attributes: [
-          "title", "body",
-          "dms:view", "dms:edit", "dms:delete",
+          "title", "chapter",
+          "dms:edit", "dms:delete",
           { action: "api:delete",
             label: "API delete",
             color: "red",
@@ -53,7 +56,7 @@ export default ({
       wrappers: ["with-theme"]
     },
 
-    { type: "dms-card", // generic dms component for viewing a single data item
+    { type: "docs-page", // generic dms component for viewing a single data item
       props: { dmsAction: "view" },
       wrappers: [
         { type: "dms-view",
@@ -61,14 +64,35 @@ export default ({
             mapDataToProps: {
 // mapDataToProps is used by dms-view to map data items to wrapped component props
 // prop: [...attributes]
+// in this case, the dms-card is expecting title and body props.
               title: "item:data.title",
-              body: [
-                "item:data.body",
-                "item:data.tags",
-                "item:updated_at"
-              ]
+              chapter: ["item:data.chapter"],
+              body: "item:data.body",
+              footer: ["item:updated_at"]
             }
           }
+        }
+      ],
+      children: [
+        { type: "dms-list",
+          props: {
+            attributes: ["title", "chapter"],
+            className: "mt-5",
+            sortBy: "data.chapter",
+            sortOrder: "asc",
+          },
+          wrappers: [{
+            type: "dms-falcor",
+            options: {
+              filter: {
+                args: ["props:dms-docs.data.chapter", "item:data.chapter"],
+                comparator: (arg1, arg2) => {
+                  const regex = new RegExp(`^${ arg1 }[.]\\d+$`)
+                  return regex.test(arg2);
+                }
+              }
+            }
+          }, "with-theme"]
         }
       ]
     },
@@ -91,6 +115,7 @@ export default ({
             mapDataToProps: {
               title: "item:data.title",
               body: [
+                "item:data.chapter",
                 "item:data.body",
                 "item:data.tags",
                 "item:updated_at"

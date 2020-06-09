@@ -1,12 +1,12 @@
 import React from "react"
 
-import { DmsButton, Title } from "./parts"
+import { DmsButton, Title, DmsListRow } from "./parts"
 
 import get from "lodash.get"
 
 import { makeFilter } from "../wrappers/dms-falcor"
 
-const DmsList = ({ theme = {}, ...props }) => {
+const DmsList = ({ ...props }) => {
   const attributes = props.attributes
     .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
 
@@ -19,6 +19,18 @@ const DmsList = ({ theme = {}, ...props }) => {
   const getAttributeName = att =>
     get(props, ["format", "attributes"], [])
       .reduce((a, c) => c.key === att ? (c.name || c.key) : a, att);
+
+  const makeSort = () =>{
+    let { sortBy, sortOrder, transform } = props,
+      dir = sortOrder === "desc" ? -1 : 1;
+    if (!transform && (sortBy === "updated_at")) {
+      transform = v => new Date(v).valueOf();
+    }
+    else if (!transform) {
+      transform = v => v;
+    }
+    return (a, b) => (transform(get(a, sortBy)) - transform(get(b, sortBy))) * dir;
+  }
 
   return !props.dataItems.length ? null : (
     <div className={ props.className }>
@@ -36,10 +48,9 @@ const DmsList = ({ theme = {}, ...props }) => {
           </tr>
         </thead>
         <tbody>
-          { dataItems
-              .sort((a, b) => new Date(b.updated_at).valueOf() - new Date(a.updated_at).valueOf())
+          { dataItems.sort(makeSort())
               .map(d =>
-                <tr key={ d.id } className={ theme.contentBgHover }>
+                <DmsListRow key={ d.id } className={ props.theme.contentBgHover } action="dms:view" item={ d }>
                   { attributes.map(a =>
                       <td key={ a } className="py-1 px-3">
                         { d.data[a] }
@@ -54,7 +65,7 @@ const DmsList = ({ theme = {}, ...props }) => {
                       </td>
                     )
                   }
-                </tr>
+                </DmsListRow>
               )
           }
         </tbody>
@@ -67,6 +78,10 @@ DmsList.defaultProps = {
   dataItems: [],
   attributes: [],
   format: {},
-  filter: false
+  filter: false,
+  sortBy: "updated_at",
+  sortOrder: "desc",
+  transform: null,
+  theme: {}
 }
 export default DmsList;

@@ -1,6 +1,12 @@
 import React from "react"
 
-import { Button, DmsButton, getButtonClassName } from "./parts"
+import {
+  Button, DmsButton,
+  getButtonClassName,
+  Title
+} from "./parts"
+
+import { prettyKey } from "../utils"
 
 import deepequal from "deep-equal"
 import get from "lodash.get"
@@ -191,13 +197,13 @@ const InputRow = ({ att, children, onChange, ...props }) =>
     <td className="align-top py-1 pl-1 pr-5"
       onClick={ e => document.getElementById(`att:${ att.key }`).focus() }>
       <div className="w-full py-1">
-        { att.name || att.key }
+        { att.name || prettyKey(att.key) }
       </div>
     </td>
     <td className="p-1">
       { att.type === "textarea" ?
           <textarea className="block w-full py-1 px-2 rounded" { ...props }
-            id={ `att:${ att.key }` }
+            id={ `att:${ att.key }` } rows="6"
             onChange={ e => onChange(e.target.value) }>
             { children }
           </textarea>
@@ -275,12 +281,15 @@ export default class DmsCreate extends React.Component {
       return value || "";
     }
 
+    const attributes = get(this.props, ["format", "attributes"], []),
+      showPreview = attributes.reduce((a, c) => c.type === "textarea" ? [...a, c] : a, []);
+
     return (
-      <div>
-        <form onSubmit={ e => e.preventDefault() }>
-          <table>
+      <div className="flex">
+        <form onSubmit={ e => e.preventDefault() } className="w-1/2 pr-2.5">
+          <table className="w-full">
             <tbody>
-              { get(this.props, ["format", "attributes"], [])
+              { attributes
                   .map((att, i) =>
                     <InputRow key={ att.key } autoFocus={ i === 0 }
                       disabled={ att.editable === false }
@@ -291,14 +300,34 @@ export default class DmsCreate extends React.Component {
               }
               <tr>
                 <td colSpan={ 2 } className="p-1">
-                  <DmsButton large block disabled={ !this.verify() } type="submit"
-                    label={ this.props.dmsAction } item={ item }
-                    action={ this.getButtonAction(values) }/>
+                  <div className="flex justify-end">
+                    <DmsButton large className="w-full max-w-xs" disabled={ !this.verify() } type="submit"
+                      label={ this.props.dmsAction } item={ item }
+                      action={ this.getButtonAction(values) }/>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
         </form>
+        { !showPreview.length || true ? null :
+          <div className="w-1/2 pl-2.5">
+            <Title>Preview</Title>
+            <table className="w-full">
+              <tbody>
+                { showPreview
+                    .map((att, i) =>
+                      <InputRow key={ att.key } autoFocus={ i === 0 }
+                        disabled={ att.editable === false }
+                        att={ att }
+                        value={ getValue(att.key) }
+                        onChange={ value => this.handleChange(att.key, value) }/>
+                    )
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     )
   }
