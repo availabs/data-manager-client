@@ -99,7 +99,7 @@ export default (Component, options = {}) => {
       }
       return get(this.props, p, null);
     }
-    getActionGroups(actions) {
+    getActionGroups(actions, key) {
       const item = get(this, ["props", this.props.type], null);
       if (!Array.isArray(actions)) {
         return (
@@ -108,8 +108,8 @@ export default (Component, options = {}) => {
         )
       }
       return (
-        <div className="btn-group-horizontal">
-          { actions.map(a => this.getActionGroups(a)) }
+        <div className="btn-group-horizontal" key={ key }>
+          { actions.map((a, i) => this.getActionGroups(a, i)) }
         </div>
       )
     }
@@ -140,9 +140,11 @@ export default (Component, options = {}) => {
       return (
         <div>
           <Component { ...props } { ...this.props }/>
-          <div className="action-container">
-            { !actions.length ? null : this.getActionGroups(actions) }
-          </div>
+          { !actions.length ? null :
+            <div className="action-container">
+              { this.getActionGroups(actions) }
+            </div>
+          }
           <div>{ this.renderChildren() }</div>
         </div>
 
@@ -150,45 +152,3 @@ export default (Component, options = {}) => {
     }
   }
 }
-
-// export default class DmsView extends React.Component {
-//   static defaultProps = {
-//     dmsAction: "view",
-//     title: "",
-//     content: "",
-//     actions: [],
-//     interact: () => {},
-//     data: {},
-//     mapDataToProps: {},
-//     seedProps: props => ({})
-//   }
-//   render() {
-//     const {
-//       actions, interact,
-//       type, format,
-//       mapDataToProps
-//     } = this.props;
-//
-//     const item = get(this, ["props", type], null);
-//
-//     if (!item) return null;
-//
-//     const data = get(item, "data", {});
-//
-//     const mapped = {
-//       title: this.props.title,
-//       content: this.props.content
-//     };
-//
-//     for (const key in mapDataToProps) {
-//       const v = data[key],
-//         k = mapDataToProps[key];
-//       mapped[k] = v;
-//     }
-//     const { title, content } = mapped;
-//
-//     return (
-//       <div>{ title }</div>
-//     )
-//   }
-// }

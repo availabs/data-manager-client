@@ -29,7 +29,11 @@ const DmsList = ({ ...props }) => {
     else if (!transform) {
       transform = v => v;
     }
-    return (a, b) => (transform(get(a, sortBy)) - transform(get(b, sortBy))) * dir;
+    return (a, b) => {
+      const av = transform(get(a, sortBy)),
+        bv = transform(get(b, sortBy));
+      return (av < bv ? -1 : bv < av ? 1 : 0) * dir;
+    }
   }
 
   return !props.dataItems.length ? null : (
