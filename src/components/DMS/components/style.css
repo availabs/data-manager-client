@@ -8,10 +8,7 @@
 .btn-group-horizontal {
   display: block;
 }
-.btn-group-horizontal:only-child {
-  display: flex;
-  align-items: center;
-}
+.btn-group-horizontal:only-child,
 .btn-group-horizontal > .btn-group-horizontal {
   display: flex;
   align-items: center;
