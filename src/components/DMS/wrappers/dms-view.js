@@ -99,6 +99,20 @@ export default (Component, options = {}) => {
       }
       return get(this.props, p, null);
     }
+    getActionGroups(actions) {
+      const item = get(this, ["props", this.props.type], null);
+      if (!Array.isArray(actions)) {
+        return (
+          <DmsButton key={ get(actions, "action", actions) }
+            item={ item } action={ actions } props={ this.props }/>
+        )
+      }
+      return (
+        <div className="btn-group-horizontal">
+          { actions.map(a => this.getActionGroups(a)) }
+        </div>
+      )
+    }
     render() {
       const {
         actions, interact,
@@ -126,14 +140,9 @@ export default (Component, options = {}) => {
       return (
         <div>
           <Component { ...props } { ...this.props }/>
-          { !actions.length ? null :
-            <div className="mt-2 btn-group-horizontal">
-              { actions.map(a =>
-                  <DmsButton key={ get(a, "action", a) } item={ item } action={ a } props={ this.props }/>
-                )
-              }
-            </div>
-          }
+          <div className="action-container">
+            { !actions.length ? null : this.getActionGroups(actions) }
+          </div>
           <div>{ this.renderChildren() }</div>
         </div>
 

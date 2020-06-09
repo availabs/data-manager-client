@@ -61,7 +61,7 @@ export default ({
       wrappers: [
         { type: "dms-view",
           options: {
-            actions: ["dms:edit", "dms:create"],
+            actions: [["dms:edit", "dms:delete"], ["dms:create"]],
             mapDataToProps: {
 // mapDataToProps is used by dms-view to map data items to wrapped component props
 // prop: [...attributes]
@@ -77,7 +77,7 @@ export default ({
       children: [
         { type: "dms-list",
           props: {
-            attributes: ["title", "chapter", "dms:edit"],
+            attributes: ["title", "chapter", "dms:edit", "dms:delete"],
             className: "mt-5",
             sortBy: "data.chapter",
             sortOrder: "asc",

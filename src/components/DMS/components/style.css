@@ -5,6 +5,13 @@
   display: block;
 }
 
+.action-container .btn-group-horizontal {
+  margin-top: 0.25rem;
+}
+.action-container .btn-group-horizontal:first-child {
+  margin-top: 0rem;
+}
+
 .btn-group-horizontal > * {
   margin-right: 0.25rem;
 }
