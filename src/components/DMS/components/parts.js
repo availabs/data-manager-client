@@ -172,11 +172,11 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
       return () => clearTimeout(timeout);
     })
     return (
-      <>
+      <div className="btn-group-horizontal">
         <RenderButton waiting={ waiting }/>
-        <ActionButton className="ml-1" { ...rest } action="cancel"
+        <ActionButton { ...rest } action="cancel"
           onClick={ e => (e.stopPropagation(), setOpen(false)) }/>
-      </>
+      </div>
     )
   }
 

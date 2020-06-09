@@ -5,16 +5,28 @@
   display: block;
 }
 
-.action-container .btn-group-horizontal {
-  margin-top: 0.25rem;
+.btn-group-horizontal {
+  display: block;
 }
-.action-container .btn-group-horizontal:first-child {
-  margin-top: 0rem;
+.btn-group-horizontal:only-child {
+  display: flex;
+  align-items: center;
 }
-
+.btn-group-horizontal > .btn-group-horizontal {
+  display: flex;
+  align-items: center;
+}
 .btn-group-horizontal > * {
   margin-right: 0.25rem;
 }
 .btn-group-horizontal > *:last-child {
   margin-right: 0rem;
+}
+
+.action-container .btn-group-horizontal {
+  display: block;
+  margin-top: 0.25rem;
+}
+.action-container .btn-group-horizontal:first-child {
+  margin-top: 0rem;
 }
