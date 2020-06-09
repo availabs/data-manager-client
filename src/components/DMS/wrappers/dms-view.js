@@ -127,7 +127,7 @@ export default (Component, options = {}) => {
         <div>
           <Component { ...props } { ...this.props }/>
           { !actions.length ? null :
-            <div className="mt-2">
+            <div className="mt-2 btn-group-horizontal">
               { actions.map(a =>
                   <DmsButton key={ get(a, "action", a) } item={ item } action={ a } props={ this.props }/>
                 )

@@ -8,9 +8,9 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
+    "dms-router",
     "show-loading", // receives loading prop
-    "dms-router", // generates loading prop and passes to children
-    "dms-falcor",
+    "dms-falcor", // generates loading prop and passes to children
     "use-auth"
   ],
   props: {
@@ -61,6 +61,7 @@ export default ({
       wrappers: [
         { type: "dms-view",
           options: {
+            actions: ["create", "edit"],
             mapDataToProps: {
 // mapDataToProps is used by dms-view to map data items to wrapped component props
 // prop: [...attributes]
@@ -76,7 +77,7 @@ export default ({
       children: [
         { type: "dms-list",
           props: {
-            attributes: ["title", "chapter"],
+            attributes: ["title", "chapter", "dms:edit"],
             className: "mt-5",
             sortBy: "data.chapter",
             sortOrder: "asc",

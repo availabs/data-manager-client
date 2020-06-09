@@ -124,11 +124,18 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
           const DISABLED = !hasAuth || disabled || waiting;
 
           return useRouter && !DISABLED ?
-            ( ["back", "dms:back"].includes(action) ?
+            // ( ["back", "dms:back"].includes(action) ?
+            ( /^(dms:)*back$/.test(action) ?
                 <ActionLink { ...rest } action={ action } { ...fromAction }
                   to={ {
                     pathname: get(state, [length - 1], basePath),
                     state: state.slice(0, length - 1)
+                  } }/>
+              : /^(dms:)*home$/.test(action) ?
+                <ActionLink { ...rest } action={ action } { ...fromAction }
+                  to={ {
+                    pathname: basePath,
+                    state: []
                   } }/>
               : /^api:/.test(action) ?
                 <ActionButton { ...rest } action={ action } { ...fromAction }

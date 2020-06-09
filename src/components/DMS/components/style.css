@@ -4,3 +4,10 @@
 .load-image-input:hover .remove-image-button {
   display: block;
 }
+
+.btn-group-horizontal > * {
+  margin-right: 0.25rem;
+}
+.btn-group-horizontal > *:last-child {
+  margin-right: 0rem;
+}
