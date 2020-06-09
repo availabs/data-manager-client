@@ -108,19 +108,16 @@ export default ({
       wrappers: ["use-auth"]
     },
 
-    { type: "dms-card",
+    { type: "docs-page",
       props: { dmsAction: "delete" },
       wrappers: [
         { type: "dms-view",
           options: {
             mapDataToProps: {
               title: "item:data.title",
-              body: [
-                "item:data.chapter",
-                "item:data.body",
-                "item:data.tags",
-                "item:updated_at"
-              ]
+              chapter: ["item:data.chapter"],
+              body: "item:data.body",
+              footer: ["item:updated_at"]
             },
             actions: [{
               action: "api:delete",
