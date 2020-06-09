@@ -4,7 +4,7 @@ import { DmsButton, Title, DmsListRow } from "./parts"
 
 import get from "lodash.get"
 
-import { makeFilter } from "../wrappers/dms-falcor"
+import { prettyKey, makeFilter } from "../utils"
 
 const DmsList = ({ ...props }) => {
   const attributes = props.attributes
@@ -18,7 +18,7 @@ const DmsList = ({ ...props }) => {
 
   const getAttributeName = att =>
     get(props, ["format", "attributes"], [])
-      .reduce((a, c) => c.key === att ? (c.name || c.key) : a, att);
+      .reduce((a, c) => c.key === att ? (c.name || prettyKey(c.key)) : a, att);
 
   const makeSort = () =>{
     let { sortBy, sortOrder, transform } = props,

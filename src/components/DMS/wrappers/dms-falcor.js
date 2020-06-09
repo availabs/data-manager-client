@@ -6,8 +6,11 @@ import { reduxFalcor } from "utils/redux-falcor-new"
 
 import get from "lodash.get"
 
-const ITEM_REGEX = /^item:(.+)$/,
-  PROPS_REGEX = /^props:(.+)$/;
+import {
+  makeFilter,
+  ITEM_REGEX,
+  PROPS_REGEX
+} from "../utils"
 
 const processPath = (path, props) => {
   return path.map(p => {
@@ -32,41 +35,6 @@ const getDataItems = (path, state, filter = false) => {
     }
   }
   return filter ? dataItems.filter(filter) : dataItems;
-}
-
-export function makeFilter(props) {
-  const filter = get(props, "filter", false);
-
-  if (!filter) return false;
-
-  if (typeof filter === "function") return filter;
-
-  let { args, comparator } = filter;
-
-  args = args.map(arg => {
-    if (typeof arg === "string") {
-      if (ITEM_REGEX.test(arg)) {
-        return {
-          type: "item",
-          path: arg.slice(5)
-        }
-      }
-      if (PROPS_REGEX.test(arg)) {
-        return {
-          type: "value",
-          value: get(props, arg.slice(6))
-        }
-      }
-    }
-    return { type: "value", value: arg };
-  })
-
-  return d =>
-    comparator(
-      ...args.map(({ type, path, value }) =>
-        type === "item" ? get(d, path) : value
-      )
-    );
 }
 
 const getFormat = (app, type, state) => {

@@ -61,7 +61,7 @@ export default ({
       wrappers: [
         { type: "dms-view",
           options: {
-            actions: ["create", "edit"],
+            actions: ["dms:edit", "dms:create"],
             mapDataToProps: {
 // mapDataToProps is used by dms-view to map data items to wrapped component props
 // prop: [...attributes]
