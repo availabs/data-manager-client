@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
 import { Link } from "react-router-dom"
 import { useLocation, useHistory } from "react-router-dom"
@@ -16,7 +16,7 @@ export const Title = ({ children, ...props }) =>
     { children }
   </div>
 
-const getButtonClassName = ({ color, large, small, block, className, disabled }) =>
+export const getButtonClassName = ({ color = "blue", large, small, block, className, disabled }) =>
   ` focus:outline-none
     bg-${ color }-500
     justify-center
@@ -30,39 +30,23 @@ const getButtonClassName = ({ color, large, small, block, className, disabled })
     ${ block ? "w-full" : "" }
     ${ disabled ?
       "cursor-not-allowed opacity-50" :
-      `hover:bg-${ color }-700`
+      `cursor-pointer hover:bg-${ color }-700`
     }
     ${ className }
   `
 
 export const Button = ({ children, large, small, block, color = "blue", className = "", disabled = false, type = "button", ...props }) =>
-  <button { ...props } type={ type }
+  <button { ...props } type={ type } disabled={ disabled }
     className={ getButtonClassName({ color, large, small, block, className, disabled })}>
     { children }
   </button>
 
 const LinkButton = ({ children, href, large, small, block, color = "blue", className = "", disabled = false, ...props }) =>
-  <Link { ...props }
+  <Link { ...props } disabled={ disabled } onClick={ e => e.stopPropagation() }
     className={ getButtonClassName({ color, large, small, block, className, disabled })}>
     { children }
   </Link>
 
-const processAction = arg => {
-  let response = {
-    action: "unknown",
-    seedProps: () => null,
-    showConfirm: false,
-    label: null,
-    color: null
-  };
-  if (typeof arg === "string") {
-    response.action = arg;
-  }
-  else {
-    response = { ...response, ...arg };
-  }
-  return response;
-}
 const getLabel = action =>
   action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
 
@@ -104,6 +88,23 @@ export const ActionLink = ({ action, label, color, ...props }) => {
   )
 }
 
+const processAction = arg => {
+  let response = {
+    action: "unknown",
+    seedProps: () => null,
+    showConfirm: false,
+    label: null,
+    color: null
+  };
+  if (typeof arg === "string") {
+    response.action = arg;
+  }
+  else {
+    response = { ...response, ...arg };
+  }
+  return response;
+}
+
 export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...rest }) => {
   const { pathname, state = [] } = useLocation(),
     { push } = useHistory(),
@@ -114,29 +115,36 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
     { action, seedProps, showConfirm, ...fromAction } = processAction(arg);
 
 // RENDER BUTTON START
-  const RenderButton = () =>
+  const RenderButton = ({ waiting = false }) =>
     <AuthContext.Consumer>
       { ({ authRules, user, interact, useRouter, basePath }) => {
 
           const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
 
-          return useRouter && hasAuth && !disabled ?
-            ( ["back", "dms:back"].includes(action) ?
+          const DISABLED = !hasAuth || disabled || waiting;
+
+          return useRouter && !DISABLED ?
+            // ( ["back", "dms:back"].includes(action) ?
+            ( /^(dms:)*back$/.test(action) ?
                 <ActionLink { ...rest } action={ action } { ...fromAction }
                   to={ {
                     pathname: get(state, [length - 1], basePath),
                     state: state.slice(0, length - 1)
                   } }/>
+              : /^(dms:)*home$/.test(action) ?
+                <ActionLink { ...rest } action={ action } { ...fromAction }
+                  to={ {
+                    pathname: basePath,
+                    state: []
+                  } }/>
               : /^api:/.test(action) ?
                 <ActionButton { ...rest } action={ action } { ...fromAction }
-                  onClick={ !hasAuth ? null :
-                    e => (e.stopPropagation(),
-                      Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
-                        .then(() => push({
-                          pathname: get(state, [length - 1], basePath),
-                          state: state.slice(0, length - 1)
-                        }))
-                    )
+                  onClick={ e => (e.stopPropagation(),
+                    Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                      .then(() => push({
+                        pathname: get(state, [length - 1], basePath),
+                        state: state.slice(0, length - 1)
+                      })))
                   }/>
               : <ActionLink { ...rest } action={ action } { ...fromAction }
                   to={ {
@@ -144,9 +152,8 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
                     state: [...state, pathname]
                   } }/>
             ) :
-            (
-              <ActionButton { ...rest } disabled={ disabled || !hasAuth } action={ action } { ...fromAction }
-                onClick={ (!hasAuth || disabled) ? null :
+            ( <ActionButton { ...rest } disabled={ DISABLED } action={ action } { ...fromAction }
+                onClick={ DISABLED ? null :
                   e => (e.stopPropagation(),
                     Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
                       .then(() => /^api:/.test(action) && interact("dms:back"))
@@ -158,20 +165,72 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
     </AuthContext.Consumer>
 // RENDER BUTTON END
 
-  const [openConfirm, setState] = useState(!showConfirm)
+  const Opened = ({ setOpen }) => {
+    const [waiting, setWaiting] = useState(true);
+    useEffect(() => {
+      const timeout = setTimeout(setWaiting, 2000, false);
+      return () => clearTimeout(timeout);
+    })
+    return (
+      <div className="btn-group-horizontal">
+        <RenderButton waiting={ waiting }/>
+        <ActionButton { ...rest } action="cancel"
+          onClick={ e => (e.stopPropagation(), setOpen(false)) }/>
+      </div>
+    )
+  }
+
+  const [openConfirm, setOpen] = useState(!showConfirm)
 
   if (showConfirm) {
-    return openConfirm ?
-      <div className="flex flex-row items-center justify-end">
-        <RenderButton />
-        <ActionButton className="ml-1" { ...rest } action="cancel"
-          onClick={ e => setState(false) }/>
-      </div>
-    :
-      <div className="flex flex-row items-center justify-end">
-        <ActionButton { ...rest } action={ action } { ...fromAction }
-          onClick={ e => setState(true) }/>
-      </div>
+    return openConfirm ? <Opened setOpen={ setOpen }/> :
+      <ActionButton { ...rest } action={ action } { ...fromAction }
+        onClick={ e => (e.stopPropagation(), setOpen(true)) }/>
   }
   return <RenderButton />;
+}
+
+export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, children, className = "", ...rest }) => {
+  const { pathname, state = [] } = useLocation(),
+    { push } = useHistory(),
+    length = state.length,
+
+    itemId = get(item, "id", null),
+
+    { action, seedProps, showConfirm, ...fromAction } = processAction(arg);
+
+  return (
+    <AuthContext.Consumer>
+      { ({ authRules, user, interact, useRouter, basePath }) => {
+
+        const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
+
+        return useRouter && hasAuth && !disabled ?
+          (
+            <tr { ...rest } className={ `${ className } cursor-pointer` }
+              onClick={ e => (
+                  e.stopPropagation(),
+                  push({
+                    pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
+                    state: [...state, pathname]
+                  })
+                )
+              }>
+              { children }
+            </tr>
+          ) : (
+            <tr { ...rest } className={ `${ className } cursor-pointer` }
+              onClick={ (!hasAuth || disabled) ? null :
+                e => (e.stopPropagation(),
+                  Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                    .then(() => /^api:/.test(action) && interact("dms:back"))
+                )
+              }>
+              { children }
+            </tr>
+          )
+        }
+      }
+    </AuthContext.Consumer>
+  )
 }

@@ -3,17 +3,18 @@ export const BLOG_POST = {
   type: "blog-post",
   attributes: [
     { key: "title",
-      name: "Title",
       type: "text",
       required: true
     },
     { key: "body",
-      name: "Body",
       type: "textarea",
       required: true
     },
     { key: 'tags',
       type: 'array:text'
+    },
+    { key: "image",
+      type: "img"
     },
     { key: "bloggerId",
       name: "Blogger ID",

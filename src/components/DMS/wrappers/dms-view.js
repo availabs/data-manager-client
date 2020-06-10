@@ -4,12 +4,20 @@ import { DmsButton } from "../components/parts"
 
 import get from "lodash.get"
 
+import { prettyKey } from "../utils"
+
 const SEED_PROPS = () => ({});
 
-const ViewRow = ({ name, value }) =>
+const ViewItem = ({ value, type }) =>
+  type !== "img" ? <div>{ value }</div> :
+  <div className="h-64"><img src={ value } className="max-h-full"/></div>
+
+const ViewRow = ({ name, children }) =>
   <div className="grid grid-cols-4 my-2">
     <div className="col-span-1 font-bold">{ name }</div>
-    <div className="col-span-3">{ value }</div>
+    <div className="col-span-3">
+      { children }
+    </div>
   </div>
 
 export default (Component, options = {}) => {
@@ -37,20 +45,27 @@ export default (Component, options = {}) => {
         key = path.split(".").pop(),
         attributes = get(format, "attributes", []),
         attribute = attributes.reduce((a, c) => c.key === key ? c: a, {}),
-        name = attribute.name || key,
+        name = attribute.name || prettyKey(key),
         type = attribute.type,
         value = get(item, path, null);
 
+      if (!value) return null;
+
       if (key === "updated_at") {
-        name = "Updated At";
         value = (new Date(value)).toLocaleString();
       }
       if (/^array:/.test(type)) {
-        if (!value) return null;
-        value = value.map(v => <div key={ v }>{ v }</div>)
+        value = value.map((v, i) => <ViewItem key={ i } type={ type } value={ v }/>)
+      }
+      else {
+        value = <ViewItem type={ type } value={ value }/>
       }
 
-      return <ViewRow key={ path } name={ name } value={ value }/>;
+      return (
+        <ViewRow key={ path } name={ name }>
+          { value }
+        </ViewRow>
+      );
     }
     renderRow(path, item) {
       const regex = /^(item|props):(.+)$/,
@@ -65,7 +80,11 @@ export default (Component, options = {}) => {
       }
 
       const value = get(this.props, p, null);
-      return <ViewRow key={ p } name={ p } value={ value }/>;
+      return (
+        <ViewRow key={ p } name={ p }>
+          { value }
+        </ViewRow>
+      );
     }
     getValue(path, item) {
       const regex = /^(item|props):(.+)$/,
@@ -79,6 +98,20 @@ export default (Component, options = {}) => {
         return get(item, p, null)
       }
       return get(this.props, p, null);
+    }
+    getActionGroups(actions, key) {
+      const item = get(this, ["props", this.props.type], null);
+      if (!Array.isArray(actions)) {
+        return (
+          <DmsButton key={ get(actions, "action", actions) }
+            item={ item } action={ actions } props={ this.props }/>
+        )
+      }
+      return (
+        <div className="btn-group-horizontal" key={ key }>
+          { actions.map((a, i) => this.getActionGroups(a, i)) }
+        </div>
+      )
     }
     render() {
       const {
@@ -108,11 +141,8 @@ export default (Component, options = {}) => {
         <div>
           <Component { ...props } { ...this.props }/>
           { !actions.length ? null :
-            <div className="mt-2">
-              { actions.map(a =>
-                  <DmsButton key={ get(a, "action", a) } item={ item } action={ a } props={ this.props }/>
-                )
-              }
+            <div className="action-container">
+              { this.getActionGroups(actions) }
             </div>
           }
           <div>{ this.renderChildren() }</div>
@@ -122,45 +152,3 @@ export default (Component, options = {}) => {
     }
   }
 }
-
-// export default class DmsView extends React.Component {
-//   static defaultProps = {
-//     dmsAction: "view",
-//     title: "",
-//     content: "",
-//     actions: [],
-//     interact: () => {},
-//     data: {},
-//     mapDataToProps: {},
-//     seedProps: props => ({})
-//   }
-//   render() {
-//     const {
-//       actions, interact,
-//       type, format,
-//       mapDataToProps
-//     } = this.props;
-//
-//     const item = get(this, ["props", type], null);
-//
-//     if (!item) return null;
-//
-//     const data = get(item, "data", {});
-//
-//     const mapped = {
-//       title: this.props.title,
-//       content: this.props.content
-//     };
-//
-//     for (const key in mapDataToProps) {
-//       const v = data[key],
-//         k = mapDataToProps[key];
-//       mapped[k] = v;
-//     }
-//     const { title, content } = mapped;
-//
-//     return (
-//       <div>{ title }</div>
-//     )
-//   }
-// }

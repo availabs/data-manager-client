@@ -1,4 +1,4 @@
-import { BLOG_POST } from "./blog_post"
+import { BLOG_POST } from "./blog-post.type"
 
 import get from "lodash.get"
 
@@ -8,6 +8,7 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
+    "show-loading",
     "dms-router",
     "dms-falcor",
     "use-auth"
@@ -73,6 +74,7 @@ export default ({
                 "item:data.bloggerId",
                 "item:data.body",
                 "item:data.tags",
+                "item:data.image",
                 "item:updated_at",
                 "props:user.id"
               ]
@@ -133,6 +135,7 @@ export default ({
                 "item:data.bloggerId",
                 "item:data.body",
                 "item:data.tags",
+                "item:data.image",
                 "item:updated_at",
                 "props:user.id"
               ]

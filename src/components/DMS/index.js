@@ -11,7 +11,7 @@ import { checkAuth } from "./components/auth-context"
 
 class DmsManager extends React.Component {
   static defaultProps = {
-    actions: ["dms:create"],
+    showHome: true,
     defaultAction: "list",
     dataItems: [],
     app: "app-name",
@@ -29,13 +29,26 @@ class DmsManager extends React.Component {
         dmsAction: this.props.defaultAction,
         id: null,
         props: null
-      }]
+      }],
+      initialized: false
     }
     this.interact = this.interact.bind(this);
   }
 
   componentDidMount() {
     if (this.props.useRouter) {
+      const { action, id } = get(this.props, "params", {});
+console.log("<componentDidMount>", action, id)
+      if (action) {
+        this.pushAction(action, id, null);
+      }
+    }
+  }
+  componentDidUpdate(oldProps) {
+
+  }
+  initialize() {
+    if (this.props.useRouter && !this.state.initialized) {
       const { action, id } = get(this.props, "params", {});
       if (action) {
         this.pushAction(action, id, null);
@@ -44,8 +57,13 @@ class DmsManager extends React.Component {
   }
 
   interact(dmsAction, id, props) {
-    if (["back", "dms:back"].includes(dmsAction)) {
+    // if (["back", "dms:back"].includes(dmsAction)) {
+    if (/^(dms:)*back$/.test(dmsAction)) {
       this.popAction();
+    }
+    // else if (["home", "dms:home"].includes(dmsAction)) {
+    else if (/^(dms:)*home$/.test(dmsAction)) {
+      this.clearStack();
     }
     else if (/^api:/.test(dmsAction)) {
       return this.props.apiInteract(dmsAction, id, props);
@@ -68,6 +86,10 @@ class DmsManager extends React.Component {
       stack.pop();
       this.setState({ stack });
     }
+  }
+  clearStack() {
+    const stack = [...this.state.stack].slice(0, 1);
+    this.setState({ stack });
   }
   getTop() {
     const { stack } = this.state;
@@ -120,7 +142,7 @@ class DmsManager extends React.Component {
 
   render() {
     const { dmsAction, id, props } = this.getTop(),
-      { authRules, user, buttonColors, useRouter, basePath } = this.props;
+      { authRules, user, buttonColors, useRouter, basePath, showHome } = this.props;
 
     return (
       <div className="p-20">
@@ -132,15 +154,18 @@ class DmsManager extends React.Component {
                   { this.props.title || `${ this.props.app } Manager` }
                 </Title>
                 <div className="mb-5">
-                  { ((this.state.stack.length === 1) || !this.props.format) ? null :
-                      <DmsButton action="dms:back" key={ "dms:back" }/>
-                  }
-                  { this.props.actions
-                      .filter(a => Boolean(this.props.format))
-                      .filter(a => !this.compareActions(a, "create") || (dmsAction === "list"))
-                      .map(action =>
-                        <DmsButton key={ action } action={ action }/>
-                      )
+                { !this.props.format ? null :
+                    <div className="btn-group-horizontal">
+                      { (this.state.stack.length === 1) ? null :
+                          <DmsButton action="dms:back"/>
+                      }
+                      { (this.state.stack.length === 1) || !showHome ? null :
+                          <DmsButton action="dms:home"/>
+                      }
+                      { dmsAction !== "list" ? null :
+                          <DmsButton action="dms:create"/>
+                      }
+                    </div>
                   }
                 </div>
               </div>
