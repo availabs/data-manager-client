@@ -1,5 +1,7 @@
 import React from "react"
 
+import { RouterContext } from "../contexts"
+
 import {
   useRouteMatch, useParams,
   Switch, Route
@@ -30,19 +32,21 @@ export default (Component, options = {}) => {
       alt2 = `${ path }/:action/:id`,
       alt3 = `${ path }/:action/:attribute/:value`;
     return (
-      <Switch>
-        <Route exact path={ path }>
-          <Component { ...props } useRouter={ true } basePath={ path }/>
-        </Route>
-        <Route exact path={ [alt1, alt2] }>
-          <GetParams { ...props } useRouter={ true } basePath={ path }
-            Component={ Component }/>
-        </Route>
-        <Route exact path={ alt3 }>
-          <ParseItems { ...props } useRouter={ true } basePath={ path }
-            Component={ Component }/>
-        </Route>
-      </Switch>
+      <RouterContext.Provider value={ { basePath: path, useRouter: true } }>
+        <Switch>
+          <Route exact path={ path }>
+            <Component { ...props }/>
+          </Route>
+          <Route exact path={ [alt1, alt2] }>
+            <GetParams { ...props }
+              Component={ Component }/>
+          </Route>
+          <Route exact path={ alt3 }>
+            <ParseItems { ...props }
+              Component={ Component }/>
+          </Route>
+        </Switch>
+      </RouterContext.Provider>
     )
   }
 }

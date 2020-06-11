@@ -15,7 +15,7 @@ export const DMS_DOCS = {
       required: true
     },
     { key: 'tags',
-      type: 'array:text'
+      type: 'text-array'
     }
   ]
 }

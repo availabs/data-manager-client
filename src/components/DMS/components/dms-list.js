@@ -54,7 +54,7 @@ const DmsList = ({ ...props }) => {
         <tbody>
           { dataItems.sort(makeSort())
               .map(d =>
-                <DmsListRow key={ d.id } className={ props.theme.contentBgHover } action="dms:view" item={ d }>
+                <DmsListRow key={ d.id } className={ props.theme.contentBgDarker1 } action="dms:view" item={ d }>
                   { attributes.map(a =>
                       <td key={ a } className="py-1 px-3">
                         { d.data[a] }

@@ -79,12 +79,7 @@ export default ({
                 "props:user.id"
               ]
             },
-            actions: [
-              { action: "dms:reply",
-// this sends props into the DMS Manager reply component from the dms-view wrapper
-                seedProps: props => ({ test: "prop" })
-              }
-            ]
+            actions: ["dms:reply"]
           }
         },
         "use-auth"
@@ -111,6 +106,8 @@ export default ({
 
     { type: "dms-create",
       props: { dmsAction: "create" },
+// dms-create defaults to dmsAction: "create"
+// the prop is required here due to the wrapper
       wrappers: ["use-auth"]
     },
 

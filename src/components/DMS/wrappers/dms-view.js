@@ -4,7 +4,7 @@ import { DmsButton } from "../components/parts"
 
 import get from "lodash.get"
 
-import { prettyKey } from "../utils"
+import { prettyKey, mapDataToProps as doMapDataToProps } from "../utils"
 
 const SEED_PROPS = () => ({});
 
@@ -123,6 +123,9 @@ export default (Component, options = {}) => {
       const item = get(this, ["props", type], null);
 
       if (!item) return null;
+
+      const test = doMapDataToProps(mapDataToProps, item, this.props);
+console.log("TEST:", test);
 
       const props = {};
 

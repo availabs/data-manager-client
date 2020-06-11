@@ -69,10 +69,11 @@ export default ({
               title: "item:data.title",
               chapter: ["item:data.chapter"],
               body: "item:data.body",
-              footer: ["item:updated_at"]
+              footer: ["item:updated_at", "props:user.id"]
             }
           }
-        }
+        },
+        "use-auth"
       ],
       children: [
         { type: "dms-list",
