@@ -61,10 +61,11 @@ export default {
         wrappers: [
           { type: "dms-consumer",
             options: {
-              defaultAction: "props:dataItems-->data.chapter==0->id",
+              defaultAction: "props:dataItems-->data.chapter==0->id", // --> ararray reduce
               mapDataToProps: {
                 children: [
-                  { path: "props:dataItems",
+                  { path: "props:dataItems", // since dataItems is an Array
+                                              // the following item: args are retreived from array items
                     filter: {
                       args: ["item:data.chapter"],
                       comparator: chapter => /^\d+$/.test(chapter)
@@ -76,26 +77,26 @@ export default {
                     key: "item:id",
                     value: "item:data.title",
                     interact: "item:id"
-                  },
+                  }, // END CHILD 1
                   { type: "div",
                     props: {
                       className: "border-b-4 border-black my-5 text-center"
                     },
                     value: "TESTS BELOW"
                   },
-                  { path: "props:dmsAction",
+                  { path: "props:dmsAction", // if no value is supplied then the resolved path is used
                     type: "div",
                     props: {
                       className: "border-2 p-2 rounded"
                     }
                   },
-                  { path: "item:data.title",
+                  { path: "item:data.title", // this item refers to the active dms item, if it exists
                     type: "div",
                     props: {
                       className: "border-2 p-2 rounded"
                     }
                   },
-                  { path: "item:data->body", // -> get
+                  { path: "item:data->body", // -> get, equivalent to item:data.body
                     type: "div",
                     props: {
                       className: "border-2 p-2 rounded"
@@ -116,6 +117,7 @@ export default {
                     value: "item:data.title"
                   },
                   { path: "props:dataItems-->data.chapter==0->data.title", // --> array reduce
+                                                                        // the get operator is required here due to the array reduce
                     type: "div",
                     props: {
                       className: "rounded border-2 p-2"
