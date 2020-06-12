@@ -105,6 +105,12 @@ export default {
                     },
                     value: "TESTS BELOW"
                   },
+                  { path: "item:data.chapter", // if no value is supplied then the resolved path is used
+                    type: "div",
+                    props: {
+                      className: "border-2 p-2 rounded"
+                    }
+                  },
                   { path: "props:dmsAction", // if no value is supplied then the resolved path is used
                     type: "div",
                     props: {
