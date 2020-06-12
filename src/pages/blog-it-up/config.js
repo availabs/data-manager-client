@@ -11,7 +11,7 @@ export default ({
     "show-loading",
     "dms-router",
     "dms-falcor",
-    "use-auth"
+    "with-auth"
   ],
   props: {
     format: BLOG_POST,
@@ -82,7 +82,7 @@ export default ({
             actions: ["dms:reply"]
           }
         },
-        "use-auth"
+        "with-auth"
       ],
       children: [
         { type: "dms-list",
@@ -108,17 +108,17 @@ export default ({
       props: { dmsAction: "create" },
 // dms-create defaults to dmsAction: "create"
 // the prop is required here due to the wrapper
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-create",
       props: { dmsAction: "reply" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-edit",
       props: { dmsAction: "edit" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-card",
@@ -148,7 +148,7 @@ export default ({
             }]
           }
         },
-        "use-auth"
+        "with-auth"
       ]
     }
   ]

@@ -98,7 +98,7 @@ const applyOp = (op, args, source) => {
     case "-->":
       return source.reduce((a, c) => getCompare(args[1])(get(c, args[0], null), args[2]) ? c : a, null)
     case "==":
-      return getCompare(op)(get(args[0], args[1], null), source);
+      return getCompare(op)(args[0], source);
     default:
       return source;
   }
@@ -107,7 +107,7 @@ const getArgs = (op, split) => {
   const { length } = split;
   switch (op) {
     case ">>>":
-  case "==":
+    case "==":
       return split.splice(length - 2, length);
     case "==>":
     case "-->":
@@ -128,17 +128,15 @@ const reduceSplit = (split, source) => {
 }
 
 const getValueFromPath = (path, item, props, _default = null) => {
-  const regex = /(item|props):/;
+  if (typeof path !== "string") return _default || path;
 
-  if (!regex.test(path)) return _default || path;
-
-  const split = path.split(new RegExp(`(${ OPS.join("|") })`))
+  const split = path.toString().split(new RegExp(`(${ OPS.join("|") })`))
     .reduce((a, c) => {
       const match = /^(item|props):(.+)$/.exec(c);
       if (match) {
         const [, from, path] = match,
           source = (from === "item" ? item : props);
-        return [...a, source, path];
+        return [...a, get(source, path, null)];
       }
       return [...a, c];
     }, []).reverse();
@@ -154,7 +152,7 @@ export const getValue = (arg, sourceItem, sourceProps) => {
     sourceItem = get(sourceProps, "item", null);
   }
 
-  if (typeof arg === "string") {
+  if (typeof arg !== "object") {
     arg = { path: arg }
   }
   let {

@@ -132,6 +132,17 @@ export default {
 
       { type: Content,
         wrappers: [
+          { type: "dms-share",
+            options: {
+              mapDataToProps: {
+                test1: "props:item.data",
+                test2: 2,
+                test3: "3==4",
+                test4: "4==4"
+              },
+              propsToShare: ["item.data.title"]
+            }
+          },
           { type: "dms-consumer",
             options: {
               mapDataToProps: {
@@ -139,6 +150,23 @@ export default {
                 content: "props:item.data.body"
               }
             }
+          }
+        ],
+        children: [
+          ({ children, ...props }) => <div className="border-2 rounded p-2 my-2">SHARED!!!<div>{ JSON.stringify(props) }</div></div>,
+          { type: "div",
+            children: [
+              { type: "div",
+                children: [
+                  { type: ({ className, ...props }) => <div className={ className }>{ JSON.stringify(props) }</div>,
+                    wrappers: ["dms-consumer"],
+                    props: {
+                      className: "border-2 rounded p-2 my-2"
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       }

@@ -11,7 +11,7 @@ export default ({
     "dms-router",
     "show-loading", // receives loading prop
     "dms-falcor", // generates loading prop and passes to children
-    "use-auth"
+    "with-auth"
   ],
   props: {
     format: DMS_DOCS,
@@ -73,7 +73,7 @@ export default ({
             }
           }
         },
-        "use-auth"
+        "with-auth"
       ],
       children: [
         { type: "dms-list",
@@ -101,12 +101,12 @@ export default ({
 
     { type: "dms-create",
       props: { dmsAction: "create" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-edit",
       props: { dmsAction: "edit" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "docs-page",
