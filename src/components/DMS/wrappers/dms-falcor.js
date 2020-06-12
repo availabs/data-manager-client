@@ -149,7 +149,7 @@ export default (WrappedComponent, options = {}) => {
     const { app, type } = get(props, "format", props),
       defaultPath = ["dms", "data", `${ app }+${ type }`],
       path = processPath(get(props, "path", defaultPath), props),
-      dataItems = getDataItems(path, state, makeFilter(props));
+      dataItems = getDataItems(path, state, makeFilter(props.filter, { props, item: get(props, type, null) }));
     return {
       dataItems,
       path,

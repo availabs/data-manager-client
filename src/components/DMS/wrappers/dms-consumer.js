@@ -30,7 +30,7 @@ export default (Component, options = {}) => {
     const [action, setAction] = useState(null);
     useEffect(() => {
       if (!action) {
-        let newAction = getValue(defaultAction, newProps);
+        let newAction = getValue(defaultAction, { props: newProps });
         if (newAction) {
           if (!Array.isArray(newAction)) {
             newAction = [newAction];
@@ -51,7 +51,7 @@ export default (Component, options = {}) => {
       return data;
     }
 
-    const mapped = getNewProps(mapDataToProps, newProps)
+    const mapped = getNewProps(mapDataToProps, { props: newProps })
 
     for (const key in mapped) {
       const data = mapped[key];

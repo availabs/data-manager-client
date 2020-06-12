@@ -10,7 +10,7 @@ export default (Component, options = {}) => {
     propsToShare = {}
   } = options;
   return ({ children, ...props }) => {
-    let toShare = doIt(mapDataToProps, props);
+    let toShare = doIt(mapDataToProps, { props });
     if (typeof propsToShare === "string") {
       const split = propsToShare.split(".");
       toShare[split.pop()] = get(props, propsToShare, propsToShare);

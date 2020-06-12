@@ -18,9 +18,8 @@ const SideBar = ({ children, ...props }) =>
       { children }
     </ul>
   </div>
-
-const SideBarItem = ({ children, active, ...props }) =>
-  <li { ...props }
+const SideBarItem = ({ children, active, level, ...props }) =>
+  <li { ...props } style={ { marginLeft: `${ level * 3 / 4 }rem` } }
     className={ `
       px-5 cursor-pointer border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-200 rounded
       ${ active ? "bg-gray-200" : "" }
@@ -58,26 +57,48 @@ export default {
     ],
     children: [
       { type: SideBar,
+        children: ["TESTING!!!!!!!!!", () => <>TESTING!!!!!!!</>],
         wrappers: [
           { type: "dms-consumer",
             options: {
               defaultAction: "props:dataItems-->data.chapter==0->id", // --> ararray reduce
               mapDataToProps: {
-                children: [
+                children: [ // children will be merged with config children
                   { path: "props:dataItems", // since dataItems is an Array
-                                              // the following item: args are retreived from array items
+                                              // the following self: args are retreived from array items
                     filter: {
-                      args: ["item:data.chapter"],
-                      comparator: chapter => /^\d+$/.test(chapter)
+                      args: ["self:data.chapter", "item:data.chapter"],
+                      comparator: (self, item) => {
+                        if (self === item) return true;
+                        if (/^\d+$/.test(self)) return true;
+
+                        const isChild = new RegExp(`^${ item }[.]\\d+$`);
+                        if (isChild.test(self)) return true;
+
+                        const split = item.split(".");
+                        while (split.pop()) {
+                          const sibling = split.join("."),
+                            isSibling = new RegExp(`^${ sibling }[.]\\d+$`);
+                          if (isSibling.test(self)) return true;
+                        }
+                        return false;
+
+                      }
                     },
+                    sortBy: "data.chapter",
                     props: {
-                      active: "props:item.id==item:id"
+                      active: "props:item.id==self:id",
+                      level: {
+                        args: ["self:data.chapter"],
+                        func: chapter => chapter.split(".").length - 1
+                      }
                     },
                     type: SideBarItem,
-                    key: "item:id",
-                    value: "item:data.title",
-                    interact: "item:id"
+                    key: "self:id",
+                    value: "self:data.title",
+                    interact: "self:id"
                   }, // END CHILD 1
+
                   { type: "div",
                     props: {
                       className: "border-b-4 border-black my-5 text-center"
@@ -127,7 +148,7 @@ export default {
               }
             }
           }
-        ]
+        ] // END SIDEBAR WRAPPERS
       }, // END SIDEBAR
 
       { type: Content,
@@ -135,10 +156,10 @@ export default {
           { type: "dms-share",
             options: {
               mapDataToProps: {
-                test1: "props:item.data",
-                test2: 2,
-                test3: "3==4",
-                test4: "4==4"
+                // test1: "props:item.data",
+                // test2: 2,
+                // test3: "3==4",
+                // test4: "4==4"
               },
               propsToShare: ["item.data.title"]
             }
@@ -170,6 +191,7 @@ export default {
           }
         ]
       }
+
     ]
   }
 }

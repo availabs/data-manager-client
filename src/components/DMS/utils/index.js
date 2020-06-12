@@ -10,11 +10,15 @@ export const prettyKey = key =>
 
 export const ITEM_REGEX = /^item:(.+)$/;
 export const PROPS_REGEX = /^props:(.+)$/;
+const SELF_REGEX = /^self:(.+)$/;
 
-export const makeFilter = (filter, props) => {
-  if (!props) {
-    props = filter;
-    filter = get(props, "filter", false);
+export const makeFilter = (filter, sources) => {
+  if (!sources) {
+    sources = { props: filter }
+    filter = get(sources, ["props", "filter"]);
+  }
+  if (!sources.item) {
+    sources.item = get(sources, ["props", "item"], null);
   }
 
   if (!filter) return false;
@@ -26,15 +30,22 @@ export const makeFilter = (filter, props) => {
   args = args.map(arg => {
     if (typeof arg === "string") {
       if (ITEM_REGEX.test(arg)) {
+        arg = arg.slice(5);
+        const path = arg.split(".");
         return {
-          type: "item",
+          value: get(sources, ["item", ...path], arg)
+        }
+      }
+      if (SELF_REGEX.test(arg)) {
+        return {
           path: arg.slice(5)
         }
       }
       if (PROPS_REGEX.test(arg)) {
+        arg = arg.slice(6);
+        const path = arg.split(".");
         return {
-          type: "value",
-          value: get(props, arg.slice(6))
+          value: get(sources, ["props", ...path], arg)
         }
       }
     }
@@ -43,8 +54,8 @@ export const makeFilter = (filter, props) => {
 
   return d =>
     comparator(
-      ...args.map(({ type, path, value }) => {
-        return type === "item" ? get(d, path) : value
+      ...args.map(({ path, value }) => {
+        return value || get(d, path)
       })
     );
 }
@@ -127,16 +138,16 @@ const reduceSplit = (split, source) => {
   return reduceSplit(split, get(source, path, null));
 }
 
-const getValueFromPath = (path, item, props, _default = null) => {
+const getValueFromPath = (path, sources, _default = null) => {
   if (typeof path !== "string") return _default || path;
 
   const split = path.toString().split(new RegExp(`(${ OPS.join("|") })`))
     .reduce((a, c) => {
-      const match = /^(item|props):(.+)$/.exec(c);
+      const match = /^(item|props|self):(.+)$/.exec(c);
       if (match) {
-        const [, from, path] = match,
-          source = (from === "item" ? item : props);
-        return [...a, get(source, path, null)];
+        const [, from, p] = match,
+          source = get(sources, from, null);
+        return [...a, get(source, p, null)];
       }
       return [...a, c];
     }, []).reverse();
@@ -144,12 +155,11 @@ const getValueFromPath = (path, item, props, _default = null) => {
   return reduceSplit(split, split.pop());
 }
 
-export const getValue = (arg, sourceItem, sourceProps) => {
+export const getValue = (arg, sources) => {
   if (!arg) return null;
 
-  if (!sourceProps) {
-    sourceProps = sourceItem;
-    sourceItem = get(sourceProps, "item", null);
+  if (!sources.item) {
+    sources.item = get(sources, ["props", "item"], null);
   }
 
   if (typeof arg !== "object") {
@@ -158,6 +168,7 @@ export const getValue = (arg, sourceItem, sourceProps) => {
   let {
     path,
     filter,
+    sortBy,
     props = {},
     type,
     key,
@@ -165,15 +176,22 @@ export const getValue = (arg, sourceItem, sourceProps) => {
     interact = []
   } = arg;
 
-  let data = getValueFromPath(path, sourceItem, sourceProps);
+  let data = getValueFromPath(path, sources);
 
   if (type) {
     if (!Array.isArray(data)) {
       data = [data];
     }
-    const _filter = makeFilter(filter, sourceProps);
-    if (_filter) {
-      data = data.filter(_filter);
+    filter = makeFilter(filter, sources);
+    if (filter) {
+      data = data.filter(filter);
+    }
+    if (sortBy) {
+      data.sort((a, b) => {
+        const av = get(a, sortBy, a),
+          bv = get(b, sortBy, b);
+        return av < bv ? -1 : bv < av ? 1 : 0;
+      })
     }
 
     if (!Array.isArray(interact)) {
@@ -182,10 +200,10 @@ export const getValue = (arg, sourceItem, sourceProps) => {
 
     const args = ({
       data: data.map((d, i) => ({
-        key: getValueFromPath(key, d, sourceProps, `key-${ i }`),
-        value: getValueFromPath(value, d, sourceProps, d),
-        interact: interact.map(a => getValueFromPath(a, d, sourceProps)),
-        props: mapDataToProps(props, d, sourceProps)
+        key: getValueFromPath(key, { self: d, ...sources }, `key-${ i }`),
+        value: getValueFromPath(value, { self: d, ...sources }, d),
+        interact: interact.map(a => getValueFromPath(a, { self: d, ...sources })),
+        props: mapDataToProps(props, { self: d, ...sources })
       })),
       type
     })
@@ -194,10 +212,9 @@ export const getValue = (arg, sourceItem, sourceProps) => {
   return data;
 }
 
-export const mapDataToProps = (map, item, props) => {
-  if (!props) {
-    props = item;
-    item = get(props, "item", null);
+export const mapDataToProps = (map, sources = {}) => {
+  if (!sources.item) {
+    sources.item = get(sources, ["props", "item"], null);
   }
 
   const mappedProps = {};
@@ -205,12 +222,32 @@ export const mapDataToProps = (map, item, props) => {
   for (const key in map) {
     const path = map[key];
 
+    let savedChildren = [];
+    if (key === "children") {
+      savedChildren = React.Children.toArray(get(sources, ["props", "children"], null));
+    }
+
+    let result;
     if (Array.isArray(path)) {
-      mappedProps[key] = path.map(p => getValue(p, item, props))
+      result = path.map(p => getValue(p, sources))
+    }
+    else if (typeof path === "object") {
+      const args = path.args.map(arg => getValueFromPath(arg, sources));
+      result = path.func(...args);
     }
     else {
-      mappedProps[key] = getValue(path, item, props);
+      result = getValue(path, sources);
     }
+
+    if (key === "children") {
+      if (Array.isArray(result)) {
+        result = [...result, ...savedChildren];
+      }
+      else {
+        result = [result, ...savedChildren];
+      }
+    }
+    mappedProps[key] = result;
 
   }
   return mappedProps;

@@ -54,7 +54,7 @@ export default ({
         ],
         title: "Blogs",
         filter: {
-          args: ["item:data.replyTo"],
+          args: ["self:data.replyTo"],
           comparator: arg1 => arg1 === null
         }
       },
@@ -95,7 +95,7 @@ export default ({
             type: "dms-falcor",
             options: {
               filter: {
-                args: ["item:data.replyTo", "props:blog-post.id"],
+                args: ["self:data.replyTo", "props:blog-post.id"],
                 comparator: (arg1, arg2) => +arg1 === +arg2
               }
             }

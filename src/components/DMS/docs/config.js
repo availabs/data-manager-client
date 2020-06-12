@@ -87,7 +87,7 @@ export default ({
             type: "dms-falcor",
             options: {
               filter: {
-                args: ["props:dms-docs.data.chapter", "item:data.chapter"],
+                args: ["props:dms-docs.data.chapter", "self:data.chapter"],
                 comparator: (arg1, arg2) => {
                   const regex = new RegExp(`^${ arg1 }[.]\\d+$`)
                   return regex.test(arg2);
