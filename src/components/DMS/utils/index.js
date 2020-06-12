@@ -97,6 +97,8 @@ const applyOp = (op, args, source) => {
       return source.filter(d => getCompare(args[1])(get(d, args[0], null), args[2]))
     case "-->":
       return source.reduce((a, c) => getCompare(args[1])(get(c, args[0], null), args[2]) ? c : a, null)
+    case "==":
+      return getCompare(op)(get(args[0], args[1], null), source);
     default:
       return source;
   }
@@ -105,6 +107,7 @@ const getArgs = (op, split) => {
   const { length } = split;
   switch (op) {
     case ">>>":
+  case "==":
       return split.splice(length - 2, length);
     case "==>":
     case "-->":
@@ -125,16 +128,22 @@ const reduceSplit = (split, source) => {
 }
 
 const getValueFromPath = (path, item, props, _default = null) => {
-  const regex = /^(item|props):(.+$)/,
-    match = regex.exec(path);
+  const regex = /(item|props):/;
 
-  if (!match) return _default || path;
+  if (!regex.test(path)) return _default || path;
 
-  let [, from, rest] = match,
-    source = from === "item" ? item : props;
+  const split = path.split(new RegExp(`(${ OPS.join("|") })`))
+    .reduce((a, c) => {
+      const match = /^(item|props):(.+)$/.exec(c);
+      if (match) {
+        const [, from, path] = match,
+          source = (from === "item" ? item : props);
+        return [...a, source, path];
+      }
+      return [...a, c];
+    }, []).reverse();
 
-  const split = rest.split(new RegExp(`(${ OPS.join("|") })`)).reverse();
-  return reduceSplit(split, source);
+  return reduceSplit(split, split.pop());
 }
 
 export const getValue = (arg, sourceItem, sourceProps) => {
@@ -177,9 +186,9 @@ export const getValue = (arg, sourceItem, sourceProps) => {
       data: data.map((d, i) => ({
         key: getValueFromPath(key, d, sourceProps, `key-${ i }`),
         value: getValueFromPath(value, d, sourceProps, d),
-        interact: interact.map(a => getValueFromPath(a, d, sourceProps))
+        interact: interact.map(a => getValueFromPath(a, d, sourceProps)),
+        props: mapDataToProps(props, d, sourceProps)
       })),
-      props,
       type
     })
     return (func, interact) => func(args, interact);

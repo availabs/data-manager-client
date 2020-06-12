@@ -19,17 +19,20 @@ const SideBar = ({ children, ...props }) =>
     </ul>
   </div>
 
-const SideBarItem = ({ children, ...props }) =>
+const SideBarItem = ({ children, active, ...props }) =>
   <li { ...props }
-    className="px-5 cursor-pointer border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-200 rounded">
+    className={ `
+      px-5 cursor-pointer border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-200 rounded
+      ${ active ? "bg-gray-200" : "" }
+    ` }>
     { children }
   </li>
 
 const Content = ({ title, content, children }) =>
   <div className="absolute left-0 top-0 p-5"
     style={ { marginLeft: "250px" } }>
-    <div>{ title }</div>
-    <div>{ content }</div>
+    <div className="text-2xl font-bold">{ title }</div>
+    <div className="p-5 rounded-lg border-2">{ content }</div>
     <div>
       { children }
     </div>
@@ -66,6 +69,9 @@ export default {
                       args: ["item:data.chapter"],
                       comparator: chapter => /^\d+$/.test(chapter)
                     },
+                    props: {
+                      active: "props:item.id==item:id"
+                    },
                     type: SideBarItem,
                     key: "item:id",
                     value: "item:data.title",
@@ -80,19 +86,19 @@ export default {
                   { path: "props:dmsAction",
                     type: "div",
                     props: {
-                      className: "text-xl border-2 p-3 rounded-lg"
+                      className: "border-2 p-2 rounded"
                     }
                   },
                   { path: "item:data.title",
                     type: "div",
                     props: {
-                      className: "text-xl border-2 p-3 rounded-lg"
+                      className: "border-2 p-2 rounded"
                     }
                   },
                   { path: "item:data->body", // -> get
                     type: "div",
                     props: {
-                      className: "text-xl border-2 p-3 rounded-lg"
+                      className: "border-2 p-2 rounded"
                     }
                   },
                   "props:dataItems>>>data.title", // >>> array map

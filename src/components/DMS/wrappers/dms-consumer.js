@@ -5,16 +5,15 @@ import { mapDataToProps as getNewProps, getValue } from "../utils"
 
 import get from "lodash.get"
 
-const createElements = ({ data, props, filter, ...rest }, interact) =>
-  (filter ? data.filter(filter) : data)
-    .map((d, i) =>
-      <rest.type key={ d.key } { ...props }
-        onClick={ !d.interact.length ? null :
-          e => interact(...d.interact)
-        }>
-        { d.value }
-      </rest.type>
-    )
+const createElements = ({ data, ...rest }, interact) =>
+  data.map((d, i) =>
+    <rest.type key={ d.key } { ...d.props }
+      onClick={ !d.interact.length ? null :
+        e => interact(...d.interact)
+      }>
+      { d.value }
+    </rest.type>
+  )
 
 export default (Component, options = {}) => {
   const {
