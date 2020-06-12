@@ -4,19 +4,19 @@ import PropTypes from 'prop-types';
 
 import createStore from './createStore';
 
-function debounce(func, wait) {
-  let timeout;
-  return function doDebounce() {
-    const context = this;
-    const args = arguments;
-    const later = () => {
-      timeout = null;
-      func.apply(context, args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
+// function debounce(func, wait) {
+//   let timeout;
+//   return function doDebounce() {
+//     const context = this;
+//     const args = arguments;
+//     const later = () => {
+//       timeout = null;
+//       func.apply(context, args);
+//     };
+//     clearTimeout(timeout);
+//     timeout = setTimeout(later, wait);
+//   };
+// }
 
 function attachOnChange(falcor, store) {
   falcor.onChange(this, () => store.trigger(falcor.getCache()));

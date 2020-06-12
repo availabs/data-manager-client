@@ -11,11 +11,11 @@ const GetParams = ({ Component, ...props }) =>
   <Component { ...props } params={ useParams() }/>;
 
 const ParseItems = ({ Component, ...props}) => {
-  const { type } = props,
-    { action, attribute, value } = useParams();
+  // const { type } = props,
+  const { action, attribute, value } = useParams();
 
   const id = get(props, "dataItems", []).reduce((a, c) => {
-    return get(c, ["data", attribute], null) == value ? c.id : a;
+    return get(c, ["data", attribute], null) === value ? c.id : a;
   }, undefined);
 
   if (!id) return <Component key="no-id" { ...props }/>;

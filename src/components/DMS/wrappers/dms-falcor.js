@@ -8,7 +8,7 @@ import get from "lodash.get"
 
 import {
   makeFilter,
-  ITEM_REGEX,
+  // ITEM_REGEX,
   PROPS_REGEX
 } from "../utils"
 
@@ -37,14 +37,14 @@ const getDataItems = (path, state, filter = false) => {
   return filter ? dataItems.filter(filter) : dataItems;
 }
 
-const getFormat = (app, type, state) => {
-  const key = `${ app }+${ type }`,
-    format = JSON.parse(JSON.stringify(get(state, ["falcorCache", "dms", "format", key], {})));
+// const getFormat = (app, type, state) => {
+//   const key = `${ app }+${ type }`,
+//     format = JSON.parse(JSON.stringify(get(state, ["falcorCache", "dms", "format", key], {})));
 
-  format.attributes = get(format, ["attributes", "value"], {});
+//   format.attributes = get(format, ["attributes", "value"], {});
 
-  return format;
-}
+//   return format;
+// }
 
 export default (WrappedComponent, options = {}) => {
   class Wrapper extends React.Component {
@@ -98,6 +98,8 @@ export default (WrappedComponent, options = {}) => {
         case "api:delete":
           falcorAction = this.falcorDelete;
           break;
+        default:
+          falcorAction = false;
       }
 
       if (falcorAction) {

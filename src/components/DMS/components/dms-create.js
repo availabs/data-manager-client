@@ -143,7 +143,7 @@ class ImgInput extends React.Component {
     this.props.onChange(null);
   }
   render() {
-    const { att, onChange, value, ...props } = this.props;
+    const { /* att,  onChange, */ value } = this.props;
 
     return (
       <div className={ `
@@ -158,7 +158,7 @@ class ImgInput extends React.Component {
         onDrop={ e => this.dropIt(e) }>
 
         { value ?
-            <img src={ value } className="max-w-full max-h-full"/>
+            <img src={ value } alt={ value  }className="max-w-full max-h-full"/>
           :
             <div className="flex flex-col items-center">
               <div>

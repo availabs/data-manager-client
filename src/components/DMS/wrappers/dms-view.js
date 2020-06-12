@@ -10,7 +10,7 @@ const SEED_PROPS = () => ({});
 
 const ViewItem = ({ value, type }) =>
   type !== "img" ? <div>{ value }</div> :
-  <div className="h-64"><img src={ value } className="max-h-full"/></div>
+  <div className="h-64"><img src={ value } className="max-h-full" alt={ value }/></div>
 
 const ViewRow = ({ name, children }) =>
   <div className="grid grid-cols-4 my-2">
@@ -115,8 +115,8 @@ export default (Component, options = {}) => {
     }
     render() {
       const {
-        actions, interact,
-        type, format,
+        actions, //interact,
+        type, //format,
         mapDataToProps
       } = { ...this.props, ...options };
 

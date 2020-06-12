@@ -1,6 +1,6 @@
 import { DMS_DOCS } from "./dms-docs.type"
 
-import get from "lodash.get"
+//import get from "lodash.get"
 
 export default ({
   type: "dms-manager", // top level component for managing data items

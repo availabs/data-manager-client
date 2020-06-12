@@ -118,7 +118,7 @@ console.log("<componentDidMount>", action, id)
     }
 
     const item = this.props.dataItems.reduce((a, c) =>
-      c.id == id ? c : a
+      c.id === id ? c : a
     , null)
 
     const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
@@ -137,7 +137,7 @@ console.log("<componentDidMount>", action, id)
   }
 
   compareActions(action1 = "", action2 = "") {
-    return action1.replace("dms:", "") == action2.replace("dms:", "");
+    return action1.replace("dms:", "") === action2.replace("dms:", "");
   }
 
   render() {

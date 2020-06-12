@@ -139,12 +139,14 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
                   } }/>
               : /^api:/.test(action) ?
                 <ActionButton { ...rest } action={ action } { ...fromAction }
-                  onClick={ e => (e.stopPropagation(),
-                    Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                  onClick={ e => {
+                      e.stopPropagation()
+                      Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
                       .then(() => push({
                         pathname: get(state, [length - 1], basePath),
                         state: state.slice(0, length - 1)
-                      })))
+                      }))
+                    }
                   }/>
               : <ActionLink { ...rest } action={ action } { ...fromAction }
                   to={ {
@@ -154,10 +156,11 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
             ) :
             ( <ActionButton { ...rest } disabled={ DISABLED } action={ action } { ...fromAction }
                 onClick={ DISABLED ? null :
-                  e => (e.stopPropagation(),
+                  e => {
+                    e.stopPropagation()
                     Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
                       .then(() => /^api:/.test(action) && interact("dms:back"))
-                  )
+                  }
                 }/>
             )
         }
