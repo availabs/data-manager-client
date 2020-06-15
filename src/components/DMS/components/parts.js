@@ -9,29 +9,6 @@ import { checkAuth } from "../utils"
 
 import get from "lodash.get"
 
-export const handleClickOutside = Component => {
-  return ({ ...props }) => {
-
-    const [ref, setRef] = useState(null);
-
-    useEffect(() => {
-      const handleClick = e => {
-        if (ref && ref.node.contains(e.target)) {
-          return;
-        }
-        if (ref && (typeof ref.handleClickOutside === "function")) {
-          ref.handleClickOutside(e);
-        }
-      }
-      document.addEventListener("click", handleClick);
-      return () => {
-        document.removeEventListener("click", handleClick);
-      }
-    })
-    return <Component ref={ setRef } { ...props }/>
-  }
-}
-
 export const Input = ({ large, small, className, disabled, children, ...props }) =>
   <input { ...props } disabled={ disabled }
     className={ `
@@ -155,9 +132,10 @@ const processAction = arg => {
 }
 
 export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...rest }) => {
-  const { pathname, state = [] } = useLocation(),
-    { push } = useHistory(),
-    length = state.length,
+  let { pathname, state } = useLocation(),
+    { push } = useHistory();
+  state = state || [];
+  const length = state.length,
 
     itemId = get(item, "id", null),
 
@@ -249,9 +227,10 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
 }
 
 export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, children, className = "", ...rest }) => {
-  const { pathname, state = [] } = useLocation(),
-    { push } = useHistory(),
-    length = state.length,
+  let { pathname, state } = useLocation(),
+    { push } = useHistory();
+  state = state || [];
+  const length = state.length,
 
     itemId = get(item, "id", null),
 

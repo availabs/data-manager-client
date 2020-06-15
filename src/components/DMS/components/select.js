@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 
-import { Input, handleClickOutside } from "./parts"
+import { Input } from "./parts"
 
 import get from "lodash.get"
 
@@ -41,7 +41,7 @@ const SelectContainer = ({ children }) =>
 
 const Dropdown = ({ children }) =>
   <div className="absolute left-0 bg-gray-200 z-40 overflow-hidden w-full"
-    style={ { top: "calc(100% + 0.25rem)", minWidth: "50%" } }>
+    style={ { top: "calc(100%)", minWidth: "50%" } }>
     { children }
   </div>
 const DropdownItem = ({ children, ...props }) =>
@@ -64,9 +64,6 @@ class Select extends React.Component {
       search: ""
     }
   }
-  handleClickOutside(e) {
-    this.state.opened && this.closeDopdown(e);
-  }
   hasValue() {
     const { value } = this.props;
     if (value === null || value === undefined) return false;
@@ -85,12 +82,12 @@ class Select extends React.Component {
     e.stopPropagation();
     this.setState({ opened: true });
   }
-  closeDopdown() {
+  closeDropdown() {
     this.setState({ opened: false, search: "" });
   }
   addItem(e, v) {
     e.stopPropagation();
-    this.closeDopdown();
+    this.closeDropdown();
 
     if (this.props.multi) {
       if (!this.hasValue()) {
@@ -124,7 +121,7 @@ class Select extends React.Component {
         .filter(d => !values.includes(d))
         .filter(d => d.toString().includes(this.state.search));
     return (
-      <div className="relative" ref={ node => this.node = node }>
+      <div className="relative" onMouseLeave={ e => this.closeDropdown() }>
         <SelectValue id={ this.props.id } tabIndex="0"
           onClick={ e => this.openDropdown(e) }
           style={ { borderColor: this.state.opened ? "black" : "transparent" } }>
@@ -160,5 +157,4 @@ class Select extends React.Component {
     )
   }
 }
-
-export default handleClickOutside(Select)
+export default Select

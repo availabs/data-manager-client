@@ -6,13 +6,12 @@ import {
   Title
 } from "./parts"
 import Select from "./select"
+import Editor from "./editor"
 
 import { prettyKey } from "../utils"
 
 import deepequal from "deep-equal"
 import get from "lodash.get"
-
-import "./style.css"
 
 const ArrayItem = ({ children, onClick, ...props }) =>
   <div className="flex mt-1" style={ { paddingLeft: "10%" } }>
@@ -201,36 +200,43 @@ class ImgInput extends React.Component {
   }
 }
 
-const InputRow = ({ att, children, onChange, ...props }) =>
-  <div className="grid grid-cols-4 my-2">
-    <div className="col-span-1"
-      onClick={ e => document.getElementById(`att:${ att.key }`).focus() }>
+const InputRow = ({ att, onChange, ...props }) =>
+  <div className="grid grid-cols-6 my-2">
+    <div className="col-span-1">
       <label className="block w-full py-1" htmlFor={ `att:${ att.key }` }>
         { att.name || prettyKey(att.key) }
       </label>
     </div>
-    <div className="col-span-3">
+    <div className="col-span-5">
       { /^(.+?)-array$/.test(att.type) ?
-        <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }>
-            { children }
-        </ArrayInput>
+        <div className="max-w-xl">
+          <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }/>
+        </div>
+      : att.type === "rich-text" ?
+        <Editor { ...props } id={ `att:${ att.key }` }
+          onChnage={ v => onChange(v) }/>
       : att.type === "textarea" ?
-          <TextArea { ...props } id={ `att:${ att.key }` } rows="6"
-            onChange={ e => onChange(e.target.value) }
-            placeholder={ `Type a value...`}>
-            { children }
-          </TextArea>
+          <div className="max-w-xl">
+            <TextArea { ...props } id={ `att:${ att.key }` } rows="6"
+              onChange={ e => onChange(e.target.value) }
+              placeholder={ `Type a value...`}/>
+          </div>
         : att.type === "img" ?
-          <ImgInput { ...props } id={ `att:${ att.key }` }
-            att={ att } onChange={ v => onChange(v) }/>
+          <div className="max-w-xl">
+            <ImgInput { ...props } id={ `att:${ att.key }` }
+              att={ att } onChange={ v => onChange(v) }/>
+          </div>
         : att.domain ?
-          <Select domain={ att.domain } { ...props }  id={ `att:${ att.key }` }
-            onChange={ v => onChange(v) } multi={ false }/>
-        : <Input { ...props } id={ `att:${ att.key }` } type={ att.type }
-            min={ att.min } max={ att.max } placeholder={ `Type a value...`}
-            onChange={ e => onChange(e.target.value) }>
-            { children }
-          </Input>
+          <div className="max-w-xl">
+            <Select domain={ att.domain } { ...props }  id={ `att:${ att.key }` }
+              onChange={ v => onChange(v) } multi={ false }/>
+          </div>
+        :
+          <div className="max-w-xl">
+            <Input { ...props } id={ `att:${ att.key }` } type={ att.type }
+              min={ att.min } max={ att.max } placeholder={ `Type a value...`}
+              onChange={ e => onChange(e.target.value) }/>
+          </div>
       }
     </div>
   </div>
@@ -294,12 +300,11 @@ export default class DmsCreate extends React.Component {
       return value || "";
     }
 
-    const attributes = get(this.props, ["format", "attributes"], []),
-      showPreview = attributes.reduce((a, c) => c.type === "markdown" ? [...a, c] : a, []);
+    const attributes = get(this.props, ["format", "attributes"], []);
 
     return (
-      <div className="flex w-full">
-        <form onSubmit={ e => e.preventDefault() } className="w-1/2 pr-2.5" style={ { maxWidth: "50%"}}>
+      <div className="flex w-full justify-center">
+        <form onSubmit={ e => e.preventDefault() } className="w-full">
           <div>
               { attributes
                   .map((att, i) =>
@@ -318,24 +323,6 @@ export default class DmsCreate extends React.Component {
 
           </div>
         </form>
-        { !showPreview.length || true ? null :
-          <div className="w-1/2 pl-2.5">
-            <Title>Preview</Title>
-            <table className="w-full">
-              <tbody>
-                { showPreview
-                    .map((att, i) =>
-                      <InputRow key={ att.key } autoFocus={ i === 0 }
-                        disabled={ att.editable === false }
-                        att={ att }
-                        value={ getValue(att.key) }
-                        onChange={ value => this.handleChange(att.key, value) }/>
-                    )
-                }
-              </tbody>
-            </table>
-          </div>
-        }
       </div>
     )
   }

@@ -591,6 +591,76 @@ video {
   height: auto;
 }
 
+/*
+DRAFT JS
+*/
+
+.draft-js-editor h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.draft-js-editor h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.draft-js-editor h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.draft-js-editor .public-DraftEditor-content {
+  min-height: 12rem;
+}
+
+.draft-js-editor .DraftEditor-root {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-bottom: 0.25rem;
+}
+
+.draft-js-editor .public-DraftEditor-content::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.draft-js-editor .public-DraftEditor-content::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: #888;
+}
+
+.draft-js-editor .public-DraftEditor-content::-webkit-scrollbar-thumb:hover {
+}
+
+.draft-js-editor .editor-button {
+  padding: 0.25rem;
+}
+
+.draft-js-editor .editor-button:first-child {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.draft-js-editor .editor-button:last-child {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.draft-js-editor .public-DraftStyleDefault-pre {
+  border-width: 1px;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #f9fafb;
+}
+
+.draft-js-editor blockquote {
+  background-color: #f4f5f7;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
 .container {
   width: 100%;
 }

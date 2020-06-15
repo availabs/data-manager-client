@@ -82,7 +82,6 @@ export default {
                           if (isSibling.test(self)) return true;
                         }
                         return false;
-
                       }
                     },
                     sortBy: "data.chapter",
@@ -162,10 +161,10 @@ export default {
           { type: "dms-share",
             options: {
               mapDataToProps: {
-                // test1: "props:item.data",
-                // test2: 2,
-                // test3: "3==4",
-                // test4: "4==4"
+                test1: "props:item.data",
+                test2: 2,
+                test3: "3==4",
+                test4: "4==4"
               },
               propsToShare: ["item.data.title"]
             }
@@ -181,7 +180,7 @@ export default {
         ],
         children: [
           ({ children, ...props }) => <div className="border-2 rounded p-2 my-2">SHARED!!!<div>{ JSON.stringify(props) }</div></div>,
-          { type: "div",
+          { type: ({ children, ...props }) => <div><div>{ JSON.stringify(props) }</div><div>{ children }</div></div>,
             children: [
               { type: "div",
                 children: [

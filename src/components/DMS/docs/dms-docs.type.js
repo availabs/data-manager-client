@@ -10,6 +10,9 @@ export const DMS_DOCS = {
       type: "textarea",
       required: true
     },
+    { key: "test",
+      type: "rich-text"
+    },
     { key: "chapter",
       type: "text",
       required: true
