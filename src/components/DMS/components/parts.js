@@ -186,6 +186,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
                 onClick={ DISABLED ? null :
                   e => {
                     e.stopPropagation()
+                    console.log('what is interact ?', interact)
                     Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
                       .then(() => /^api:/.test(action) && interact("dms:back"))
                   }

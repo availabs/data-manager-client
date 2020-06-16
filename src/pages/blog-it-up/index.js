@@ -1,15 +1,15 @@
-import DmsComponents from "components/DMS"
-import DmsWrappers from "components/DMS/wrappers"
+// import DmsComponents from "components/DMS"
+// import DmsWrappers from "components/DMS/wrappers"
 
-import {
-  addComponents,
-  addWrappers
-} from "components/avl-components/ComponentFactory"
+// import {
+//   addComponents,
+//   addWrappers
+// } from "components/avl-components/ComponentFactory"
 
 import config from "./config"
 
-addComponents(DmsComponents)
-addWrappers(DmsWrappers)
+// addComponents(DmsComponents)
+// addWrappers(DmsWrappers)
 
 export default {
   path: "/dms",

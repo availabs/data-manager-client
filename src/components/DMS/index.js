@@ -5,6 +5,8 @@ import DmsComponents from "./components"
 import { AuthContext, ButtonContext } from "./contexts"
 import { DmsButton, Title } from "./components/parts"
 
+import { Header } from 'components/avl-components/components'
+
 import get from "lodash.get"
 
 import { checkAuth } from "./utils"
@@ -131,38 +133,42 @@ class DmsManager extends React.Component {
     const { dmsAction, id, props } = this.getTop(),
       { authRules, user, buttonColors, showHome } = this.props;
 
+    console.log('dms manager theme', this.props.theme)
+    if(!this.props.format) {
+      return <div> No Format </div>
+    }
+
+    let actions = []
+    if(this.state.stack.length > 1) {
+      actions.push(<DmsButton action="dms:back"/>)
+    }                          
+    if ((this.state.stack.length > 1) && showHome ){
+       actions.push(<DmsButton action="dms:home"/>)        
+    }
+    if( dmsAction === "list"){
+     actions.push(<DmsButton action="dms:create"/>)
+    }     
+                  
     return (
-      <div className="p-20">
-        <div className={ this.props.className }>
-          <AuthContext.Provider value={ { authRules, user } }>
-            <ButtonContext.Provider value={ { buttonColors, interact: this.interact } }>
-              <div>
-                <Title large>
-                  { this.props.title || `${ this.props.app } Manager` }
-                </Title>
-                <div className="mb-5">
-                { !this.props.format ? null :
-                    <div className="btn-group-horizontal">
-                      { (this.state.stack.length === 1) ? null :
-                          <DmsButton action="dms:back"/>
-                      }
-                      { (this.state.stack.length === 1) || !showHome ? null :
-                          <DmsButton action="dms:home"/>
-                      }
-                      { dmsAction !== "list" ? null :
-                          <DmsButton action="dms:create"/>
-                      }
-                    </div>
-                  }
+        <AuthContext.Provider value={ { authRules, user } }>
+          <ButtonContext.Provider value={ { buttonColors, interact: this.interact } }>
+            
+            <div>
+              <Header title= { this.props.title || `${ this.props.app } Manager` } theme={this.props.theme} actions={actions}/>
+              
+              <div className="mb-5">
+                <div className="btn-group-horizontal">
+                  
                 </div>
               </div>
-              <div>
-                { this.renderChildren(dmsAction, id, props) }
-              </div>
-            </ButtonContext.Provider>
-          </AuthContext.Provider>
-        </div>
-      </div>
+            </div>
+            <main>
+              { this.renderChildren(dmsAction, id, props) }
+            </main>
+            
+          </ButtonContext.Provider>
+        </AuthContext.Provider>
+        
     )
   }
 }
