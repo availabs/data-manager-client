@@ -6,15 +6,27 @@ DRAFT JS
 
 .draft-js-editor h1 {
   @apply text-3xl;
-	@apply font-bold;
+  @apply font-extrabold;
 }
 .draft-js-editor h2 {
   @apply text-2xl;
-	@apply font-semibold;
+  @apply font-bold;
 }
 .draft-js-editor h3 {
   @apply text-xl;
-	@apply font-medium;
+  @apply font-semibold;
+}
+.draft-js-editor h4 {
+  @apply text-base;
+  @apply font-medium;
+}
+.draft-js-editor h5 {
+  @apply text-sm;
+  @apply font-medium;
+}
+.draft-js-editor h6 {
+  @apply text-xs;
+  @apply font-medium;
 }
 
 .draft-js-editor .public-DraftEditor-content {

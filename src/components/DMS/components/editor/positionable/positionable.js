@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 
 const POSITIONS = ["flex", "flex float-left clear-right mr-2", "flex flex-row justify-center", "flex float-right clear-left ml-2"]
 
@@ -32,25 +32,23 @@ const BUTTONS = [
 export default Component =>
   ({ ...props }) => {
     const {
-      block, contentState, blockProps
+      block, contentState, blockProps = {}
     } = props;
     const {
       adjustPosition,
       position,
-      src
+      hoverPosition = ""
     } = blockProps;
     const handleClick = (e, p) => {
       e.preventDefault();
       adjustPosition(block, contentState, p);
     }
-    const [hovering, setHovering] = useState(false);
     return (
       <div className={ `${ POSITIONS[position] } relative z-10 my-2` }>
-        <div className="inline-block relative"
-          onMouseEnter={ e => setHovering(true) }
-          onMouseLeave={ e => setHovering(false) }>
-          { !hovering ? null :
-            <div className="absolute top-0 w-full flex justify-center p-1">
+        <div className="inline-block relative hoverable">
+
+          <div className={ `absolute show-on-hover ${ hoverPosition } p-1 w-full` }>
+            <div className="w-full flex justify-center">
               { BUTTONS.map((b, i) =>
                   <button className={ `
                       py-1 px-2 bg-gray-100 hover:bg-gray-300
@@ -63,7 +61,8 @@ export default Component =>
                 )
               }
             </div>
-          }
+          </div>
+
           <Component { ...props }/>
         </div>
       </div>

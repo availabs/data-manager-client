@@ -4,11 +4,16 @@ import { RichUtils } from 'draft-js';
 
 import Button from "./button"
 
-export default (buttonType, child) =>
-  ({ editorState, ...props }) => {
+export default (buttonType, child, store) =>
+  () => {
+    const {
+      getEditorState,
+      setEditorState
+    } = store;
+    const editorState = getEditorState();
     const click = e => {
       e.preventDefault();
-      props.setEditorState(
+      setEditorState(
         RichUtils.toggleBlockType(editorState, buttonType)
       );
     }

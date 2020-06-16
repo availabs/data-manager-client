@@ -1,10 +1,11 @@
 import React from "react"
 
-export default ({ active, children, ...props }) =>
-  <button { ...props } onMouseDown={ e => e.preventDefault() }
-    className={ `
+export default ({ active, disabled, children, ...props }) =>
+  <button { ...props } disabled={ disabled }
+    onMouseDown={ e => e.preventDefault() }
+    className={ `editor-button
       ${ active ? "bg-gray-300" : "bg-gray-100" }
-      hover:bg-gray-300 editor-button
+      ${ disabled ? "bg-red-300 cursor-not-allowed" : "hover:bg-gray-300 cursor-pointer" }
     ` }>
     { children }
   </button>

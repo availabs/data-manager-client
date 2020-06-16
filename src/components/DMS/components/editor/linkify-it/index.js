@@ -29,13 +29,14 @@ const Link = ({ store, options, decoratedText, children, ...props }) => {
       { children }
     </a>
   :
-    <div className="inline-block relative read-only-link">
+    <div className="inline-block relative hoverable">
       <a className="text-blue-500 underline cursor-pointer">
         { children }
       </a>
-      <div className="tooltip pb-1 px-2 bg-gray-200 absolute z-50 rounded"
-        onClick={ e => window.open(href, target) }>
-        <a className="text-blue-500 underline cursor-pointer">
+      <div className="read-only-link-tooltip show-on-hover pb-1 px-2 bg-gray-200 absolute z-50 rounded"
+        onClick={ e => e.stopPropagation() } contentEditable={ false }>
+        <a className="text-blue-500 underline cursor-pointer"
+          href={ href } target={ target }>
           { href }
         </a>
       </div>

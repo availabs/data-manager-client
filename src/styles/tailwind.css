@@ -597,16 +597,31 @@ DRAFT JS
 
 .draft-js-editor h1 {
   font-size: 1.875rem;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .draft-js-editor h2 {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .draft-js-editor h3 {
   font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.draft-js-editor h4 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.draft-js-editor h5 {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.draft-js-editor h6 {
+  font-size: 0.75rem;
   font-weight: 500;
 }
 

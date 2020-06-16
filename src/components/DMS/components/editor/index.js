@@ -1,39 +1,47 @@
 import React, { useState, useEffect } from "react"
 
+import { debounce, get } from "lodash"
+
+// import Immutable from "immutable"
+
 import {
   EditorState,
-  AtomicBlockUtils,
-  RichUtils,
   convertToRaw,
-  convertFromRaw
+  convertFromRaw,
+  DefaultDraftBlockRenderMap,
+  // RichUtils
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import 'draft-js/dist/Draft.css';
 
-import makeToolbarPlugin, { Separator } from "./toolbar"
-import {
-  BlockQuoteButton,
-  CodeBlockButton,
-  HeaderOneButton,
-  HeaderTwoButton,
-  HeaderThreeButton,
-  OrderedListButton,
-  UnorderedListButton,
-  BoldButton,
-  CodeButton,
-  ItalicButton,
-  StrikeThroughButton,
-  SubScriptButton,
-  SuperScriptButton,
-  UnderlineButton
-} from './buttons';
+import Immutable from "draft-js/node_modules/immutable"
 
+import makeButtonPlugin from './buttons';
+import makeToolbarPlugin, { Separator } from "./toolbar"
 import makeImagePlugin from "./image"
 import makeLinkItPlugin from "./linkify-it"
 import makeSuperSubScriptPlugin from "./super-sub-script"
 import makePositionablePlugin from "./positionable"
 
-import { debounce, get } from "lodash"
+const buttonPlugin = makeButtonPlugin(),
+  { BlockQuoteButton,
+    CodeBlockButton,
+    HeaderOneButton,
+    HeaderTwoButton,
+    HeaderThreeButton,
+    OrderedListButton,
+    UnorderedListButton,
+    BoldButton,
+    CodeButton,
+    ItalicButton,
+    StrikeThroughButton,
+    SubScriptButton,
+    SuperScriptButton,
+    UnderlineButton,
+    LeftAlignButton,
+    CenterAlignButton,
+    RightAlignButton
+  } = buttonPlugin;
 
 const toolbarPlugin = makeToolbarPlugin(),
   { Toolbar } = toolbarPlugin;
@@ -45,6 +53,7 @@ const imagePlugin = makeImagePlugin({ wrapper: positionable }),
   { addImage } = imagePlugin;
 
 const plugins = [
+  buttonPlugin,
   toolbarPlugin,
   imagePlugin,
   makeLinkItPlugin(),
@@ -57,6 +66,34 @@ const styleMap = {
     textDecoration: 'line-through',
   }
 };
+
+// const OrderedListWrapper = ({ children, ...props }) =>
+//   <div className="my-list-wrapper">
+//     <ol { ...props } className="m-auto">
+//       { children }
+//     </ol>
+//   </div>
+// const UnorderedListWrapper = ({ children, ...props }) =>
+//   <div className="my-list-wrapper">
+//     <ul { ...props } className="m-auto">
+//       { children }
+//     </ul>
+//   </div>
+//
+const myBlockRenderMap = Immutable.Map({
+  // "ordered-list-item": {
+  //   element: "li",
+  //   wrapper: <OrderedListWrapper />
+  // },
+  // "unordered-list-item": {
+  //   element: "li",
+  //   wrapper: <UnorderedListWrapper />
+  // }
+  // "atomic": {
+  //   element: props => <figure { ...props } className="relative z-10">{ props.children }</figure>
+  // }
+})
+const blockRenderMap = DefaultDraftBlockRenderMap.merge(myBlockRenderMap);
 
 class MyEditor extends React.Component {
   editor = React.createRef();
@@ -73,20 +110,6 @@ class MyEditor extends React.Component {
 //       }
 //     }
   }
-  focus(e) {
-    e.preventDefault();
-    this.editor.current.focus();
-  }
-  addNewBlock(blockfunc) {
-    this.setState(state => {
-      const editorState = blockfunc(state.editorState)
-      return { editorState };
-    });
-  }
-  handleChange(editorState) {
-    this.setState(state => ({ editorState }));
-    // this.saveToLocalStorage()
-  }
   _saveToLocalStorage() {
     if (window.localStorage) {
       const saved = convertToRaw(this.state.editorState.getCurrentContent());
@@ -94,12 +117,21 @@ class MyEditor extends React.Component {
     }
   }
   saveToLocalStorage = debounce(this._saveToLocalStorage, 250);
+
+  focus(e) {
+    e.preventDefault();
+    this.editor.current.focus();
+  }
+  handleChange(editorState) {
+    this.setState(state => ({ editorState }));
+    // this.saveToLocalStorage()
+  }
   dropIt(e) {
     e.preventDefault();
 
     const file = get(e, ["dataTransfer", "files", 0], null);
 
-    if (file) {
+    if (file && /^image\/\w+$/.test(file.type)) {
       this.setState({
         editorState: addImage(URL.createObjectURL(file), this.state.editorState)
       });
@@ -110,42 +142,43 @@ class MyEditor extends React.Component {
     return (
       <div id={ this.props.id } onClick={ e => this.focus(e) }
         className={ `pt-14 relative bg-white rounded draft-js-editor clearfix` }
-        onDrop={ e => this.dropIt(e) } spellCheck={ true }>
+        onDrop={ e => this.dropIt(e) }>
         <Editor ref={ this.editor } placeholder="Type a value..."
           customStyleMap={ styleMap }
           editorState={ editorState }
           onChange={ editorState => this.handleChange(editorState) }
           plugins={ plugins }
           readOnly={ false }
+          blockRenderMap={ blockRenderMap }
           spellCheck={ true }/>
 
-        <Toolbar editorState={ editorState }>
-          {
-            toolbarProps => (
-              <>
-                <BoldButton { ...toolbarProps }/>
-                <ItalicButton { ...toolbarProps }/>
-                <StrikeThroughButton { ...toolbarProps }/>
-                <UnderlineButton { ...toolbarProps }/>
-                <SubScriptButton { ...toolbarProps }/>
-                <SuperScriptButton { ...toolbarProps }/>
-                <CodeButton { ...toolbarProps }/>
+        <Toolbar>
+          <BoldButton />
+          <ItalicButton />
+          <StrikeThroughButton />
+          <UnderlineButton />
+          <SubScriptButton />
+          <SuperScriptButton />
+          <CodeButton />
 
-                <Separator />
+          <Separator />
 
-                <HeaderOneButton { ...toolbarProps }/>
-                <HeaderTwoButton { ...toolbarProps }/>
-                <HeaderThreeButton { ...toolbarProps }/>
+          <HeaderOneButton />
+          <HeaderTwoButton />
+          <HeaderThreeButton />
 
-                <Separator />
+          <Separator />
 
-                <BlockQuoteButton { ...toolbarProps }/>
-                <CodeBlockButton { ...toolbarProps }/>
-                <OrderedListButton { ...toolbarProps }/>
-                <UnorderedListButton { ...toolbarProps }/>
-              </>
-            )
-          }
+          <BlockQuoteButton />
+          <CodeBlockButton />
+          <OrderedListButton />
+          <UnorderedListButton />
+
+          <Separator />
+
+          <LeftAlignButton />
+          <CenterAlignButton />
+          <RightAlignButton />
         </Toolbar>
 
       </div>

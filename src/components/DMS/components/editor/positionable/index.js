@@ -1,6 +1,6 @@
 import React from "react"
 
-import { EditorState, AtomicBlockUtils } from 'draft-js';
+import { EditorState } from 'draft-js';
 
 import positionable from "./positionable"
 
@@ -31,7 +31,7 @@ export default () => {
 
         if (!entityKey) return null;
 
-        const { position } = contentState.getEntity(entityKey).getData();
+        const { position = 0 } = contentState.getEntity(entityKey).getData();
 
         return {
           props: {

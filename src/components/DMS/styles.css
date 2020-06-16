@@ -44,12 +44,49 @@
 
 }
 
-.read-only-link .tooltip {
+.hoverable .show-on-hover {
   display: none;
+  top: 0px;
+}
+.hoverable:hover .show-on-hover {
+  display: block;
+}
+.hoverable:hover .show-on-hover.show-on-bottom {
+  top: 100%;
+}
+.hoverable:hover .show-on-hover.show-on-top {
+  bottom: 100%;
+}
+
+.read-only-link-tooltip {
   top: 100%;
   left: 50%;
   transform: translate(-50%, 0);
 }
-.read-only-link:hover .tooltip {
-  display: block;
+
+.text-center {
+  display: flex;
+  justify-content: center;
+}
+.text-left {
+  display: flex;
+  justify-content: flex-start;
+}
+.text-right {
+  display: flex;
+  justify-content: flex-end;
+}
+.text-center .public-DraftStyleDefault-ltr,
+.text-center .public-DraftStyleDefault-rtl {
+  display: inline-block;
+}
+
+.text-left .public-DraftStyleDefault-ltr,
+.text-left .public-DraftStyleDefault-rtl {
+  display: inline-block;
+}
+
+.text-right .public-DraftStyleDefault-ltr,
+.text-right .public-DraftStyleDefault-rtl {
+  display: inline-block;
 }
