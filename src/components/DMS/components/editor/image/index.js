@@ -44,23 +44,30 @@ export default (options = {}) => {
         entityKey = contentState.getLastCreatedEntityKey(),
         newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, 'IMAGE-BLOCK');
 
-const selection = editorState.getSelection(),
-  startKey = selection.getStartKey();
-const test = Modifier.replaceWithFragment(
-  newEditorState.getCurrentContent(),
-  newEditorState.getCurrentContent().getSelectionBefore(),
-  newEditorState.getCurrentContent().getBlockMap().filter(b => b.getKey() !== startKey)
-)
-console.log("TEST:", test.getBlockMap(), newEditorState.getCurrentContent().getBlockMap(),
-  newEditorState.getCurrentContent().getBlockMap().filter(b => b.getKey() !== startKey)
-);
+      const newContentState = newEditorState.getCurrentContent();
 
-      return newEditorState;
+      const startKey = newContentState.getSelectionBefore().getStartKey(),
+        block = newContentState.getBlockForKey(startKey);
 
-      // return EditorState.forceSelection(
-      //   newEditorState,
-      //   newEditorState.getCurrentContent().getSelectionAfter()
-      // );
+      if (block.getLength() > 0) return newEditorState;
+
+      const firstBlock = newContentState.getFirstBlock(),
+        lastBlock = newContentState.getLastBlock(),
+        selectAll = new SelectionState({ anchorKey: firstBlock.getKey(), focusKey: lastBlock.getKey() }),
+        currentContent =  Modifier.replaceWithFragment(
+          newContentState,
+          selectAll,
+          newContentState.getBlockMap().filter(b => b.getKey() !== startKey)
+        ),
+        anchorKey = currentContent.getLastBlock().getKey();
+
+      return EditorState.forceSelection(
+        EditorState.set(
+          newEditorState,
+          { currentContent }
+        ),
+        new SelectionState({ anchorKey, focusKey: anchorKey })
+      )
     }
   }
 }
