@@ -8,13 +8,6 @@ const linkify = linkifyIt()
   .add("ftp", null)
   .set({ fuzzyIP: true });
 
-const strategy = (contentBlock, callback) => {
-  const text = contentBlock.getText(),
-    links = linkify.match(text);
-
-  links && links.forEach(({ index, lastIndex }) => callback(index, lastIndex));
-}
-
 const Link = ({ store, options, decoratedText, children, ...props }) => {
   const links = linkify.match(decoratedText),
     href = links && links.pop().url;
@@ -41,6 +34,13 @@ const Link = ({ store, options, decoratedText, children, ...props }) => {
         </a>
       </div>
     </div>
+}
+
+const strategy = (contentBlock, callback) => {
+  const text = contentBlock.getText(),
+    links = linkify.match(text);
+
+  links && links.forEach(({ index, lastIndex }) => callback(index, lastIndex));
 }
 
 export default (options = {}) => {

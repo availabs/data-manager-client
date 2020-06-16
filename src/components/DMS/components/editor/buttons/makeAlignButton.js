@@ -3,8 +3,9 @@ import React from "react"
 import { Modifier, EditorState } from 'draft-js';
 
 import Button from "./button"
+import ICONS from "./icons"
 
-export default (buttonType, child, store) =>
+export default (buttonType, store) =>
   () => {
     const {
       getEditorState,
@@ -39,7 +40,7 @@ export default (buttonType, child, store) =>
 
     return (
       <Button active={ isActive() } onClick={ click }>
-        { child }
+        { ICONS[buttonType] }
       </Button>
     )
   }
