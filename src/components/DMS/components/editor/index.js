@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 
-import { debounce, get } from "lodash"
+import { throttle, get } from "lodash"
 
 import {
   EditorState,
@@ -76,12 +76,12 @@ class MyEditor extends React.Component {
 //     }
   }
   _saveToLocalStorage() {
-    if (window.localStorage) {
-      const saved = convertToRaw(this.state.editorState.getCurrentContent());
-      window.localStorage.setItem("saved-editor-state", JSON.stringify(saved));
-    }
+    // if (window.localStorage) {
+    //   const saved = convertToRaw(this.state.editorState.getCurrentContent());
+    //   window.localStorage.setItem("saved-editor-state", JSON.stringify(saved));
+    // }
   }
-  saveToLocalStorage = debounce(this._saveToLocalStorage, 250);
+  saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
 
   focus(e) {
     e.preventDefault();
@@ -89,7 +89,7 @@ class MyEditor extends React.Component {
   }
   handleChange(editorState) {
     this.setState(state => ({ editorState }));
-    // this.saveToLocalStorage()
+    this.saveToLocalStorage()
   }
   dropIt(e) {
     e.preventDefault();
@@ -105,15 +105,19 @@ class MyEditor extends React.Component {
   render() {
     const { editorState } = this.state;
     return (
-      <div id={ this.props.id } onClick={ e => this.focus(e) }
+      <div id={ this.props.id }
         className={ `pt-14 relative bg-white rounded draft-js-editor clearfix` }
+        onClick={ e => this.focus(e) }
         onDrop={ e => this.dropIt(e) }>
-        <Editor ref={ this.editor } placeholder="Type a value..."
-          editorState={ editorState }
-          onChange={ editorState => this.handleChange(editorState) }
-          plugins={ plugins }
-          readOnly={ false }
-          spellCheck={ true }/>
+
+        <div className="px-2 pb-1">
+          <Editor ref={ this.editor } placeholder="Type a value..."
+            editorState={ editorState }
+            onChange={ editorState => this.handleChange(editorState) }
+            plugins={ plugins }
+            readOnly={ false }
+            spellCheck={ true }/>
+        </div>
 
         <Toolbar>
           <BoldButton />

@@ -4,7 +4,7 @@
 DRAFT JS
 */
 
-.draft-js-editor h1 {
+.draft-js-editor .public-DraftEditor-content h1 {
   @apply text-3xl;
   @apply font-extrabold;
 }
@@ -27,11 +27,6 @@ DRAFT JS
 .draft-js-editor .public-DraftEditor-content h6 {
   @apply text-xs;
   @apply font-medium;
-}
-
-.draft-js-editor .DraftEditor-root {
-	@apply px-2;
-	@apply pb-1;
 }
 
 @tailwind components;
