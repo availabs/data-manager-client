@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 
 class Test extends Component {
   render () {
+    const { children, ...props } = this.props;
     return (
     	<div className='mn-h-screen'>
         <div className=" mx-auto px-4 sm:px-6 md:px-8">
@@ -12,8 +13,9 @@ class Test extends Component {
           <div className="py-4">
             <div className="border-4 border-dashed border-gray-200 rounded-lg">
               <pre className='text-xs'>
-                {JSON.stringify(this.props, null, 4)}
+                <div>{ JSON.stringify(props, null, 3) }</div>
               </pre>
+              <div>{ children }</div>
             </div>
           </div>
         </div>
@@ -32,5 +34,18 @@ export default
     fixed: true,
     theme: 'light'
   },
-  component: Test
+  component: {
+    type: Test,
+    children: [
+      "ONE ", "TWO ", Test,
+      { type: "div",
+        props: {
+          className: "border-2 rounded p-2 m-2"
+        },
+        children: [
+          "ONE ", "TWO ", "THREE ", { type: Test }
+        ]
+      }, "THREE "
+    ]
+  }
 }

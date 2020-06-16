@@ -11,7 +11,7 @@ export default ({
     "dms-router",
     "show-loading", // receives loading prop
     "dms-falcor", // generates loading prop and passes to children
-    "use-auth"
+    "with-auth"
   ],
   props: {
     format: DMS_DOCS,
@@ -69,10 +69,11 @@ export default ({
               title: "item:data.title",
               chapter: ["item:data.chapter"],
               body: "item:data.body",
-              footer: ["item:updated_at"]
+              footer: ["item:updated_at", "props:user.id"]
             }
           }
-        }
+        },
+        "with-auth"
       ],
       children: [
         { type: "dms-list",
@@ -86,7 +87,7 @@ export default ({
             type: "dms-falcor",
             options: {
               filter: {
-                args: ["props:dms-docs.data.chapter", "item:data.chapter"],
+                args: ["props:dms-docs.data.chapter", "self:data.chapter"],
                 comparator: (arg1, arg2) => {
                   const regex = new RegExp(`^${ arg1 }[.]\\d+$`)
                   return regex.test(arg2);
@@ -100,12 +101,12 @@ export default ({
 
     { type: "dms-create",
       props: { dmsAction: "create" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-edit",
       props: { dmsAction: "edit" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "docs-page",

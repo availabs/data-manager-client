@@ -11,7 +11,7 @@ export default ({
     "show-loading",
     "dms-router",
     "dms-falcor",
-    "use-auth"
+    "with-auth"
   ],
   props: {
     format: BLOG_POST,
@@ -54,7 +54,7 @@ export default ({
         ],
         title: "Blogs",
         filter: {
-          args: ["item:data.replyTo"],
+          args: ["self:data.replyTo"],
           comparator: arg1 => arg1 === null
         }
       },
@@ -79,15 +79,10 @@ export default ({
                 "props:user.id"
               ]
             },
-            actions: [
-              { action: "dms:reply",
-// this sends props into the DMS Manager reply component from the dms-view wrapper
-                seedProps: props => ({ test: "prop" })
-              }
-            ]
+            actions: ["dms:reply"]
           }
         },
-        "use-auth"
+        "with-auth"
       ],
       children: [
         { type: "dms-list",
@@ -100,7 +95,7 @@ export default ({
             type: "dms-falcor",
             options: {
               filter: {
-                args: ["item:data.replyTo", "props:blog-post.id"],
+                args: ["self:data.replyTo", "props:blog-post.id"],
                 comparator: (arg1, arg2) => +arg1 === +arg2
               }
             }
@@ -111,17 +106,19 @@ export default ({
 
     { type: "dms-create",
       props: { dmsAction: "create" },
-      wrappers: ["use-auth"]
+// dms-create defaults to dmsAction: "create"
+// the prop is required here due to the wrapper
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-create",
       props: { dmsAction: "reply" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-edit",
       props: { dmsAction: "edit" },
-      wrappers: ["use-auth"]
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-card",
@@ -151,7 +148,7 @@ export default ({
             }]
           }
         },
-        "use-auth"
+        "with-auth"
       ]
     }
   ]

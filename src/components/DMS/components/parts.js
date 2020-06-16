@@ -1,11 +1,62 @@
 import React, { useState, useEffect } from "react"
+import ReactDOM from "react-dom"
 
 import { Link } from "react-router-dom"
 import { useLocation, useHistory } from "react-router-dom"
 
-import { AuthContext, checkAuth } from "./auth-context"
+import { AuthContext, ButtonContext, RouterContext } from "../contexts"
+import { checkAuth } from "../utils"
 
 import get from "lodash.get"
+
+export const handleClickOutside = Component => {
+  return ({ ...props }) => {
+
+    const [ref, setRef] = useState(null);
+
+    useEffect(() => {
+      const handleClick = e => {
+        if (ref && ref.node.contains(e.target)) {
+          return;
+        }
+        if (ref && (typeof ref.handleClickOutside === "function")) {
+          ref.handleClickOutside(e);
+        }
+      }
+      document.addEventListener("click", handleClick);
+      return () => {
+        document.removeEventListener("click", handleClick);
+      }
+    })
+    return <Component ref={ setRef } { ...props }/>
+  }
+}
+
+export const Input = ({ large, small, className, disabled, children, ...props }) =>
+  <input { ...props } disabled={ disabled }
+    className={ `
+      w-full block
+      ${ large ? "py-2 px-4" : small ? "py-0 px-1" : "py-1 px-2" }
+      ${ large ? "text-lg" : small ? "text-sm" : "" }
+      ${ large ? "rounded-lg" : "rounded" }
+      ${ disabled ? "cursor-not-allowed" : `cursor-pointer` }
+      ${ className }
+    ` }>
+    { children }
+  </input>
+
+export const TextArea = ({ large, small, className, disabled, children, ...props }) =>
+  <textarea { ...props } disabled={ disabled }
+    className={ `
+      w-full block
+      ${ large ? "py-2 px-4" : small ? "py-0 px-1" : "py-1 px-2" }
+      ${ large ? "text-lg" : small ? "text-sm" : "" }
+      ${ large ? "rounded-lg" : "rounded" }
+      ${ disabled ? "cursor-not-allowed" : `cursor-pointer` }
+      ${ className }
+    ` }>
+    { children }
+  </textarea>
 
 export const Title = ({ children, ...props }) =>
   <div className={ `
@@ -50,8 +101,6 @@ const LinkButton = ({ children, href, large, small, block, color = "blue", class
 const getLabel = action =>
   action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
 
-export const ButtonColorContext = React.createContext({});
-
 const BUTTON_COLORS = {
   create: "green",
   back: "teal",
@@ -62,29 +111,29 @@ const BUTTON_COLORS = {
 const getButtonColor = (label, colors) =>
   get(colors, label, get(BUTTON_COLORS, label))
 
-export const ActionButton = ({ action, label, color, ...props }) => {
+export const ActionButton = ({ action, label, color, waiting, ...props }) => {
   label = label || getLabel(action);
   return (
-    <ButtonColorContext.Consumer>
-      { buttonColors =>
+    <ButtonContext.Consumer>
+      { ({ buttonColors }) =>
         <Button { ...props } color={ color || getButtonColor(label, buttonColors) }>
           { label }
         </Button>
       }
-    </ButtonColorContext.Consumer>
+    </ButtonContext.Consumer>
   )
 }
 
 export const ActionLink = ({ action, label, color, ...props }) => {
   label = label || getLabel(action);
   return (
-    <ButtonColorContext.Consumer>
-      { buttonColors =>
+    <ButtonContext.Consumer>
+      { ({ buttonColors }) =>
         <LinkButton { ...props } color={ color || getButtonColor(label, buttonColors) }>
           { label  }
         </LinkButton>
       }
-    </ButtonColorContext.Consumer>
+    </ButtonContext.Consumer>
   )
 }
 
@@ -117,6 +166,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
 // RENDER BUTTON START
   const RenderButton = ({ waiting = false }) =>
     <AuthContext.Consumer>
+
       { ({ authRules, user, interact, useRouter, basePath }) => {
 
           const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
@@ -169,9 +219,9 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
 // RENDER BUTTON END
 
   const Opened = ({ setOpen }) => {
-    const [waiting, setWaiting] = useState(true);
+    const [waiting, setWaiting] = useState(2000);
     useEffect(() => {
-      const timeout = setTimeout(setWaiting, 2000, false);
+      const timeout = waiting && setTimeout(setWaiting, 20, waiting - 20);
       return () => clearTimeout(timeout);
     })
     return (
@@ -204,35 +254,43 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
 
   return (
     <AuthContext.Consumer>
-      { ({ authRules, user, interact, useRouter, basePath }) => {
+      { ({ authRules, user }) =>
+        <ButtonContext.Consumer>
+          { ({ interact }) =>
+            <RouterContext.Consumer>
+              { ({ useRouter, basePath }) => {
 
-        const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
+                const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
 
-        return useRouter && hasAuth && !disabled ?
-          (
-            <tr { ...rest } className={ `${ className } cursor-pointer` }
-              onClick={ e => (
-                  e.stopPropagation(),
-                  push({
-                    pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-                    state: [...state, pathname]
-                  })
-                )
-              }>
-              { children }
-            </tr>
-          ) : (
-            <tr { ...rest } className={ `${ className } cursor-pointer` }
-              onClick={ (!hasAuth || disabled) ? null :
-                e => (e.stopPropagation(),
-                  Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
-                    .then(() => /^api:/.test(action) && interact("dms:back"))
-                )
-              }>
-              { children }
-            </tr>
-          )
-        }
+                return useRouter && hasAuth && !disabled ?
+                  (
+                    <tr { ...rest } className={ `${ className } cursor-pointer` }
+                      onClick={ e => (
+                          e.stopPropagation(),
+                          push({
+                            pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
+                            state: [...state, pathname]
+                          })
+                        )
+                      }>
+                      { children }
+                    </tr>
+                  ) : (
+                    <tr { ...rest } className={ `${ className } cursor-pointer` }
+                      onClick={ (!hasAuth || disabled) ? null :
+                        e => (e.stopPropagation(),
+                          Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                            .then(() => /^api:/.test(action) && interact("dms:back"))
+                        )
+                      }>
+                      { children }
+                    </tr>
+                  )
+                }
+              }
+            </RouterContext.Consumer>
+          }
+        </ButtonContext.Consumer>
       }
     </AuthContext.Consumer>
   )

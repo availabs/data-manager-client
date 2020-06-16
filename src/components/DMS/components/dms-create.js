@@ -1,10 +1,11 @@
 import React from "react"
 
 import {
-  Button, DmsButton,
+  Button, DmsButton, Input, TextArea,
   getButtonClassName,
   Title
 } from "./parts"
+import Select from "./select"
 
 import { prettyKey } from "../utils"
 
@@ -14,8 +15,8 @@ import get from "lodash.get"
 import "./style.css"
 
 const ArrayItem = ({ children, onClick, ...props }) =>
-  <div className="flex pl-4 mt-1">
-    <div className="py-1 px-2 mr-1 bg-white rounded inline-block flex-grow"
+  <div className="flex mt-1" style={ { paddingLeft: "10%" } }>
+    <div className="py-1 mr-1 px-2 bg-white rounded inline-block flex-grow"
       { ...props }>
       { children }
     </div>
@@ -48,31 +49,38 @@ class ArrayInput extends React.Component {
   }
   render() {
     const { att, value, children, ...props } = this.props,
-      type = att.type.slice(6);
+      [, type] = /^(.+?)-array$/.exec(att.type);
 
     return (
       <div className="w-full">
-        <div className="flex">
-          <input className="p-1 px-2 rounded mr-1 w-full" { ...props }
-            id={ `att:${ att.key }` } type={ type }
-            value={ this.state.value }
-            onChange={ e => this.setState({ value: e.target.value })}>
-            { children }
-          </input>
-          <Button onClick={ e => this.addToArray() }
-            disabled={ !this.state.value }>
-            add
-          </Button>
-        </div>
-        <div className="flex flex-col">
-          { !value ? null : value.map((v, i) =>
-              <ArrayItem key={ v }
-                onClick={ e => this.removeFromArray(v) }>
-                { v }
-              </ArrayItem>
-            )
-          }
-        </div>
+        { att.domain ?
+          <Select domain={ att.domain } { ...props } id={ `att:${ att.key }` }
+            value={ value } multi={ true }
+            onChange={ v => this.props.onChange(v) }/> :
+          <>
+            <div className="flex">
+              <Input { ...props } id={ `att:${ att.key }` } type={ type } className="mr-1"
+                value={ this.state.value }  min={ att.min } max={ att.max }
+                onChange={ e => this.setState({ value: e.target.value }) }
+                placeholder={ `Type a value...`}>
+                { children }
+              </Input>
+              <Button onClick={ e => this.addToArray() }
+                disabled={ !this.state.value }>
+                add
+              </Button>
+            </div>
+            <div className="flex flex-col">
+              { !value ? null : value.map((v, i) =>
+                  <ArrayItem key={ v }
+                    onClick={ e => this.removeFromArray(v) }>
+                    { v }
+                  </ArrayItem>
+                )
+              }
+            </div>
+          </>
+        }
       </div>
     )
   }
@@ -116,10 +124,12 @@ class ImgInput extends React.Component {
     if (!file) return;
     if (!/^image[/]/.test(file.type)) {
       this.setState({ message: "File was not an image." });
+      this.props.onChange(null);
       return;
     }
-    if (file.size > 10000000) {
+    if (file.size > 250000) {
       this.setState({ message: "File was too large." });
+      this.props.onChange(null);
       return;
     }
 
@@ -150,7 +160,7 @@ class ImgInput extends React.Component {
           w-full h-64 border-2 rounded p-2 border-dashed
           flex items-center justify-center relative
           ${ this.state.hovering ? "border-gray-500" : "" }
-          load-image-input
+          has-remove-button
         ` }
         onDragEnter={ e => this.dragEnter(e) }
         onDragLeave={ e => this.onDragExit(e) }
@@ -163,8 +173,8 @@ class ImgInput extends React.Component {
             <div className="flex flex-col items-center">
               <div>
                 <label className={ getButtonClassName({}) }
-                  htmlFor="choose-image">Select an image file...</label>
-                <input className="py-1 px-2 w-full rounded hidden" id="choose-image"
+                  htmlFor={ this.props.id }>Select an image file...</label>
+                <input className="py-1 px-2 w-full rounded hidden" id={ this.props.id }
                   type="file" accept="image/*" placeholder="..."
                   onChange={ e => this.handleChange(e) }/>
               </div>
@@ -177,8 +187,7 @@ class ImgInput extends React.Component {
               absolute right-2 top-2 z-10
               rounded bg-red-500 p-1
               cursor-pointer
-              flex justify-center items-center
-              remove-image-button
+              remove-button
             ` }
             onClick={ e => this.removeImage(e) }>
             <svg width="20" height="20">
@@ -193,34 +202,38 @@ class ImgInput extends React.Component {
 }
 
 const InputRow = ({ att, children, onChange, ...props }) =>
-  <tr>
-    <td className="align-top py-1 pl-1 pr-5"
+  <div className="grid grid-cols-4 my-2">
+    <div className="col-span-1"
       onClick={ e => document.getElementById(`att:${ att.key }`).focus() }>
-      <div className="w-full py-1">
+      <label className="block w-full py-1" htmlFor={ `att:${ att.key }` }>
         { att.name || prettyKey(att.key) }
-      </div>
-    </td>
-    <td className="p-1">
-      { att.type === "textarea" ?
-          <textarea className="block w-full py-1 px-2 rounded" { ...props }
-            id={ `att:${ att.key }` } rows="6"
-            onChange={ e => onChange(e.target.value) }>
+      </label>
+    </div>
+    <div className="col-span-3">
+      { /^(.+?)-array$/.test(att.type) ?
+        <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }>
             { children }
-          </textarea>
+        </ArrayInput>
+      : att.type === "textarea" ?
+          <TextArea { ...props } id={ `att:${ att.key }` } rows="6"
+            onChange={ e => onChange(e.target.value) }
+            placeholder={ `Type a value...`}>
+            { children }
+          </TextArea>
         : att.type === "img" ?
-          <ImgInput { ...props } att={ att } onChange={ v => onChange(v) }/>
-        : att.type.includes("array:") ?
-          <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }>
-              { children }
-          </ArrayInput>
-        : <input className="py-1 px-2 w-full rounded" { ...props }
-            id={ `att:${ att.key }` } type={ att.type }
+          <ImgInput { ...props } id={ `att:${ att.key }` }
+            att={ att } onChange={ v => onChange(v) }/>
+        : att.domain ?
+          <Select domain={ att.domain } { ...props }  id={ `att:${ att.key }` }
+            onChange={ v => onChange(v) } multi={ false }/>
+        : <Input { ...props } id={ `att:${ att.key }` } type={ att.type }
+            min={ att.min } max={ att.max } placeholder={ `Type a value...`}
             onChange={ e => onChange(e.target.value) }>
             { children }
-          </input>
+          </Input>
       }
-    </td>
-  </tr>
+    </div>
+  </div>
 
 export default class DmsCreate extends React.Component {
   static defaultProps = {
@@ -284,13 +297,12 @@ export default class DmsCreate extends React.Component {
     }
 
     const attributes = get(this.props, ["format", "attributes"], []),
-      showPreview = attributes.reduce((a, c) => c.type === "textarea" ? [...a, c] : a, []);
+      showPreview = attributes.reduce((a, c) => c.type === "markdown" ? [...a, c] : a, []);
 
     return (
-      <div className="flex">
-        <form onSubmit={ e => e.preventDefault() } className="w-1/2 pr-2.5">
-          <table className="w-full">
-            <tbody>
+      <div className="flex w-full">
+        <form onSubmit={ e => e.preventDefault() } className="w-1/2 pr-2.5" style={ { maxWidth: "50%"}}>
+          <div>
               { attributes
                   .map((att, i) =>
                     <InputRow key={ att.key } autoFocus={ i === 0 }
@@ -300,17 +312,13 @@ export default class DmsCreate extends React.Component {
                       onChange={ value => this.handleChange(att.key, value) }/>
                   )
               }
-              <tr>
-                <td colSpan={ 2 } className="p-1">
-                  <div className="flex justify-end">
-                    <DmsButton large className="w-full max-w-xs" disabled={ !this.verify() } type="submit"
-                      label={ this.props.dmsAction } item={ item }
-                      action={ this.getButtonAction(values) }/>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              <div className="flex justify-end">
+                <DmsButton large className="w-full max-w-xs" disabled={ !this.verify() } type="submit"
+                  label={ this.props.dmsAction } item={ item }
+                  action={ this.getButtonAction(values) }/>
+              </div>
+
+          </div>
         </form>
         { !showPreview.length || true ? null :
           <div className="w-1/2 pl-2.5">

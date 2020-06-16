@@ -2,12 +2,12 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { DmsButton, Title, ButtonColorContext } from "./components/parts"
-import { AuthContext } from "./components/auth-context"
+import { AuthContext, ButtonContext } from "./contexts"
+import { DmsButton, Title } from "./components/parts"
 
 import get from "lodash.get"
 
-import { checkAuth } from "./components/auth-context"
+import { checkAuth } from "./utils"
 
 class DmsManager extends React.Component {
   static defaultProps = {
@@ -22,8 +22,9 @@ class DmsManager extends React.Component {
     buttonColors: {},
     apiInteract: () => Promise.resolve()
   }
+
   constructor(...args) {
-    super(...args)
+    super(...args);
     this.state = {
       stack: [{
         dmsAction: this.props.defaultAction,
@@ -36,32 +37,16 @@ class DmsManager extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.useRouter) {
-      const { action, id } = get(this.props, "params", {});
-console.log("<componentDidMount>", action, id)
-      if (action) {
-        this.pushAction(action, id, null);
-      }
-    }
-  }
-  componentDidUpdate(oldProps) {
-
-  }
-  initialize() {
-    if (this.props.useRouter && !this.state.initialized) {
-      const { action, id } = get(this.props, "params", {});
-      if (action) {
-        this.pushAction(action, id, null);
-      }
+    const { action, id } = get(this.props, "params", {});
+    if (action) {
+      this.pushAction(action, id, null);
     }
   }
 
   interact(dmsAction, id, props) {
-    // if (["back", "dms:back"].includes(dmsAction)) {
     if (/^(dms:)*back$/.test(dmsAction)) {
       this.popAction();
     }
-    // else if (["home", "dms:home"].includes(dmsAction)) {
     else if (/^(dms:)*home$/.test(dmsAction)) {
       this.clearStack();
     }
@@ -70,11 +55,13 @@ console.log("<componentDidMount>", action, id)
     }
     else {
       this.pushAction(dmsAction, id, props);
-      if (this.props.history && id) {
-        this.props.history.push(`/${ dmsAction.replace("dms:", "") }/${ id }`)
-      }
     }
   }
+
+  compareActions(action1 = "", action2 = "") {
+    return action1.replace("dms:", "") == action2.replace("dms:", "");
+  }
+
   pushAction(dmsAction, id, props) {
     const stack = [...this.state.stack];
     stack.push({ dmsAction, id, props });
@@ -104,7 +91,7 @@ console.log("<componentDidMount>", action, id)
 
     if (child === null) return null;
 
-    if (/^(list|dms:list)$/.test(dmsAction)) {
+    if (/^(dms:)*list$/.test(dmsAction)) {
       return React.cloneElement(child,
         { ...child.props,
           ...props,
@@ -117,9 +104,7 @@ console.log("<componentDidMount>", action, id)
       );
     }
 
-    const item = this.props.dataItems.reduce((a, c) =>
-      c.id === id ? c : a
-    , null)
+    const item = this.props.dataItems.reduce((a, c) => c.id == id ? c : a, null);
 
     const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
     if (!hasAuth) return <NoAuth />;
@@ -142,13 +127,13 @@ console.log("<componentDidMount>", action, id)
 
   render() {
     const { dmsAction, id, props } = this.getTop(),
-      { authRules, user, buttonColors, useRouter, basePath, showHome } = this.props;
+      { authRules, user, buttonColors, showHome } = this.props;
 
     return (
       <div className="p-20">
         <div className={ this.props.className }>
-          <AuthContext.Provider value={ { authRules, user, useRouter, basePath, interact: this.interact } }>
-            <ButtonColorContext.Provider value={ buttonColors }>
+          <AuthContext.Provider value={ { authRules, user } }>
+            <ButtonContext.Provider value={ { buttonColors, interact: this.interact } }>
               <div>
                 <Title large>
                   { this.props.title || `${ this.props.app } Manager` }
@@ -172,7 +157,7 @@ console.log("<componentDidMount>", action, id)
               <div>
                 { this.renderChildren(dmsAction, id, props) }
               </div>
-            </ButtonColorContext.Provider>
+            </ButtonContext.Provider>
           </AuthContext.Provider>
         </div>
       </div>
