@@ -9,6 +9,12 @@ module.exports = {
       }
     }
   },
+  variants: {
+    borderRadius: ['responsive', 'first', 'last'],
+    margin: ['responsive', 'first', 'last'],
+    padding: ['responsive', 'first', 'last'],
+    backgroundColor: ['responsive', 'hover', 'focus', 'first', 'last', 'odd', 'even']
+  },
   plugins: [
     require('@tailwindcss/ui'),
   ]

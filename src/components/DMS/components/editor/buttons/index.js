@@ -1,7 +1,5 @@
 import React from "react"
 
-import { EditorState } from "draft-js"
-
 import Immutable from "draft-js/node_modules/immutable"
 
 import makeAlignButton from "./makeAlignButton"
@@ -175,44 +173,6 @@ export default () => {
       store.blockMap = getBlockMap(editorState);
       return editorState;
     },
-    onTab: e => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      let found = false;
-      const editorState = store.getEditorState(),
-        contentState = editorState.getCurrentContent(),
-
-        selection = editorState.getSelection(),
-        startKey = selection.getStartKey(),
-        endKey = selection.getEndKey(),
-
-        blockMap = editorState.getCurrentContent().getBlockMap(),
-        newBlockMap = blockMap.reduce((a, block) => {
-          const depth = block.getDepth(),
-            key = block.getKey();
-          if (key === startKey) {
-            found = true;
-          }
-          if (found) {
-            block = block.set("depth", Math.max(0, Math.min(4, depth + 1 * (e.shiftKey ? -1 : 1))))
-          }
-          if (key === endKey) {
-            found = false;
-          }
-          return a.set(block.getKey(), block);
-        }, blockMap);
-      store.setEditorState(
-        EditorState.forceSelection(
-          EditorState.push(
-            editorState,
-            contentState.merge({ blockMap: newBlockMap }),
-            'adjust-depth'
-          ),
-          selection
-        )
-      );
-    },
     blockStyleFn: block => {
       return block.getData().get("textAlign");
     },
@@ -223,6 +183,7 @@ export default () => {
     HeaderThreeButton: makeBlockStyleButton("header-three", <Header>H3</Header>, store),
     OrderedListButton: makeBlockStyleButton("ordered-list-item", OrderedList, store),
     UnorderedListButton: makeBlockStyleButton("unordered-list-item", UnorderedList, store),
+
     BoldButton: makeInlineStyleButton("BOLD", Bold, store),
     CodeButton: makeInlineStyleButton("CODE", Code, store),
     ItalicButton: makeInlineStyleButton("ITALIC", Italic, store),
@@ -230,6 +191,7 @@ export default () => {
     SubScriptButton: makeInlineStyleButton("SUBSCRIPT", SubScript, store),
     SuperScriptButton: makeInlineStyleButton("SUPERSCRIPT", SuperScript, store),
     UnderlineButton: makeInlineStyleButton("UNDERLINE", Underline, store),
+
     LeftAlignButton: makeAlignButton("text-left", TextLeft, store),
     CenterAlignButton: makeAlignButton("text-center", TextCenter, store),
     RightAlignButton: makeAlignButton("text-right", TextRight, store)

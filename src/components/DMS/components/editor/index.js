@@ -2,26 +2,24 @@ import React, { useState, useEffect } from "react"
 
 import { debounce, get } from "lodash"
 
-// import Immutable from "immutable"
-
 import {
   EditorState,
   convertToRaw,
   convertFromRaw,
-  DefaultDraftBlockRenderMap,
   // RichUtils
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
-import 'draft-js/dist/Draft.css';
 
-import Immutable from "draft-js/node_modules/immutable"
+import 'draft-js/dist/Draft.css';
+import './styles.css'
 
 import makeButtonPlugin from './buttons';
-import makeToolbarPlugin, { Separator } from "./toolbar"
+import makeToolbarPlugin from "./toolbar"
 import makeImagePlugin from "./image"
 import makeLinkItPlugin from "./linkify-it"
 import makeSuperSubScriptPlugin from "./super-sub-script"
 import makePositionablePlugin from "./positionable"
+import makeStuffPlugin from "./stuff"
 
 const buttonPlugin = makeButtonPlugin(),
   { BlockQuoteButton,
@@ -44,7 +42,7 @@ const buttonPlugin = makeButtonPlugin(),
   } = buttonPlugin;
 
 const toolbarPlugin = makeToolbarPlugin(),
-  { Toolbar } = toolbarPlugin;
+  { Toolbar, Separator } = toolbarPlugin;
 
 const positionablePlugin = makePositionablePlugin(),
   { positionable } = positionablePlugin;
@@ -58,42 +56,9 @@ const plugins = [
   imagePlugin,
   makeLinkItPlugin(),
   makeSuperSubScriptPlugin(),
-  positionablePlugin
+  positionablePlugin,
+  makeStuffPlugin()
 ];
-
-const styleMap = {
-  'STRIKETHROUGH': {
-    textDecoration: 'line-through',
-  }
-};
-
-// const OrderedListWrapper = ({ children, ...props }) =>
-//   <div className="my-list-wrapper">
-//     <ol { ...props } className="m-auto">
-//       { children }
-//     </ol>
-//   </div>
-// const UnorderedListWrapper = ({ children, ...props }) =>
-//   <div className="my-list-wrapper">
-//     <ul { ...props } className="m-auto">
-//       { children }
-//     </ul>
-//   </div>
-//
-const myBlockRenderMap = Immutable.Map({
-  // "ordered-list-item": {
-  //   element: "li",
-  //   wrapper: <OrderedListWrapper />
-  // },
-  // "unordered-list-item": {
-  //   element: "li",
-  //   wrapper: <UnorderedListWrapper />
-  // }
-  // "atomic": {
-  //   element: props => <figure { ...props } className="relative z-10">{ props.children }</figure>
-  // }
-})
-const blockRenderMap = DefaultDraftBlockRenderMap.merge(myBlockRenderMap);
 
 class MyEditor extends React.Component {
   editor = React.createRef();
@@ -144,12 +109,10 @@ class MyEditor extends React.Component {
         className={ `pt-14 relative bg-white rounded draft-js-editor clearfix` }
         onDrop={ e => this.dropIt(e) }>
         <Editor ref={ this.editor } placeholder="Type a value..."
-          customStyleMap={ styleMap }
           editorState={ editorState }
           onChange={ editorState => this.handleChange(editorState) }
           plugins={ plugins }
           readOnly={ false }
-          blockRenderMap={ blockRenderMap }
           spellCheck={ true }/>
 
         <Toolbar>

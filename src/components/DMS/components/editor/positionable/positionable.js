@@ -29,42 +29,43 @@ const BUTTONS = [
   </svg>
 ]
 
-export default Component =>
-  ({ ...props }) => {
-    const {
-      block, contentState, blockProps = {}
-    } = props;
-    const {
-      adjustPosition,
-      position,
-      hoverPosition = ""
-    } = blockProps;
-    const handleClick = (e, p) => {
-      e.preventDefault();
-      adjustPosition(block, contentState, p);
-    }
-    return (
-      <div className={ `${ POSITIONS[position] } relative z-10 my-2` }>
-        <div className="inline-block relative hoverable">
+export default store =>
+  Component =>
+    ({ ...props }) => {
+      const {
+        block, contentState, blockProps = {}
+      } = props;
+      const {
+        adjustPosition,
+        position,
+        hoverPosition = ""
+      } = blockProps;
+      const handleClick = (e, p) => {
+        e.preventDefault();
+        adjustPosition(block, contentState, p);
+      }
+      return (
+        <div className={ `${ POSITIONS[position] } relative z-10 my-2` } draggable>
+          <div className="inline-block relative hoverable">
 
-          <div className={ `absolute show-on-hover ${ hoverPosition } p-1 w-full` }>
-            <div className="w-full flex justify-center">
-              { BUTTONS.map((b, i) =>
-                  <button className={ `
-                      py-1 px-2 bg-gray-100 hover:bg-gray-300
-                      ${ position === i ? "bg-gray-300" : "" }
-                    ` }
-                    onClick={ e => handleClick(e, i) } key={ i }
-                    onMouseDown={ e => e.preventDefault() }>
-                    { BUTTONS[i] }
-                  </button>
-                )
-              }
+            <div className={ `absolute show-on-hover ${ hoverPosition } p-1 w-full` }>
+              <div className="w-full flex justify-center">
+                { BUTTONS.map((b, i) =>
+                    <button className={ `
+                        py-1 px-2 bg-gray-100 hover:bg-gray-300
+                        ${ position === i ? "bg-gray-300" : "" }
+                      ` }
+                      onClick={ e => handleClick(e, i) } key={ i }
+                      onMouseDown={ e => e.preventDefault() }>
+                      { BUTTONS[i] }
+                    </button>
+                  )
+                }
+              </div>
             </div>
-          </div>
 
-          <Component { ...props }/>
+            <Component { ...props }/>
+          </div>
         </div>
-      </div>
-    )
-  }
+      )
+    }
