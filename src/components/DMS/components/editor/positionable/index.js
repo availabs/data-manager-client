@@ -2,7 +2,7 @@ import React from "react"
 
 import { EditorState } from 'draft-js';
 
-import positionable from "./positionable"
+import makePositionable from "./positionable"
 
 export default () => {
   const store = {};
@@ -42,6 +42,6 @@ export default () => {
       }
       return null;
     },
-    positionable
+    positionable: makePositionable(store)
   }
 }

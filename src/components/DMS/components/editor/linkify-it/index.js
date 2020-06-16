@@ -8,13 +8,6 @@ const linkify = linkifyIt()
   .add("ftp", null)
   .set({ fuzzyIP: true });
 
-const strategy = (contentBlock, callback) => {
-  const text = contentBlock.getText(),
-    links = linkify.match(text);
-
-  links && links.forEach(({ index, lastIndex }) => callback(index, lastIndex));
-}
-
 const Link = ({ store, options, decoratedText, children, ...props }) => {
   const links = linkify.match(decoratedText),
     href = links && links.pop().url;
@@ -23,7 +16,7 @@ const Link = ({ store, options, decoratedText, children, ...props }) => {
     target = "_blank"
   } = options;
 
-  return store.getProps().readOnly ?
+  return store.getReadOnly() ?
     <a className="text-blue-500 underline cursor-pointer"
       href={ href } target={ target }>
       { children }
@@ -33,7 +26,7 @@ const Link = ({ store, options, decoratedText, children, ...props }) => {
       <a className="text-blue-500 underline cursor-pointer">
         { children }
       </a>
-      <div className="read-only-link-tooltip show-on-hover pb-1 px-2 bg-gray-200 absolute z-50 rounded"
+      <div className="read-only-link-tooltip show-on-hover show-on-bottom pb-1 px-2 bg-gray-200 absolute z-50 rounded"
         onClick={ e => e.stopPropagation() } contentEditable={ false }>
         <a className="text-blue-500 underline cursor-pointer"
           href={ href } target={ target }>
@@ -43,11 +36,18 @@ const Link = ({ store, options, decoratedText, children, ...props }) => {
     </div>
 }
 
+const strategy = (contentBlock, callback) => {
+  const text = contentBlock.getText(),
+    links = linkify.match(text);
+
+  links && links.forEach(({ index, lastIndex }) => callback(index, lastIndex));
+}
+
 export default (options = {}) => {
   const store = {};
   return {
-    initialize: ({ getProps }) => {
-      store.getProps = getProps;
+    initialize: ({ getReadOnly }) => {
+      store.getReadOnly = getReadOnly;
     },
     decorators: [
       { strategy,
