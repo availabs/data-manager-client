@@ -1,6 +1,6 @@
 import React from "react"
 
-const POSITIONS = ["flex", "flex float-left clear-right mr-2", "flex flex-row justify-center", "flex float-right clear-left ml-2"]
+const POSITIONS = ["flex", "flex float-left mr-2", "flex flex-row justify-center", "flex float-right ml-2"]
 
 const BUTTONS = [
   <svg viewBox="0 0 24 24"
@@ -45,8 +45,9 @@ export default store =>
         adjustPosition(block, contentState, p);
       }
       return (
-        <div className={ `${ POSITIONS[position] } relative z-10 my-2` } draggable>
-          <div className="inline-block relative hoverable">
+        <div className={ `${ POSITIONS[position] } relative z-10 my-2` }
+          onDrop={ e => (alert("??????"), e.preventDefault()) }>
+          <div className="inline-block relative hoverable pointer-events-auto">
 
             <div className={ `absolute show-on-hover ${ hoverPosition } p-1 w-full` }>
               <div className="w-full flex justify-center">

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { EditorState, AtomicBlockUtils } from 'draft-js';
+import { EditorState, AtomicBlockUtils, Modifier, SelectionState } from 'draft-js';
 
 export default (options = {}) => {
   const {
@@ -35,18 +35,32 @@ export default (options = {}) => {
       return null;
     },
     addImage: (src, editorState) => {
-      const contentState = editorState.getCurrentContent(),
-        newContentState = contentState.createEntity(
-          'IMAGE',
-          'IMMUTABLE',
-          { src }
-        ),
-        entityKey = newContentState.getLastCreatedEntityKey(),
+      const contentState = editorState.getCurrentContent()
+          .createEntity(
+            'IMAGE',
+            'IMMUTABLE',
+            { src }
+          ),
+        entityKey = contentState.getLastCreatedEntityKey(),
         newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, 'IMAGE-BLOCK');
-      return EditorState.forceSelection(
-        newEditorState,
-        newEditorState.getCurrentContent().getSelectionAfter()
-      );
+
+const selection = editorState.getSelection(),
+  startKey = selection.getStartKey();
+const test = Modifier.replaceWithFragment(
+  newEditorState.getCurrentContent(),
+  newEditorState.getCurrentContent().getSelectionBefore(),
+  newEditorState.getCurrentContent().getBlockMap().filter(b => b.getKey() !== startKey)
+)
+console.log("TEST:", test.getBlockMap(), newEditorState.getCurrentContent().getBlockMap(),
+  newEditorState.getCurrentContent().getBlockMap().filter(b => b.getKey() !== startKey)
+);
+
+      return newEditorState;
+
+      // return EditorState.forceSelection(
+      //   newEditorState,
+      //   newEditorState.getCurrentContent().getSelectionAfter()
+      // );
     }
   }
 }

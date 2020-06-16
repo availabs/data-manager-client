@@ -12,3 +12,36 @@
 .draft-js-editor .public-DraftEditor-content::-webkit-scrollbar-thumb:hover {
 
 }
+
+.read-only-link-tooltip {
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.draft-js-editor .text-center {
+  display: flex;
+  justify-content: center;
+}
+.draft-js-editor .text-left {
+  display: flex;
+  justify-content: flex-start;
+}
+.draft-js-editor .text-right {
+  display: flex;
+  justify-content: flex-end;
+}
+.draft-js-editor .text-center .public-DraftStyleDefault-ltr,
+.draft-js-editor .text-center .public-DraftStyleDefault-rtl {
+  display: inline-block;
+}
+
+.draft-js-editor .text-left .public-DraftStyleDefault-ltr,
+.draft-js-editor .text-left .public-DraftStyleDefault-rtl {
+  display: inline-block;
+}
+
+.draft-js-editor .text-right .public-DraftStyleDefault-ltr,
+.draft-js-editor .text-right .public-DraftStyleDefault-rtl {
+  display: inline-block;
+}

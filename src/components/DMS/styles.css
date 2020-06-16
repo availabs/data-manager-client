@@ -57,36 +57,3 @@
 .hoverable:hover .show-on-hover.show-on-top {
   bottom: 100%;
 }
-
-.read-only-link-tooltip {
-  top: 100%;
-  left: 50%;
-  transform: translate(-50%, 0);
-}
-
-.text-center {
-  display: flex;
-  justify-content: center;
-}
-.text-left {
-  display: flex;
-  justify-content: flex-start;
-}
-.text-right {
-  display: flex;
-  justify-content: flex-end;
-}
-.text-center .public-DraftStyleDefault-ltr,
-.text-center .public-DraftStyleDefault-rtl {
-  display: inline-block;
-}
-
-.text-left .public-DraftStyleDefault-ltr,
-.text-left .public-DraftStyleDefault-rtl {
-  display: inline-block;
-}
-
-.text-right .public-DraftStyleDefault-ltr,
-.text-right .public-DraftStyleDefault-rtl {
-  display: inline-block;
-}

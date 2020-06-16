@@ -26,6 +26,10 @@ const myBlockRenderMap = Immutable.Map({
   "code-block": {
     element: "pre",
     wrapper: <pre className="border font-momo py-2 px-3 rounded bg-gray-50 my-2"/>
+  },
+  "atomic": {
+    element: "figure",
+    wrapper: <div className="pointer-events-none"/>
   }
 })
 const blockRenderMap = DefaultDraftBlockRenderMap.merge(myBlockRenderMap);

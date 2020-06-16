@@ -248,7 +248,7 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
 
                 return useRouter && hasAuth && !disabled ?
                   (
-                    <tr { ...rest } className={ `${ className } cursor-pointer` }
+                    <tr { ...rest } className={ `hover:${ className } cursor-pointer` }
                       onClick={ e => (
                           e.stopPropagation(),
                           push({
@@ -260,7 +260,7 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
                       { children }
                     </tr>
                   ) : (
-                    <tr { ...rest } className={ `${ className } cursor-pointer` }
+                    <tr { ...rest } className={ `hover:${ className } cursor-pointer` }
                       onClick={ (!hasAuth || disabled) ? null :
                         e => (e.stopPropagation(),
                           Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))

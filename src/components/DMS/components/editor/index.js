@@ -61,9 +61,13 @@ const plugins = [
 ];
 
 class MyEditor extends React.Component {
+  static defaultProps = {
+    readOnly: false
+  }
   editor = React.createRef();
   state = {
-    editorState: EditorState.createEmpty()
+    editorState: EditorState.createEmpty(),
+    loading: false
   }
   componentDidMount() {
 //     if (window.localStorage) {
@@ -97,56 +101,70 @@ class MyEditor extends React.Component {
     const file = get(e, ["dataTransfer", "files", 0], null);
 
     if (file && /^image\/\w+$/.test(file.type)) {
-      this.setState({
-        editorState: addImage(URL.createObjectURL(file), this.state.editorState)
+      this.setState({ loading: true });
+      new Promise(resolve => {
+        setTimeout(resolve, 2000)
+      })
+      .then(() => {
+        this.setState({
+          editorState: addImage(URL.createObjectURL(file), this.state.editorState),
+          loading: false
+        });
       });
     }
   }
   render() {
-    const { editorState } = this.state;
+    const { readOnly } = this.props,
+      { editorState, loading } = this.state;
     return (
       <div id={ this.props.id }
-        className={ `pt-14 relative bg-white rounded draft-js-editor clearfix` }
+        className={ `${ readOnly ? "" : "pt-14" } relative bg-white rounded draft-js-editor clearfix` }
         onClick={ e => this.focus(e) }
         onDrop={ e => this.dropIt(e) }>
 
-        <div className="px-2 pb-1">
+        { !loading ? null :
+          <div className="absolute top-0 bottom-0 left-0 right-0 bg-black opacity-50 z-40 rounded"/>
+        }
+
+        <div className="px-2 pb-1 relative">
           <Editor ref={ this.editor } placeholder="Type a value..."
             editorState={ editorState }
             onChange={ editorState => this.handleChange(editorState) }
             plugins={ plugins }
-            readOnly={ false }
+            readOnly={ loading || this.props.readOnly }
             spellCheck={ true }/>
         </div>
 
-        <Toolbar>
-          <BoldButton />
-          <ItalicButton />
-          <StrikeThroughButton />
-          <UnderlineButton />
-          <SubScriptButton />
-          <SuperScriptButton />
-          <CodeButton />
+        { readOnly ? null :
+          <Toolbar>
+            <BoldButton />
+            <ItalicButton />
+            <StrikeThroughButton />
+            <UnderlineButton />
+            <SubScriptButton />
+            <SuperScriptButton />
+            <CodeButton />
 
-          <Separator />
+            <Separator />
 
-          <HeaderOneButton />
-          <HeaderTwoButton />
-          <HeaderThreeButton />
+            <HeaderOneButton />
+            <HeaderTwoButton />
+            <HeaderThreeButton />
 
-          <Separator />
+            <Separator />
 
-          <BlockQuoteButton />
-          <CodeBlockButton />
-          <OrderedListButton />
-          <UnorderedListButton />
+            <BlockQuoteButton />
+            <CodeBlockButton />
+            <OrderedListButton />
+            <UnorderedListButton />
 
-          <Separator />
+            <Separator />
 
-          <LeftAlignButton />
-          <CenterAlignButton />
-          <RightAlignButton />
-        </Toolbar>
+            <LeftAlignButton />
+            <CenterAlignButton />
+            <RightAlignButton />
+          </Toolbar>
+        }
 
       </div>
     );
