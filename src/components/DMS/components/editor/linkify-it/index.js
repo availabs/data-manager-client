@@ -1,0 +1,58 @@
+import React from "react"
+
+import linkifyIt from "linkify-it"
+import tlds from "tlds"
+
+const linkify = linkifyIt()
+  .tlds(tlds)
+  .add("ftp", null)
+  .set({ fuzzyIP: true });
+
+const strategy = (contentBlock, callback) => {
+  const text = contentBlock.getText(),
+    links = linkify.match(text);
+
+  links && links.forEach(({ index, lastIndex }) => callback(index, lastIndex));
+}
+
+const Link = ({ store, options, decoratedText, children, ...props }) => {
+  const links = linkify.match(decoratedText),
+    href = links && links.pop().url;
+
+  const {
+    target = "_blank"
+  } = options;
+
+  return store.getProps().readOnly ?
+    <a className="text-blue-500 underline cursor-pointer"
+      href={ href } target={ target }>
+      { children }
+    </a>
+  :
+    <div className="inline-block relative hoverable">
+      <a className="text-blue-500 underline cursor-pointer">
+        { children }
+      </a>
+      <div className="read-only-link-tooltip show-on-hover pb-1 px-2 bg-gray-200 absolute z-50 rounded"
+        onClick={ e => e.stopPropagation() } contentEditable={ false }>
+        <a className="text-blue-500 underline cursor-pointer"
+          href={ href } target={ target }>
+          { href }
+        </a>
+      </div>
+    </div>
+}
+
+export default (options = {}) => {
+  const store = {};
+  return {
+    initialize: ({ getProps }) => {
+      store.getProps = getProps;
+    },
+    decorators: [
+      { strategy,
+        component: props => <Link { ...props } store={ store } options={ options }/>
+      }
+    ]
+  }
+}

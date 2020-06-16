@@ -9,6 +9,8 @@ import get from "lodash.get"
 
 import { checkAuth } from "./utils"
 
+import "./styles.css"
+
 class DmsManager extends React.Component {
   static defaultProps = {
     showHome: true,
