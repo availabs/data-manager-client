@@ -4,13 +4,15 @@ import { DmsButton } from "../components/parts"
 
 import get from "lodash.get"
 
-import { prettyKey, mapDataToProps as doMapDataToProps } from "../utils"
+import { prettyKey, mapDataToProps as doMapDataToProps, getValue } from "../utils"
 
 const SEED_PROPS = () => ({});
 
 const ViewItem = ({ value, type }) =>
   type !== "img" ? <div>{ value }</div> :
-  <div className="h-64"><img src={ value } className="max-h-full"/></div>
+  <div>
+    <img src={ value } style={ { maxHeight: "16rem" } }/>
+  </div>
 
 const ViewRow = ({ name, children }) =>
   <div className="grid grid-cols-4 my-2">
@@ -32,29 +34,22 @@ export default (Component, options = {}) => {
     renderChildren() {
       const { seedProps = SEED_PROPS, ...props } = this.props;
       return React.Children.map(this.props.children, child =>
-        React.cloneElement(child,
-          { ...props,
-            ...child.props,
-            ...seedProps(props)
-          }
-        )
+        React.cloneElement(child, { ...props, ...seedProps(props) })
       )
     }
-    renderItem(path, item) {
+    renderItem({ value, key }, item) {
       let { format } = this.props,
-        key = path.split(".").pop(),
         attributes = get(format, "attributes", []),
         attribute = attributes.reduce((a, c) => c.key === key ? c: a, {}),
         name = attribute.name || prettyKey(key),
-        type = attribute.type,
-        value = get(item, path, null);
+        type = attribute.type;
 
       if (!value) return null;
 
       if (key === "updated_at") {
         value = (new Date(value)).toLocaleString();
       }
-      if (/^array:/.test(type)) {
+      else if (/-array$/.test(type)) {
         value = value.map((v, i) => <ViewItem key={ i } type={ type } value={ v }/>)
       }
       else {
@@ -62,42 +57,26 @@ export default (Component, options = {}) => {
       }
 
       return (
-        <ViewRow key={ path } name={ name }>
+        <ViewRow key={ key } name={ name }>
           { value }
         </ViewRow>
       );
     }
-    renderRow(path, item) {
-      const regex = /^(item|props):(.+)$/,
-        match = regex.exec(path);
+    renderRow(objectArg, sources) {
+      const {
+        value,
+        key,
+        source
+      } = objectArg;
 
-      if (!match) return null;
-
-      const [,, p] = match;
-
-      if (match[1] === "item") {
-        return this.renderItem(p, item);
+      if (source === "item") {
+        return this.renderItem(objectArg, sources.item);
       }
-
-      const value = get(this.props, p, null);
       return (
-        <ViewRow key={ p } name={ p }>
+        <ViewRow key={ key } name={ key }>
           { value }
         </ViewRow>
       );
-    }
-    getValue(path, item) {
-      const regex = /^(item|props):(.+)$/,
-        match = regex.exec(path);
-
-      if (!match) return null;
-
-      const [, from, p] = match;
-
-      if (from === "item") {
-        return get(item, p, null)
-      }
-      return get(this.props, p, null);
     }
     getActionGroups(actions, key) {
       const item = get(this, ["props", this.props.type], null);
@@ -124,19 +103,19 @@ export default (Component, options = {}) => {
 
       if (!item) return null;
 
-      const test = doMapDataToProps(mapDataToProps, item, this.props);
-console.log("TEST:", test);
-
-      const props = {};
+      const sources = { item, props: this.props },
+        props = {};
 
       for (const key in mapDataToProps) {
+        const path = mapDataToProps[key];
+
         if (typeof mapDataToProps[key] === "string") {
-          props[key] = this.getValue(mapDataToProps[key], item);
+          props[key] = getValue(path, sources);
         }
         else {
-          props[key] = mapDataToProps[key].map(path => {
-            return this.renderRow(path, item)
-          })
+          const directives = { preserveSource: true },
+            mapped = path.map(p => getValue(p, sources, directives));
+          props[key] = mapped.map(v => this.renderRow(v, sources));
         }
       }
 

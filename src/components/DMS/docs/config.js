@@ -63,13 +63,14 @@ export default ({
           options: {
             actions: [["dms:edit", "dms:delete"], ["dms:create"]],
             mapDataToProps: {
+              // $preserveKeys: true,
 // mapDataToProps is used by dms-view to map data items to wrapped component props
 // prop: [...attributes]
 // in this case, the dms-card is expecting title and body props.
               title: "item:data.title",
-              chapter: ["item:data.chapter"],
+              chapter: "item:data.chapter",
               body: "item:data.body",
-              footer: ["item:updated_at", "props:user.id"]
+              updated_at: "item:updated_at"
             }
           }
         },

@@ -7,6 +7,8 @@ import { useLocation, useHistory } from "react-router-dom"
 import { AuthContext, ButtonContext, RouterContext } from "../contexts"
 import { checkAuth } from "../utils"
 
+import { useTheme } from "components/avl-components/wrappers/with-theme"
+
 import get from "lodash.get"
 
 export const Input = ({ large, small, className, disabled, children, ...props }) =>
@@ -234,7 +236,9 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
 
     itemId = get(item, "id", null),
 
-    { action, seedProps, showConfirm, ...fromAction } = processAction(arg);
+    { action, seedProps, showConfirm, ...fromAction } = processAction(arg),
+
+    theme = useTheme();
 
   return (
     <AuthContext.Consumer>
@@ -248,7 +252,7 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
 
                 return useRouter && hasAuth && !disabled ?
                   (
-                    <tr { ...rest } className={ `hover:${ className } cursor-pointer` }
+                    <tr { ...rest } className={ `${ className } hover:${ theme.accent1 } cursor-pointer` }
                       onClick={ e => (
                           e.stopPropagation(),
                           push({
@@ -260,7 +264,7 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
                       { children }
                     </tr>
                   ) : (
-                    <tr { ...rest } className={ `hover:${ className } cursor-pointer` }
+                    <tr { ...rest } className={ `${ className } hover:${ theme.accent1 } cursor-pointer` }
                       onClick={ (!hasAuth || disabled) ? null :
                         e => (e.stopPropagation(),
                           Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))

@@ -100,9 +100,10 @@ const getCompare = arg => {
   }
 }
 
-const applyOp = (op, args, source) => {
+const applyOp = (op, args, source, func) => {
   switch (op) {
     case ">>>":
+      func(args[0]);
       return source.map(d => get(d, ...args, null));
     case "==>":
       return source.filter(d => getCompare(args[1])(get(d, args[0], null), args[2]))
@@ -127,35 +128,66 @@ const getArgs = (op, split) => {
       return [];
   }
 }
-const reduceSplit = (split, source) => {
+const reduceSplit = (split, source, func) => {
   if (!split.length) return source;
 
   const path = split.pop();
   if (OPS.includes(path)) {
     const args = getArgs(path, split).reverse();
-    return reduceSplit(split, applyOp(path, args, source));
+    return reduceSplit(split, applyOp(path, args, source, func), func);
   }
-  return reduceSplit(split, get(source, path, null));
+  func(path);
+  return reduceSplit(split, get(source, path, null), func);
 }
 
-const getValueFromPath = (path, sources, _default = null) => {
-  if (typeof path !== "string") return _default || path;
+const getValueFromPath = (pathArg, sources, directives = {}, _default = null) => {
+  if (typeof pathArg !== "string") return _default || pathArg;
 
-  const split = path.toString().split(new RegExp(`(${ OPS.join("|") })`))
+  const {
+    preserveKeys,
+    preservePath,
+    preserveSource
+  } = directives;
+
+  const REGEX = /^(item|props|self):(.+)$/;
+
+  let key = null, path = null, source = null;
+
+  const removeSource = p => p.replace(REGEX, (m, c1, c2) => c2),
+    setPreserve = d => {
+      key = removeSource(d).split(".").pop();
+      path = removeSource(d);
+      if (source) return;
+      source = d.replace(REGEX, (m, c1, c2) => c1);
+    }
+
+  const split = pathArg.toString().split(new RegExp(`(${ OPS.join("|") })`))
     .reduce((a, c) => {
-      const match = /^(item|props|self):(.+)$/.exec(c);
+      const match = REGEX.exec(c);
       if (match) {
         const [, from, p] = match,
           source = get(sources, from, null);
+        setPreserve(c);
         return [...a, get(source, p, null)];
       }
       return [...a, c];
     }, []).reverse();
 
-  return reduceSplit(split, split.pop());
+  const value = reduceSplit(split, split.pop(), setPreserve);
+  
+  if (preserveKeys) {
+    return { key, value };
+  }
+  else if (preservePath) {
+    return { key, path, value };
+  }
+  else if (preserveSource) {
+    return { key, path, source, value };
+  }
+  return value;
 }
 
-export const getValue = (arg, sources) => {
+export const getValue = (arg, sources, directives) => {
   if (!arg) return null;
 
   if (!sources.item) {
@@ -176,7 +208,7 @@ export const getValue = (arg, sources) => {
     interact = []
   } = arg;
 
-  let data = getValueFromPath(path, sources);
+  let data = getValueFromPath(path, sources, directives);
 
   if (type) {
     if (!Array.isArray(data)) {
@@ -200,10 +232,10 @@ export const getValue = (arg, sources) => {
 
     const args = ({
       data: data.map((d, i) => ({
-        key: getValueFromPath(key, { self: d, ...sources }, `key-${ i }`),
-        value: getValueFromPath(value, { self: d, ...sources }, d),
-        interact: interact.map(a => getValueFromPath(a, { self: d, ...sources })),
-        props: mapDataToProps(props, { self: d, ...sources })
+        key: getValueFromPath(key, { self: d, ...sources }, directives, `key-${ i }`),
+        value: getValueFromPath(value, { self: d, ...sources }, directives, d),
+        interact: interact.map(a => getValueFromPath(a, { self: d, ...sources }, directives)),
+        props: mapDataToProps(props, { self: d, ...sources }, directives)
       })),
       type
     })
@@ -212,34 +244,46 @@ export const getValue = (arg, sources) => {
   return data;
 }
 
-export const mapDataToProps = (map, sources = {}) => {
+export const mapDataToProps = (map, sources = {}, _directives = {}) => {
   if (!sources.item) {
     sources.item = get(sources, ["props", "item"], null);
+  }
+
+  const directiveKeys = Object.keys(map).filter(k => /^\$.+$/.test(k)),
+    directives = { ..._directives };
+  for (const k of directiveKeys) {
+    directives[k.slice(1)] = map[k];
+    delete map[k];
   }
 
   const mappedProps = {};
 
   for (const key in map) {
-    const path = map[key];
+    const path = map[key],
+      children = key === "children",
+      DIRECTIVES = children ? {} : directives;
 
     let savedChildren = [];
-    if (key === "children") {
+    if (children) {
       savedChildren = React.Children.toArray(get(sources, ["props", "children"], null));
     }
 
     let result;
     if (Array.isArray(path)) {
-      result = path.map(p => getValue(p, sources))
+      result = path.map(p => getValue(p, sources, DIRECTIVES));
     }
     else if (typeof path === "object") {
-      const args = path.args.map(arg => getValueFromPath(arg, sources));
+      const args = path.args.map(arg => getValueFromPath(arg, sources, DIRECTIVES));
       result = path.func(...args);
     }
+    else if (typeof path === "function") {
+      result = path(sources);
+    }
     else {
-      result = getValue(path, sources);
+      result = getValue(path, sources, DIRECTIVES);
     }
 
-    if (key === "children") {
+    if (children) {
       if (Array.isArray(result)) {
         result = [...result, ...savedChildren];
       }

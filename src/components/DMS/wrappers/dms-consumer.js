@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react"
 
 import { DmsContext } from "../contexts"
-import { mapDataToProps as getNewProps, getValue } from "../utils"
+import { mapDataToProps as doMapDataToProps, getValue } from "../utils"
 
 import get from "lodash.get"
 
@@ -17,9 +17,7 @@ const createElements = ({ data, ...rest }, interact) =>
 
 export default (Component, options = {}) => {
   const {
-    action,
-    mapDataToProps,
-    mapDataToComponents,
+    mapDataToProps = {},
     defaultAction
   } = options;
 
@@ -27,19 +25,18 @@ export default (Component, options = {}) => {
     const dmsProps = useContext(DmsContext),
       newProps = { ...props, ...dmsProps };
 
-    const [action, setAction] = useState(null);
+    let doDefaultAction = getValue(defaultAction, { props: newProps });
+
     useEffect(() => {
-      if (!action) {
-        let newAction = getValue(defaultAction, { props: newProps });
-        if (newAction) {
-          if (!Array.isArray(newAction)) {
-            newAction = [newAction];
-          }
-          dmsProps.interact(...newAction);
-          setAction(newAction);
+      if (doDefaultAction) {
+        if (Array.isArray(doDefaultAction)) {
+          dmsProps.interact(...doDefaultAction);
+        }
+        else {
+          dmsProps.interact(doDefaultAction);
         }
       }
-    })
+    }, [doDefaultAction]);
 
     const handleData = data => {
       if (Array.isArray(data)) {
@@ -51,7 +48,7 @@ export default (Component, options = {}) => {
       return data;
     }
 
-    const mapped = getNewProps(mapDataToProps, { props: newProps })
+    const mapped = doMapDataToProps(mapDataToProps, { props: newProps })
 
     for (const key in mapped) {
       const data = mapped[key];
