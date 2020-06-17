@@ -231,7 +231,7 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
   
   const itemId = get(item, "id", null),
 
-    { action, seedProps, showConfirm } = processAction(arg);
+    { action, seedProps, /*showConfirm*/ } = processAction(arg);
 
   return (
     <AuthContext.Consumer>

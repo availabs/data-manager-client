@@ -7,9 +7,9 @@ import get from "lodash.get"
 
 export default (Component, options = {}) => {
   const {
-    format,
+    // format,
     authRules,
-    buttonColors,
+    // buttonColors,
     setDefaultTo = false
   } = options;
 
@@ -29,7 +29,7 @@ export default (Component, options = {}) => {
       }
     }
     interact(id, dmsAction = "click") {
-      const item = this.props.dataItems.reduce((a, c) => c.id == id ? c : a, null),
+      const item = this.props.dataItems.reduce((a, c) => c.id === id ? c : a, null),
         hasAuth = checkAuth(authRules, dmsAction, this.props, item);
 
       if (hasAuth) {
