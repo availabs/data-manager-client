@@ -2,7 +2,7 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { AuthContext, ButtonContext } from "./contexts"
+import { AuthContext, ButtonContext, DmsContext } from "./contexts"
 import { DmsButton, Title } from "./components/parts"
 
 import { Header } from 'components/avl-components/components'
@@ -125,38 +125,45 @@ class DmsManager extends React.Component {
     );
   }
 
-  
+
 
   render() {
     const { dmsAction, id, props } = this.getTop(),
-      { authRules, user, buttonColors, showHome } = this.props;
+      { authRules, user, buttonColors, showHome, app, type, dataItems } = this.props;
 
-    console.log('dms manager theme', this.props)
     if(!this.props.format) {
       return <div> No Format </div>
     }
 
     let actions = []
     if(this.state.stack.length > 1) {
-      // this should always be the same as home ??? 
-      actions.push(<DmsButton action="dms:back"/>)
-    }                          
-    if ((this.state.stack.length > 1) && showHome ){
-       //actions.push({href:`/${this.props.location.pathname.split('/')[1]}`, name:'Home', type: 'button'})   
-       actions.push(<DmsButton action="dms:home"/>)     
+
+      actions.push(<DmsButton action="dms:back" key="back"/>)
     }
-    if( dmsAction === "list"){
-      //actions.push({href:`${this.props.location.pathname}/create`, name:'Create', type: 'buttonPrimary'})
-      actions.push(<DmsButton action="dms:create"/>)
-    }     
-                  
+    if ((this.state.stack.length > 1) && showHome ){
+       actions.push(<DmsButton action="dms:home" key="home"/>)
+    }
+    if( dmsAction === "list") {
+      actions.push(<DmsButton action="dms:create" key="create"/>)
+    }
+
+    const dmsProps = {
+      dmsAction,
+      app,
+      type,
+      dataItems,
+      item: dataItems.reduce((a, c) => c.id === id ? c : a, null)
+    }
+
     return (
+      <DmsContext.Provider value={ dmsProps }>
         <AuthContext.Provider value={ { authRules, user } }>
           <ButtonContext.Provider value={ { buttonColors, interact: this.interact } }>
-            <Header title= { this.props.title || `${ this.props.app } Manager` } theme={this.props.theme} actions={actions}/>
+            <Header title= { this.props.title || `${ this.props.app } Manager` } actions={ actions }/>
             <main>{ this.renderChildren(dmsAction, id, props) }</main>
           </ButtonContext.Provider>
         </AuthContext.Provider>
+      </DmsContext.Provider>
     )
   }
 }

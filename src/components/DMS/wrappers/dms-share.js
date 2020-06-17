@@ -2,7 +2,7 @@ import React from "react"
 
 import get from "lodash.get"
 
-import { mapDataToProps as doIt } from "../utils"
+import { mapDataToProps as doMapDataToProps } from "../utils"
 
 export default (Component, options = {}) => {
   const {
@@ -10,7 +10,7 @@ export default (Component, options = {}) => {
     propsToShare = {}
   } = options;
   return ({ children, ...props }) => {
-    let toShare = doIt(mapDataToProps, { props });
+    let toShare = doMapDataToProps(mapDataToProps, { props });
     if (typeof propsToShare === "string") {
       const split = propsToShare.split(".");
       toShare[split.pop()] = get(props, propsToShare, propsToShare);

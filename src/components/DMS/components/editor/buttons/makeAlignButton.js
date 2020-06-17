@@ -13,21 +13,26 @@ export default (buttonType, store) =>
     } = store;
     const editorState = getEditorState();
 
-    const isActive = () => {
-      const data = editorState
-        .getCurrentContent()
+    const getStartData = contentState =>
+      contentState
         .getBlockForKey(editorState.getSelection().getStartKey())
-        .getData();
+        .getData()
+
+    const isActive = () => {
+      const data = getStartData(editorState.getCurrentContent());
       return data.get("textAlign") === buttonType;
     }
+
     const click = e => {
       e.preventDefault();
       const contentState = editorState.getCurrentContent(),
         selectionState = editorState.getSelection(),
+        blockData = getStartData(contentState),
+
         newContentState = Modifier.setBlockData(
           contentState,
           selectionState,
-          isActive() ? {} : { textAlign: buttonType }
+          isActive() ? blockData.delete("textAlign") : blockData.set("textAlign", buttonType)
         );
 
       setEditorState(

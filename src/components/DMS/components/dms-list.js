@@ -38,7 +38,7 @@ const DmsList = ({ ...props }) => {
 
   return !props.dataItems.length ? null : (
     <div className={ props.className }>
-      { props.title ? <Title>{ props.title }</Title> : null } Custom
+      { props.title ? <Title>{ props.title }</Title> : null }
       <table className="w-full text-left">
         <thead>
           <tr>
@@ -54,7 +54,7 @@ const DmsList = ({ ...props }) => {
         <tbody>
           { dataItems.sort(makeSort())
               .map(d =>
-                <DmsListRow key={ d.id } className={ props.theme.contentBgDarker1 } action="dms:view" item={ d }>
+                <DmsListRow key={ d.id } action="dms:view" item={ d }>
                   { attributes.map(a =>
                       <td key={ a } className="py-1 px-3">
                         { d.data[a] }

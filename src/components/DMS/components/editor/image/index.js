@@ -46,8 +46,8 @@ export default (options = {}) => {
 
       const newContentState = newEditorState.getCurrentContent();
 
-      const startKey = newContentState.getSelectionBefore().getStartKey(),
-        block = newContentState.getBlockForKey(startKey);
+      const beforeKey = newContentState.getSelectionBefore().getStartKey(),
+        block = newContentState.getBlockForKey(beforeKey);
 
       if (block.getLength() > 0) return newEditorState;
 
@@ -57,7 +57,7 @@ export default (options = {}) => {
         currentContent =  Modifier.replaceWithFragment(
           newContentState,
           selectAll,
-          newContentState.getBlockMap().filter(b => b.getKey() !== startKey)
+          newContentState.getBlockMap().filter(b => b.getKey() !== beforeKey)
         ),
         anchorKey = currentContent.getLastBlock().getKey();
 

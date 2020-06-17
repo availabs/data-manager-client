@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react"
 
+import { ScalableLoading } from "components/avl-components/components/Loading/LoadingPage"
+
 import { throttle, get } from "lodash"
 
 import {
@@ -62,7 +64,6 @@ const plugins = [
 
 class MyEditor extends React.Component {
   static defaultProps = {
-    readOnly: false
   }
   editor = React.createRef();
   state = {
@@ -114,16 +115,21 @@ class MyEditor extends React.Component {
     }
   }
   render() {
-    const { readOnly } = this.props,
-      { editorState, loading } = this.state;
+    const { editorState, loading } = this.state;
     return (
       <div id={ this.props.id }
-        className={ `${ readOnly ? "" : "pt-14" } relative bg-white rounded draft-js-editor clearfix` }
+        className={ `pt-14 relative bg-white rounded draft-js-editor clearfix` }
         onClick={ e => this.focus(e) }
         onDrop={ e => this.dropIt(e) }>
 
         { !loading ? null :
-          <div className="absolute top-0 bottom-0 left-0 right-0 bg-black opacity-50 z-40 rounded"/>
+          <div className={ `
+            absolute top-0 bottom-0 left-0 right-0
+            bg-black opacity-50 z-30 rounded
+            flex items-center justify-center
+          ` }>
+            <ScalableLoading />
+          </div>
         }
 
         <div className="px-2 pb-1 relative">
@@ -131,40 +137,38 @@ class MyEditor extends React.Component {
             editorState={ editorState }
             onChange={ editorState => this.handleChange(editorState) }
             plugins={ plugins }
-            readOnly={ loading || this.props.readOnly }
+            readOnly={ loading }
             spellCheck={ true }/>
         </div>
 
-        { readOnly ? null :
-          <Toolbar>
-            <BoldButton />
-            <ItalicButton />
-            <StrikeThroughButton />
-            <UnderlineButton />
-            <SubScriptButton />
-            <SuperScriptButton />
-            <CodeButton />
+        <Toolbar>
+          <BoldButton />
+          <ItalicButton />
+          <StrikeThroughButton />
+          <UnderlineButton />
+          <SubScriptButton />
+          <SuperScriptButton />
+          <CodeButton />
 
-            <Separator />
+          <Separator />
 
-            <HeaderOneButton />
-            <HeaderTwoButton />
-            <HeaderThreeButton />
+          <HeaderOneButton />
+          <HeaderTwoButton />
+          <HeaderThreeButton />
 
-            <Separator />
+          <Separator />
 
-            <BlockQuoteButton />
-            <CodeBlockButton />
-            <OrderedListButton />
-            <UnorderedListButton />
+          <BlockQuoteButton />
+          <CodeBlockButton />
+          <OrderedListButton />
+          <UnorderedListButton />
 
-            <Separator />
+          <Separator />
 
-            <LeftAlignButton />
-            <CenterAlignButton />
-            <RightAlignButton />
-          </Toolbar>
-        }
+          <LeftAlignButton />
+          <CenterAlignButton />
+          <RightAlignButton />
+        </Toolbar>
 
       </div>
     );

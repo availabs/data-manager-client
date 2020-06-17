@@ -2,6 +2,8 @@ import React from "react"
 
 import { DmsButton, Title, DmsListRow } from "./parts"
 
+import { Content, Table } from 'components/avl-components/components'
+
 import get from "lodash.get"
 
 import { prettyKey, makeFilter } from "../utils"
@@ -35,46 +37,49 @@ const DmsList = ({ ...props }) => {
       return (av < bv ? -1 : bv < av ? 1 : 0) * dir;
     }
   }
+  let columns = [
+    ...attributes.map(d => {return {accessor: d, Header: d}}),
+    ...actions
+      .map(a => { 
+        return {
+          accessor: get(a, "action", a), 
+          Header: get(a, "action", a), 
+          Cell: props =>  {
+            console.log('props', props)
+            return <DmsButton action={ props.value } item={ props.row } small/>
+          }
+        }
+      })
+  ]
+
+  let data = dataItems
+    .map(d => {
+      return {
+        ...d.data,
+        ...actions
+          .reduce((o,a) => {
+            o[get(a, "action", a)] = get(a, "label", a)
+            return o
+          },{})
+      }
+    })
 
   return !props.dataItems.length ? null : (
-    <div className={ props.className }>
+    <Content>
       { props.title ? <Title>{ props.title }</Title> : null }
-      <table className="w-full text-left">
-        <thead>
-          <tr>
-            { attributes.map(a =>
-                <th key={ a } className="px-3 border-b-2">
-                  { getAttributeName(a) }
-                </th>
-              )
-            }
-            { actions.length ? <th className="border-b-2" colSpan={ actions.length }/> : null }
-          </tr>
-        </thead>
-        <tbody>
-          { dataItems.sort(makeSort())
-              .map(d =>
-                <DmsListRow key={ d.id } className={ props.theme.contentBgDarker1 } action="dms:view" item={ d }>
-                  { attributes.map(a =>
-                      <td key={ a } className="py-1 px-3">
-                        { d.data[a] }
-                      </td>
-                    )
-                  }
-                  { actions.map(a =>
-                      <td key={ get(a, "action", a) } className="text-right p-1">
-                        <div className="flex items-center justify-end">
-                          <DmsButton action={ a } item={ d } small/>
-                        </div>
-                      </td>
-                    )
-                  }
-                </DmsListRow>
-              )
-          }
-        </tbody>
-      </table>
-    </div>
+      {/*<Title>Columns</Title>
+      {JSON.stringify(columns)}
+
+      <Title>dataItems</Title>
+      {JSON.stringify(data)}
+
+      <Title>actions</Title>
+      {JSON.stringify(actions)}*/}
+      <Table 
+        columns={columns} 
+        data={data}
+      />
+    </Content>
   )
 }
 DmsList.defaultProps = {

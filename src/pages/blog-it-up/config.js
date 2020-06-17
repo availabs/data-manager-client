@@ -8,13 +8,11 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-provider",
+    // "dms-provider",
     "show-loading",
     "dms-router",
     "dms-falcor",
-    "with-auth",
-    "with-theme",
-
+    "with-auth"
   ],
   props: {
     format: BLOG_POST,
@@ -78,14 +76,12 @@ export default ({
                 "item:data.body",
                 "item:data.tags",
                 "item:data.image",
-                "item:updated_at",
-                "props:user.id"
+                "item:updated_at"
               ]
             },
             actions: ["dms:reply"]
           }
-        },
-        "with-auth"
+        }
       ],
       children: [
         { type: "dms-list",
@@ -94,15 +90,18 @@ export default ({
             className: "mt-5",
             title: "Replies"
           },
-          wrappers: [{
-            type: "dms-falcor",
-            options: {
-              filter: {
-                args: ["self:data.replyTo", "props:blog-post.id"],
-                comparator: (arg1, arg2) => +arg1 === +arg2
+          wrappers: [
+            "with-theme",
+            {
+              type: "dms-falcor",
+              options: {
+                filter: {
+                  args: ["self:data.replyTo", "props:blog-post.id"],
+                  comparator: (arg1, arg2) => +arg1 === +arg2
+                }
               }
             }
-          }]
+          ]
         }
       ]
     },

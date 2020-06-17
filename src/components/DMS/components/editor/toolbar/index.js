@@ -12,7 +12,7 @@ export default (options = {}) => {
   const store = {};
 
   const Toolbar = ({ children }) =>
-    <div className={ `absolute ${ position }-0 left-0 w-full p-2` }>
+    <div className={ `absolute ${ position }-0 left-0 w-full p-2 z-10` }>
       <div className={ `flex flex-${ direction } p-1 shadow-md rounded bg-gray-100 w-full` }>
         { children }
       </div>
