@@ -1,10 +1,9 @@
 import React from "react"
-import { withRouter } from "react-router";
 
 import DmsComponents from "./components"
 
 import { AuthContext, ButtonContext } from "./contexts"
-// import { DmsButton, Title } from "./components/parts"
+import { DmsButton, Title } from "./components/parts"
 
 import { Header } from 'components/avl-components/components'
 
@@ -126,9 +125,7 @@ class DmsManager extends React.Component {
     );
   }
 
-  compareActions(action1 = "", action2 = "") {
-    return action1.replace("dms:", "") === action2.replace("dms:", "");
-  }
+  
 
   render() {
     const { dmsAction, id, props } = this.getTop(),
@@ -145,10 +142,12 @@ class DmsManager extends React.Component {
       // actions.push(<DmsButton action="dms:back"/>)
     }                          
     if ((this.state.stack.length > 1) && showHome ){
-       actions.push({href:`/${this.props.location.pathname.split('/')[1]}`, name:'Home', type: 'button'})        
+       //actions.push({href:`/${this.props.location.pathname.split('/')[1]}`, name:'Home', type: 'button'})   
+       actions.push(<DmsButton action="dms:home"/>)     
     }
     if( dmsAction === "list"){
-     actions.push({href:`${this.props.location.pathname}/create`, name:'Create', type: 'buttonPrimary'})
+      //actions.push({href:`${this.props.location.pathname}/create`, name:'Create', type: 'buttonPrimary'})
+      actions.push(<DmsButton action="dms:create"/>)
     }     
                   
     return (
@@ -167,5 +166,5 @@ const NoAuth = () => <div large className="p-5">You do not have authorization fo
 
 export default {
   ...DmsComponents,
-  "dms-manager": withRouter(DmsManager)
+  "dms-manager": DmsManager
 }
