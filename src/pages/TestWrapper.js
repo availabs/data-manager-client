@@ -22,7 +22,7 @@ const SideBarItem = ({ children, active, level, ...props }) =>
   <li { ...props } style={ { marginLeft: `${ level * 3 / 4 }rem` } }
     className={ `
       px-5 cursor-pointer border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-200 rounded
-      ${ active ? "bg-gray-200" : "" }
+      ${ active ? "bg-gray-300" : "" }
     ` }>
     { children }
   </li>
@@ -61,7 +61,7 @@ export default {
         wrappers: [
           { type: "dms-consumer",
             options: {
-              defaultAction: "props:dataItems-->data.chapter==0->id", // --> ararray reduce
+              interactOnMount: "props:dataItems-->data.chapter==0->id", // --> ararray reduce
               mapDataToProps: {
                 children: [ // children will be merged with config children
                   { path: "props:dataItems", // since dataItems is an Array

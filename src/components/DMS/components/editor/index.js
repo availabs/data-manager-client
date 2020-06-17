@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 
 import { ScalableLoading } from "components/avl-components/components/Loading/LoadingPage"
 
@@ -6,8 +6,8 @@ import { throttle, get } from "lodash"
 
 import {
   EditorState,
-  convertToRaw,
-  convertFromRaw,
+  // convertToRaw,
+  // convertFromRaw,
   // RichUtils
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';

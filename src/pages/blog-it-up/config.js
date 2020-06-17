@@ -8,9 +8,9 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    // "dms-provider",
-    "show-loading",
+    "dms-provider",
     "dms-router",
+    "show-loading",
     "dms-falcor",
     "with-auth"
   ],
