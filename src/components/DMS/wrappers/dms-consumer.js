@@ -23,6 +23,7 @@ export default (Component, options = {}) => {
 
   return ({ ...props }) => {
     const dmsProps = useContext(DmsContext),
+      { interact } = dmsProps,
       newProps = { ...props, ...dmsProps };
 
     let defaultAction = getValue(interactOnMount, { props: newProps });
@@ -30,13 +31,13 @@ export default (Component, options = {}) => {
     useEffect(() => {
       if (defaultAction) {
         if (Array.isArray(defaultAction)) {
-          dmsProps.interact(...defaultAction);
+          interact(...defaultAction);
         }
         else {
-          dmsProps.interact(defaultAction);
+          interact(defaultAction);
         }
       }
-    }, [dmsProps, defaultAction]);
+    }, [interact, defaultAction]);
 
     const handleData = data => {
       if (Array.isArray(data)) {

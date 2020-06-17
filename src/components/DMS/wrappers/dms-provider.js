@@ -47,7 +47,7 @@ export default (Component, options = {}) => {
     componentDidMount() {
       const { action, id } = get(this.props, "params", {});
       if (action) {
-        this.pushAction(action, id, null);
+        this.interact(action, id, null);
       }
     }
     componentDidUpdate() {
@@ -113,7 +113,8 @@ export default (Component, options = {}) => {
         app,
         type,
         dataItems,
-        top: this.getTop(),
+        top,
+        [type]: top.item,
         ...top
       }
     }
