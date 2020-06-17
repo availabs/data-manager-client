@@ -75,6 +75,7 @@ class DmsManager extends React.Component {
       return <div> No Format </div>
     }
 
+
     const actions = [];
     if (stack.length > 1) {
       // actions.push(<DmsButton action="dms:back" key="back"/>)
