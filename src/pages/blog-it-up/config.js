@@ -8,13 +8,11 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-provider",
+    // "dms-provider",
     "show-loading",
     "dms-router",
     "dms-falcor",
-    "with-auth",
-    "with-theme",
-
+    "with-auth"
   ],
   props: {
     format: BLOG_POST,

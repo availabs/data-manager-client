@@ -1,15 +1,15 @@
 import React from "react"
 
-import { AuthContext, DmsContext } from "../contexts"
+import { AuthContext, DmsContext, ButtonContext } from "../contexts"
 import { checkAuth } from "../utils"
 
 import get from "lodash.get"
 
 export default (Component, options = {}) => {
   const {
-    format,
+    // format,
     authRules,
-    buttonColors,
+    // buttonColors,
     setDefaultTo = false
   } = options;
 
@@ -29,7 +29,7 @@ export default (Component, options = {}) => {
       }
     }
     interact(id, dmsAction = "click") {
-      const item = this.props.dataItems.reduce((a, c) => c.id == id ? c : a, null),
+      const item = this.props.dataItems.reduce((a, c) => c.id === id ? c : a, null),
         hasAuth = checkAuth(authRules, dmsAction, this.props, item);
 
       if (hasAuth) {
@@ -48,10 +48,13 @@ export default (Component, options = {}) => {
       }
     }
     render() {
+      const { authRules, user } = this.props;
       return (
         <DmsContext.Provider value={ this.getDmsProps() }>
-          <AuthContext.Provider value={ { authRules, user: this.props.user } }>
-            <Component { ...this.state } { ...this.props } interact={ this.interact }/>
+          <AuthContext.Provider value={ { authRules, user } }>
+            <ButtonContext.Provider value={ { interact: this.interact } }>
+              <Component { ...this.state } { ...this.props } interact={ this.interact }/>
+            </ButtonContext.Provider>
           </AuthContext.Provider>
         </DmsContext.Provider>
       )
