@@ -66,7 +66,8 @@ export const login = ({ email, password }) => dispatch =>
       } else {
         dispatch(receiveAuthResponse(res.user));
       }
-    });
+    })
+    .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , {type: 'LOGIN ERROR'})) );
 
 export const auth = (token = null) => dispatch => {
   token = token || getUserToken();
@@ -88,7 +89,9 @@ export const auth = (token = null) => dispatch => {
         else {
           dispatch(receiveAuthResponse(res.user));
         }
-      });
+      })
+      .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , {type: 'LOGIN ERROR'})) );
+      ;
   } else {
     return dispatch({ type: AUTH_FAILURE });
   }

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from "react"
 import { DmsContext } from "../contexts"
 import { mapDataToProps as getNewProps, getValue } from "../utils"
 
-import get from "lodash.get"
+// import get from "lodash.get"
 
 const createElements = ({ data, ...rest }, interact) =>
   data.map((d, i) =>
@@ -17,9 +17,9 @@ const createElements = ({ data, ...rest }, interact) =>
 
 export default (Component, options = {}) => {
   const {
-    action,
+    // action,
     mapDataToProps,
-    mapDataToComponents,
+    // mapDataToComponents,
     defaultAction
   } = options;
 

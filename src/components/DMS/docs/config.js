@@ -11,7 +11,8 @@ export default ({
     "dms-router",
     "show-loading", // receives loading prop
     "dms-falcor", // generates loading prop and passes to children
-    "with-auth"
+    "with-auth",
+    "with-theme"
   ],
   props: {
     format: DMS_DOCS,

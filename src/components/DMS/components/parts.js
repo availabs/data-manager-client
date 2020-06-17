@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import ReactDOM from "react-dom"
 
 import { Link } from "react-router-dom"
 import { useLocation, useHistory } from "react-router-dom"
@@ -207,7 +206,10 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
       <div className="btn-group-horizontal">
         <RenderButton waiting={ waiting }/>
         <ActionButton { ...rest } action="cancel"
-          onClick={ e => (e.stopPropagation(), setOpen(false)) }/>
+          onClick={ e => {
+            e.stopPropagation(); 
+            setOpen(false)
+            }}/>
       </div>
     )
   }
@@ -226,11 +228,10 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
   let { pathname, state } = useLocation(),
     { push } = useHistory();
   state = state || [];
-  const length = state.length,
+  
+  const itemId = get(item, "id", null),
 
-    itemId = get(item, "id", null),
-
-    { action, seedProps, showConfirm, ...fromAction } = processAction(arg);
+    { action, seedProps, showConfirm } = processAction(arg);
 
   return (
     <AuthContext.Consumer>
@@ -245,23 +246,24 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
                 return useRouter && hasAuth && !disabled ?
                   (
                     <tr { ...rest } className={ `${ className } cursor-pointer` }
-                      onClick={ e => (
-                          e.stopPropagation(),
+                      onClick={ e => {
+                          e.stopPropagation()
                           push({
                             pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
                             state: [...state, pathname]
                           })
-                        )
+                        }
                       }>
                       { children }
                     </tr>
                   ) : (
                     <tr { ...rest } className={ `${ className } cursor-pointer` }
                       onClick={ (!hasAuth || disabled) ? null :
-                        e => (e.stopPropagation(),
+                        e => {
+                          e.stopPropagation()
                           Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
                             .then(() => /^api:/.test(action) && interact("dms:back"))
-                        )
+                        }
                       }>
                       { children }
                     </tr>
