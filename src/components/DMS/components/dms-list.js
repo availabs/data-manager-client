@@ -48,7 +48,7 @@ const DmsList = ({ ...props }) => {
                 </th>
               )
             }
-            { actions.length ? <th className="border-b-2" colSpan={ span }/> : null }
+            { actions.length ? <th className="border-b-2" colSpan={ actions.length }/> : null }
           </tr>
         </thead>
         <tbody>

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { EditorState, AtomicBlockUtils } from 'draft-js';
+import { EditorState, AtomicBlockUtils, Modifier, SelectionState } from 'draft-js';
 
 export default (options = {}) => {
   const {
@@ -35,18 +35,39 @@ export default (options = {}) => {
       return null;
     },
     addImage: (src, editorState) => {
-      const contentState = editorState.getCurrentContent(),
-        newContentState = contentState.createEntity(
-          'IMAGE',
-          'IMMUTABLE',
-          { src }
-        ),
-        entityKey = newContentState.getLastCreatedEntityKey(),
+      const contentState = editorState.getCurrentContent()
+          .createEntity(
+            'IMAGE',
+            'IMMUTABLE',
+            { src }
+          ),
+        entityKey = contentState.getLastCreatedEntityKey(),
         newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, 'IMAGE-BLOCK');
+
+      const newContentState = newEditorState.getCurrentContent();
+
+      const startKey = newContentState.getSelectionBefore().getStartKey(),
+        block = newContentState.getBlockForKey(startKey);
+
+      if (block.getLength() > 0) return newEditorState;
+
+      const firstBlock = newContentState.getFirstBlock(),
+        lastBlock = newContentState.getLastBlock(),
+        selectAll = new SelectionState({ anchorKey: firstBlock.getKey(), focusKey: lastBlock.getKey() }),
+        currentContent =  Modifier.replaceWithFragment(
+          newContentState,
+          selectAll,
+          newContentState.getBlockMap().filter(b => b.getKey() !== startKey)
+        ),
+        anchorKey = currentContent.getLastBlock().getKey();
+
       return EditorState.forceSelection(
-        newEditorState,
-        newEditorState.getCurrentContent().getSelectionAfter()
-      );
+        EditorState.set(
+          newEditorState,
+          { currentContent }
+        ),
+        new SelectionState({ anchorKey, focusKey: anchorKey })
+      )
     }
   }
 }

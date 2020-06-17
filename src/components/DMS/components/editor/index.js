@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 
-import { debounce, get } from "lodash"
+import { throttle, get } from "lodash"
 
 import {
   EditorState,
@@ -61,9 +61,13 @@ const plugins = [
 ];
 
 class MyEditor extends React.Component {
+  static defaultProps = {
+    readOnly: false
+  }
   editor = React.createRef();
   state = {
-    editorState: EditorState.createEmpty()
+    editorState: EditorState.createEmpty(),
+    loading: false
   }
   componentDidMount() {
 //     if (window.localStorage) {
@@ -76,12 +80,12 @@ class MyEditor extends React.Component {
 //     }
   }
   _saveToLocalStorage() {
-    if (window.localStorage) {
-      const saved = convertToRaw(this.state.editorState.getCurrentContent());
-      window.localStorage.setItem("saved-editor-state", JSON.stringify(saved));
-    }
+    // if (window.localStorage) {
+    //   const saved = convertToRaw(this.state.editorState.getCurrentContent());
+    //   window.localStorage.setItem("saved-editor-state", JSON.stringify(saved));
+    // }
   }
-  saveToLocalStorage = debounce(this._saveToLocalStorage, 250);
+  saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
 
   focus(e) {
     e.preventDefault();
@@ -89,7 +93,7 @@ class MyEditor extends React.Component {
   }
   handleChange(editorState) {
     this.setState(state => ({ editorState }));
-    // this.saveToLocalStorage()
+    this.saveToLocalStorage()
   }
   dropIt(e) {
     e.preventDefault();
@@ -97,52 +101,70 @@ class MyEditor extends React.Component {
     const file = get(e, ["dataTransfer", "files", 0], null);
 
     if (file && /^image\/\w+$/.test(file.type)) {
-      this.setState({
-        editorState: addImage(URL.createObjectURL(file), this.state.editorState)
+      this.setState({ loading: true });
+      new Promise(resolve => {
+        setTimeout(resolve, 2000)
+      })
+      .then(() => {
+        this.setState({
+          editorState: addImage(URL.createObjectURL(file), this.state.editorState),
+          loading: false
+        });
       });
     }
   }
   render() {
-    const { editorState } = this.state;
+    const { readOnly } = this.props,
+      { editorState, loading } = this.state;
     return (
-      <div id={ this.props.id } onClick={ e => this.focus(e) }
-        className={ `pt-14 relative bg-white rounded draft-js-editor clearfix` }
+      <div id={ this.props.id }
+        className={ `${ readOnly ? "" : "pt-14" } relative bg-white rounded draft-js-editor clearfix` }
+        onClick={ e => this.focus(e) }
         onDrop={ e => this.dropIt(e) }>
-        <Editor ref={ this.editor } placeholder="Type a value..."
-          editorState={ editorState }
-          onChange={ editorState => this.handleChange(editorState) }
-          plugins={ plugins }
-          readOnly={ false }
-          spellCheck={ true }/>
 
-        <Toolbar>
-          <BoldButton />
-          <ItalicButton />
-          <StrikeThroughButton />
-          <UnderlineButton />
-          <SubScriptButton />
-          <SuperScriptButton />
-          <CodeButton />
+        { !loading ? null :
+          <div className="absolute top-0 bottom-0 left-0 right-0 bg-black opacity-50 z-40 rounded"/>
+        }
 
-          <Separator />
+        <div className="px-2 pb-1 relative">
+          <Editor ref={ this.editor } placeholder="Type a value..."
+            editorState={ editorState }
+            onChange={ editorState => this.handleChange(editorState) }
+            plugins={ plugins }
+            readOnly={ loading || this.props.readOnly }
+            spellCheck={ true }/>
+        </div>
 
-          <HeaderOneButton />
-          <HeaderTwoButton />
-          <HeaderThreeButton />
+        { readOnly ? null :
+          <Toolbar>
+            <BoldButton />
+            <ItalicButton />
+            <StrikeThroughButton />
+            <UnderlineButton />
+            <SubScriptButton />
+            <SuperScriptButton />
+            <CodeButton />
 
-          <Separator />
+            <Separator />
 
-          <BlockQuoteButton />
-          <CodeBlockButton />
-          <OrderedListButton />
-          <UnorderedListButton />
+            <HeaderOneButton />
+            <HeaderTwoButton />
+            <HeaderThreeButton />
 
-          <Separator />
+            <Separator />
 
-          <LeftAlignButton />
-          <CenterAlignButton />
-          <RightAlignButton />
-        </Toolbar>
+            <BlockQuoteButton />
+            <CodeBlockButton />
+            <OrderedListButton />
+            <UnorderedListButton />
+
+            <Separator />
+
+            <LeftAlignButton />
+            <CenterAlignButton />
+            <RightAlignButton />
+          </Toolbar>
+        }
 
       </div>
     );

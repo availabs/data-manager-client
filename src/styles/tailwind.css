@@ -595,7 +595,7 @@ video {
 DRAFT JS
 */
 
-.draft-js-editor h1 {
+.draft-js-editor .public-DraftEditor-content h1 {
   font-size: 1.875rem;
   font-weight: 800;
 }
@@ -623,12 +623,6 @@ DRAFT JS
 .draft-js-editor .public-DraftEditor-content h6 {
   font-size: 0.75rem;
   font-weight: 500;
-}
-
-.draft-js-editor .DraftEditor-root {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  padding-bottom: 0.25rem;
 }
 
 .container {

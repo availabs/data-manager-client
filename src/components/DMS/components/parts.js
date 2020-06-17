@@ -219,7 +219,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
   if (showConfirm) {
     return openConfirm ? <Opened setOpen={ setOpen }/> :
       <ActionButton { ...rest } action={ action } { ...fromAction }
-        onClick={ e => (e.stopPropagation(), setOpen(true)) }/>
+        onClick={ e => {e.stopPropagation(); setOpen(true);} }/>
   }
   return <RenderButton />;
 }
@@ -257,7 +257,7 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
                       { children }
                     </tr>
                   ) : (
-                    <tr { ...rest } className={ `${ className } cursor-pointer` }
+                    <tr { ...rest } className={ `hover:${ className } cursor-pointer` }
                       onClick={ (!hasAuth || disabled) ? null :
                         e => {
                           e.stopPropagation()
