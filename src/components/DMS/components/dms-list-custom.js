@@ -13,7 +13,6 @@ const DmsList = ({ ...props }) => {
     .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
 
   const actions = props.attributes.filter(a => !attributes.includes(a));
-console.log("ACTIONS:", actions)
 
   const filter = makeFilter(props),
     dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
@@ -38,7 +37,7 @@ console.log("ACTIONS:", actions)
     }
   }
   let columns = [
-    ...attributes.map(d => {return {accessor: d, Header: d}}),
+    ...attributes.map(d => {return {accessor: d, Header: d => getAttributeName(d.column.id) }}),
     ...actions
       .map(a => {
         return {
