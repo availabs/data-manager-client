@@ -94,8 +94,8 @@ export default (Component, options = {}) => {
     }
     render() {
       const {
-        actions, interact,
-        type, format,
+        actions, //interact,
+        type, //format,
         mapDataToProps
       } = { ...this.props, ...options };
 

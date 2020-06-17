@@ -88,7 +88,7 @@ const OPS = [
 const getCompare = arg => {
   switch (arg) {
     case "==":
-      return (a, b) => a == b;
+      return (a, b) => a === b;
     case ">":
       return (a, b) => a > b;
     case "<":
@@ -97,6 +97,8 @@ const getCompare = arg => {
       return (a, b) => a >= b;
     case "<=":
       return (a, b) => a <= b;
+    default:
+      return (a, b) => a === b;
   }
 }
 

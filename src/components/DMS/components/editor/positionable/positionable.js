@@ -46,7 +46,7 @@ export default store =>
       }
       return (
         <div className={ `${ POSITIONS[position] } relative z-10 my-2` }
-          onDrop={ e => (alert("??????"), e.preventDefault()) }>
+          onDrop={ e => {alert("??????"); e.preventDefault();} }>
           <div className="inline-block relative hoverable pointer-events-auto">
 
             <div className={ `absolute show-on-hover ${ hoverPosition } p-1 w-full` }>

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from "react"
 import { DmsContext } from "../contexts"
 import { mapDataToProps as doMapDataToProps, getValue } from "../utils"
 
-import get from "lodash.get"
+// import get from "lodash.get"
 
 const createElements = ({ data, ...rest }, interact) =>
   data.map((d, i) =>

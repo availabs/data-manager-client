@@ -57,7 +57,7 @@ export default {
     ],
     children: [
       { type: SideBar,
-        children: ["TESTING!!!!!!!!!", () => <>TESTING!!!!!!!</>],
+        children: ["TESTING!!!!!!!!!", () => <div>TESTING!!!!!!!</div>],
         wrappers: [
           { type: "dms-consumer",
             options: {

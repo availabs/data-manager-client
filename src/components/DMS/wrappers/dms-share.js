@@ -2,7 +2,7 @@ import React from "react"
 
 import get from "lodash.get"
 
-import { mapDataToProps as doMapDataToProps, getValue } from "../utils"
+import { mapDataToProps as doMapDataToProps } from "../utils"
 
 export default (Component, options = {}) => {
   const {

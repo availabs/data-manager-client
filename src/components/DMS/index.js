@@ -1,9 +1,12 @@
 import React from "react"
+import { withRouter } from "react-router";
 
 import DmsComponents from "./components"
 
 import { AuthContext, ButtonContext } from "./contexts"
-import { DmsButton, Title } from "./components/parts"
+// import { DmsButton, Title } from "./components/parts"
+
+import { Header } from 'components/avl-components/components'
 
 import get from "lodash.get"
 
@@ -61,7 +64,7 @@ class DmsManager extends React.Component {
   }
 
   compareActions(action1 = "", action2 = "") {
-    return action1.replace("dms:", "") == action2.replace("dms:", "");
+    return action1.replace("dms:", "") === action2.replace("dms:", "");
   }
 
   pushAction(dmsAction, id, props) {
@@ -106,7 +109,7 @@ class DmsManager extends React.Component {
       );
     }
 
-    const item = this.props.dataItems.reduce((a, c) => c.id == id ? c : a, null);
+    const item = this.props.dataItems.reduce((a, c) => c.id === id ? c : a, null);
 
     const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
     if (!hasAuth) return <NoAuth />;
@@ -123,48 +126,44 @@ class DmsManager extends React.Component {
     );
   }
 
+  compareActions(action1 = "", action2 = "") {
+    return action1.replace("dms:", "") === action2.replace("dms:", "");
+  }
+
   render() {
     const { dmsAction, id, props } = this.getTop(),
       { authRules, user, buttonColors, showHome } = this.props;
 
+    console.log('dms manager theme', this.props)
+    if(!this.props.format) {
+      return <div> No Format </div>
+    }
+
+    let actions = []
+    if(this.state.stack.length > 1) {
+      // this should always be the same as home ???
+      // actions.push(<DmsButton action="dms:back"/>)
+    }
+    if ((this.state.stack.length > 1) && showHome ){
+       actions.push({href:`/${this.props.location.pathname.split('/')[1]}`, name:'Home', type: 'button'})
+    }
+    if( dmsAction === "list"){
+     actions.push({href:`${this.props.location.pathname}/create`, name:'Create', type: 'buttonPrimary'})
+    }
+
     return (
-      <div className="p-20">
-        <div className={ this.props.className }>
-          <AuthContext.Provider value={ { authRules, user } }>
-            <ButtonContext.Provider value={ { buttonColors, interact: this.interact } }>
-              <div>
-                <Title large>
-                  { this.props.title || `${ this.props.app } Manager` }
-                </Title>
-                <div className="mb-5">
-                { !this.props.format ? null :
-                    <div className="btn-group-horizontal">
-                      { (this.state.stack.length === 1) ? null :
-                          <DmsButton action="dms:back"/>
-                      }
-                      { (this.state.stack.length === 1) || !showHome ? null :
-                          <DmsButton action="dms:home"/>
-                      }
-                      { dmsAction !== "list" ? null :
-                          <DmsButton action="dms:create"/>
-                      }
-                    </div>
-                  }
-                </div>
-              </div>
-              <div>
-                { this.renderChildren(dmsAction, id, props) }
-              </div>
-            </ButtonContext.Provider>
-          </AuthContext.Provider>
-        </div>
-      </div>
+        <AuthContext.Provider value={ { authRules, user } }>
+          <ButtonContext.Provider value={ { buttonColors, interact: this.interact } }>
+            <Header title= { this.props.title || `${ this.props.app } Manager` } theme={this.props.theme} actions={actions}/>
+            <main>{ this.renderChildren(dmsAction, id, props) }</main>
+          </ButtonContext.Provider>
+        </AuthContext.Provider>
     )
   }
 }
 
-const NoFormat = () => <Title large className="p-5">No format supplied!!!</Title>;
-const NoAuth = () => <Title large className="p-5">You do not have authorization for this action!!!</Title>;
+const NoFormat = () => <div large className="p-5">No format supplied!!!</div>;
+const NoAuth = () => <div large className="p-5">You do not have authorization for this action!!!</div>;
 
 export default {
   ...DmsComponents,

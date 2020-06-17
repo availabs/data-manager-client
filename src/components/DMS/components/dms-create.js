@@ -3,7 +3,6 @@ import React from "react"
 import {
   Button, DmsButton, Input, TextArea,
   getButtonClassName,
-  Title
 } from "./parts"
 import Select from "./select"
 import Editor from "./editor"
@@ -152,7 +151,7 @@ class ImgInput extends React.Component {
     this.props.onChange(null);
   }
   render() {
-    const { att, onChange, value, ...props } = this.props;
+    const { /* att,  onChange, */ value } = this.props;
 
     return (
       <div className={ `
@@ -167,7 +166,7 @@ class ImgInput extends React.Component {
         onDrop={ e => this.dropIt(e) }>
 
         { value ?
-            <img src={ value } className="max-w-full max-h-full"/>
+            <img src={ value } alt={ value  }className="max-w-full max-h-full"/>
           :
             <div className="flex flex-col items-center">
               <div>
@@ -273,7 +272,9 @@ export default class DmsCreate extends React.Component {
     const values = {
       ...this.state
     }
-    get(this.props, ["format", "attributes"], [])
+    let attributes = get(this.props, ["format", "attributes"], [])
+    console.log('<dms-create> attributes', attributes)
+    attributes
       .forEach(att => {
         if (("default" in att) && !(att.key in values)) {
           values[att.key] = this.getDefaultValue(att);

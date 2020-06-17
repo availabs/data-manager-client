@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import ReactDOM from "react-dom"
 
 import { Link } from "react-router-dom"
 import { useLocation, useHistory } from "react-router-dom"
@@ -146,59 +145,55 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
 // RENDER BUTTON START
   const RenderButton = ({ waiting = false }) =>
     <AuthContext.Consumer>
-      { ({ authRules, user }) =>
-        <RouterContext.Consumer>
-          { ({ useRouter, basePath }) =>
-            <ButtonContext.Consumer>
-              { ({ interact }) => {
 
-                const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
+      { ({ authRules, user, interact, useRouter, basePath }) => {
 
-                const DISABLED = !hasAuth || disabled || waiting;
+          const hasAuth = checkAuth(authRules, action, { user, ...props }, item);
 
-                return useRouter && !DISABLED ?
-                  // ( ["back", "dms:back"].includes(action) ?
-                  ( /^(dms:)*back$/.test(action) ?
-                      <ActionLink { ...rest } action={ action } { ...fromAction }
-                        to={ {
-                          pathname: get(state, [length - 1], basePath),
-                          state: state.slice(0, length - 1)
-                        } }/>
-                    : /^(dms:)*home$/.test(action) ?
-                      <ActionLink { ...rest } action={ action } { ...fromAction }
-                        to={ {
-                          pathname: basePath,
-                          state: []
-                        } }/>
-                    : /^api:/.test(action) ?
-                      <ActionButton { ...rest } action={ action } { ...fromAction }
-                        onClick={ e => (e.stopPropagation(),
-                          Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
-                            .then(() => push({
-                              pathname: get(state, [length - 1], basePath),
-                              state: state.slice(0, length - 1)
-                            })))
-                        }/>
-                    : <ActionLink { ...rest } action={ action } { ...fromAction }
-                        to={ {
-                          pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-                          state: [...state, pathname]
-                        } }/>
-                  ) :
-                  ( <ActionButton { ...rest } disabled={ DISABLED }
-                      action={ action } { ...fromAction } waiting={ waiting }
-                      onClick={ DISABLED ? null :
-                        e => (e.stopPropagation(),
-                          Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
-                            .then(() => /^api:/.test(action) && interact("dms:back"))
-                        )
-                      }/>
-                  )
-                }
-              }
-            </ButtonContext.Consumer>
-          }
-        </RouterContext.Consumer>
+          const DISABLED = !hasAuth || disabled || waiting;
+
+          return useRouter && !DISABLED ?
+            // ( ["back", "dms:back"].includes(action) ?
+            ( /^(dms:)*back$/.test(action) ?
+                <ActionLink { ...rest } action={ action } { ...fromAction }
+                  to={ {
+                    pathname: get(state, [length - 1], basePath),
+                    state: state.slice(0, length - 1)
+                  } }/>
+              : /^(dms:)*home$/.test(action) ?
+                <ActionLink { ...rest } action={ action } { ...fromAction }
+                  to={ {
+                    pathname: basePath,
+                    state: []
+                  } }/>
+              : /^api:/.test(action) ?
+                <ActionButton { ...rest } action={ action } { ...fromAction }
+                  onClick={ e => {
+                      e.stopPropagation()
+                      Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                      .then(() => push({
+                        pathname: get(state, [length - 1], basePath),
+                        state: state.slice(0, length - 1)
+                      }))
+                    }
+                  }/>
+              : <ActionLink { ...rest } action={ action } { ...fromAction }
+                  to={ {
+                    pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
+                    state: [...state, pathname]
+                  } }/>
+            ) :
+            ( <ActionButton { ...rest } disabled={ DISABLED } action={ action } { ...fromAction }
+                onClick={ DISABLED ? null :
+                  e => {
+                    e.stopPropagation()
+                    console.log('what is interact ?', interact)
+                    Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
+                      .then(() => /^api:/.test(action) && interact("dms:back"))
+                  }
+                }/>
+            )
+        }
       }
     </AuthContext.Consumer>
 // RENDER BUTTON END
@@ -213,7 +208,10 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
       <div className="btn-group-horizontal">
         <RenderButton waiting={ waiting }/>
         <ActionButton { ...rest } action="cancel"
-          onClick={ e => (e.stopPropagation(), setOpen(false)) }/>
+          onClick={ e => {
+            e.stopPropagation();
+            setOpen(false)
+            }}/>
       </div>
     )
   }
@@ -223,7 +221,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
   if (showConfirm) {
     return openConfirm ? <Opened setOpen={ setOpen }/> :
       <ActionButton { ...rest } action={ action } { ...fromAction }
-        onClick={ e => (e.stopPropagation(), setOpen(true)) }/>
+        onClick={ e => {e.stopPropagation(); setOpen(true);} }/>
   }
   return <RenderButton />;
 }
@@ -231,14 +229,13 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
 export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, children, className = "", ...rest }) => {
   let { pathname, state } = useLocation(),
     { push } = useHistory();
-  state = state || [];
-  const length = state.length,
+    state = state || [];
 
-    itemId = get(item, "id", null),
+    const itemId = get(item, "id", null),
 
-    { action, seedProps, showConfirm, ...fromAction } = processAction(arg),
+      { action, seedProps, showConfirm, ...fromAction } = processAction(arg),
 
-    theme = useTheme();
+      theme = useTheme();
 
   return (
     <AuthContext.Consumer>
@@ -253,23 +250,24 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
                 return useRouter && hasAuth && !disabled ?
                   (
                     <tr { ...rest } className={ `${ className } hover:${ theme.accent1 } cursor-pointer` }
-                      onClick={ e => (
-                          e.stopPropagation(),
+                      onClick={ e => {
+                          e.stopPropagation();
                           push({
                             pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
                             state: [...state, pathname]
-                          })
-                        )
+                          });
+                        }
                       }>
                       { children }
                     </tr>
                   ) : (
                     <tr { ...rest } className={ `${ className } hover:${ theme.accent1 } cursor-pointer` }
                       onClick={ (!hasAuth || disabled) ? null :
-                        e => (e.stopPropagation(),
+                        e => {
+                          e.stopPropagation()
                           Promise.resolve(interact(action, itemId, seedProps({ user, ...props })))
                             .then(() => /^api:/.test(action) && interact("dms:back"))
-                        )
+                        }
                       }>
                       { children }
                     </tr>

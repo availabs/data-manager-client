@@ -88,7 +88,7 @@ export const falcorChunkerNice = (...args) => {
  }, Promise.resolve())
 }
 
-let counter = 0;
+ // let counter = 0;
  class MyModelRoot extends ModelRoot {
    constructor(...args) {
      super(...args);
