@@ -4,6 +4,7 @@ import { RouterContext } from "../contexts"
 
 import {
   useRouteMatch, useParams,
+  useHistory, useLocation,
   Switch, Route
 } from "react-router-dom"
 
@@ -13,7 +14,6 @@ const GetParams = ({ Component, ...props }) =>
   <Component { ...props } params={ useParams() }/>;
 
 const ParseItems = ({ Component, ...props}) => {
-  // const { type } = props,
   const { action, attribute, value } = useParams();
 
   const id = get(props, "dataItems", []).reduce((a, c) => {
@@ -30,49 +30,27 @@ export default (Component, options = {}) => {
     const { path } = useRouteMatch(),
       alt1 = `${ path }/:action`,
       alt2 = `${ path }/:action/:id`,
-      alt3 = `${ path }/:action/:attribute/:value`;
+      alt3 = `${ path }/:action/:attribute/:value`,
+      routerProps = {
+        basePath: path,
+        useRouter: true,
+        location: useLocation(),
+        history: useHistory()
+      };
     return (
-      <RouterContext.Provider value={ { basePath: path, useRouter: true } }>
+      <RouterContext.Provider value={ routerProps }>
         <Switch>
           <Route exact path={ path }>
-            <Component { ...props }/>
+            <Component { ...props } { ...routerProps }/>
           </Route>
           <Route exact path={ [alt1, alt2] }>
-            <GetParams { ...props }
-              Component={ Component }/>
+            <GetParams { ...props } { ...routerProps } Component={ Component }/>
           </Route>
           <Route exact path={ alt3 }>
-            <ParseItems { ...props }
-              Component={ Component }/>
+            <ParseItems { ...props } { ...routerProps } Component={ Component }/>
           </Route>
         </Switch>
       </RouterContext.Provider>
     )
   }
 }
-
-// const GetParams = ({ path, setState }) => {
-//   const { action, id } = useParams();
-//   useEffect(() => {
-//     setState({ action, id });
-//   })
-//   return (
-//     <Redirect to={ path }/>
-//   )
-// }
-
-// export default (Component, options = {}) => {
-//   const { path } = useRouteMatch(),
-//     alt = `${ path }/:action/:id`,
-//     [state, setState] = useState({});
-//   return ({ ...props }) => (
-//     <Switch>
-//       <Route exact path={ path }>
-//         <Component { ...props } state={ state } useRouter={ true } basePath={ options.basePath }/>
-//       </Route>
-//       <Route exact path={ alt }>
-//         <GetParams path={ path } setState={ setState }/>
-//       </Route>
-//     </Switch>
-//   )
-// }

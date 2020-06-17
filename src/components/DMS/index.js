@@ -3,7 +3,7 @@ import React from "react"
 import DmsComponents from "./components"
 
 import { ButtonContext } from "./contexts"
-import { DmsButton } from "./components/parts"
+// import { DmsButton } from "./components/parts"
 
 import { Header } from 'components/avl-components/components'
 
@@ -52,8 +52,6 @@ class DmsManager extends React.Component {
       );
     }
 
-    if (!item) return null;
-
     const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
     if (!hasAuth) return <NoAuth />;
 
@@ -79,13 +77,31 @@ class DmsManager extends React.Component {
 
     const actions = [];
     if (stack.length > 1) {
-      actions.push(<DmsButton action="dms:back" key="back"/>)
+      // actions.push(<DmsButton action="dms:back" key="back"/>)
+      actions.push({
+        // comp: DmsButton,
+        // action: "dms:back",
+        ...this.props.makeInteraction("dms:back"),
+        children: "back"
+      })
     }
-    if ((stack.length > 1) && showHome ) {
-       actions.push(<DmsButton action="dms:home" key="home"/>)
+    if ((stack.length > 1) && showHome) {
+       // actions.push(<DmsButton action="dms:home" key="home"/>)
+       actions.push({
+         // comp: DmsButton,
+         // action: "dms:home",
+         ...this.props.makeInteraction("dms:home"),
+         children: "home"
+       })
     }
-    if(dmsAction === "list") {
-      actions.push(<DmsButton action="dms:create" key="create"/>)
+    if (dmsAction === "list") {
+      // actions.push(<DmsButton action="dms:create" key="create"/>)
+      actions.push({
+        // comp: DmsButton,
+        // action: "dms:create",
+        ...this.props.makeInteraction("dms:create"),
+        children: "create"
+      })
     }
 
     return (
