@@ -4,14 +4,14 @@ import { DmsButton } from "../components/parts"
 
 import get from "lodash.get"
 
-import { prettyKey, mapDataToProps as doMapDataToProps, getValue } from "../utils"
+import { prettyKey, getValue } from "../utils"
 
 const SEED_PROPS = () => ({});
 
 const ViewItem = ({ value, type }) =>
   type !== "img" ? <div>{ value }</div> :
   <div>
-    <img src={ value } style={ { maxHeight: "16rem" } }/>
+    <img src={ value } style={ { maxHeight: "16rem" } } alt=""/>
   </div>
 
 const ViewRow = ({ name, children }) =>

@@ -9,7 +9,7 @@ export default (options = {}) => {
   } = options
 
   const ImageBlock = ({ blockProps }) =>
-    <img className="block" src={ blockProps.src } style={ { maxHeight } }/>
+    <img className="block" src={ blockProps.src } style={ { maxHeight } } alt=""/>
 
   return {
     blockRendererFn: (block, { getEditorState }) => {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useLocation, useHistory } from "react-router-dom"
 
-import { AuthContext, ButtonContext, RouterContext } from "../contexts"
+import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
 import { checkAuth } from "../utils"
 
 import { useTheme } from "components/avl-components/wrappers/with-theme"
@@ -146,7 +146,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
   const RenderButton = ({ waiting = false }) =>
     <AuthContext.Consumer>
       { ({ authRules, user }) =>
-        <ButtonContext.Consumer>
+        <DmsContext.Consumer>
           { ({ interact }) =>
             <RouterContext.Consumer>
               { ({ useRouter, basePath }) => {
@@ -200,7 +200,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
               }
             </RouterContext.Consumer>
           }
-        </ButtonContext.Consumer>
+        </DmsContext.Consumer>
       }
     </AuthContext.Consumer>
 // RENDER BUTTON END
@@ -210,7 +210,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
     useEffect(() => {
       const timeout = waiting && setTimeout(setWaiting, 20, waiting - 20);
       return () => clearTimeout(timeout);
-    })
+    }, [waiting])
     return (
       <div className="btn-group-horizontal">
         <RenderButton waiting={ waiting }/>
@@ -240,14 +240,14 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
 
     const itemId = get(item, "id", null),
 
-      { action, seedProps, ...fromAction } = processAction(arg),
+      { action, seedProps } = processAction(arg),
 
       theme = useTheme();
 
   return (
     <AuthContext.Consumer>
       { ({ authRules, user }) =>
-        <ButtonContext.Consumer>
+        <DmsContext.Consumer>
           { ({ interact }) =>
             <RouterContext.Consumer>
               { ({ useRouter, basePath }) => {
@@ -283,7 +283,7 @@ export const DmsListRow = ({ action: arg, item, props = {}, disabled = false, ch
               }
             </RouterContext.Consumer>
           }
-        </ButtonContext.Consumer>
+        </DmsContext.Consumer>
       }
     </AuthContext.Consumer>
   )

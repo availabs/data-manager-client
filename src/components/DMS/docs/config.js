@@ -8,11 +8,11 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
+    "dms-provider",
     "dms-router",
     "show-loading", // receives loading prop
     "dms-falcor", // generates loading prop and passes to children
-    "with-auth",
-    "with-theme"
+    "with-auth"
   ],
   props: {
     format: DMS_DOCS,

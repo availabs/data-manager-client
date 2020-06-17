@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 
 import { Input } from "./parts"
-
-import get from "lodash.get"
 
 const SelectItem = ({ isPlaceholder, children, remove }) =>
   <div className={ `
@@ -31,11 +29,6 @@ const SelectValue = ({ children, large, small, className, disabled, ...props }) 
       ${ disabled ? "cursor-not-allowed" : `cursor-pointer` }
       ${ className }
     ` }>
-    { children }
-  </div>
-
-const SelectContainer = ({ children }) =>
-  <div>
     { children }
   </div>
 

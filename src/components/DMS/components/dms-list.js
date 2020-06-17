@@ -10,8 +10,7 @@ const DmsList = ({ ...props }) => {
   const attributes = props.attributes
     .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
 
-  const actions = props.attributes.filter(a => !attributes.includes(a)),
-    span = actions.reduce((a, c) => a + (c.showConfirm ? 2 : 1), 0);
+  const actions = props.attributes.filter(a => !attributes.includes(a));
 
   const filter = makeFilter(props),
     dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;

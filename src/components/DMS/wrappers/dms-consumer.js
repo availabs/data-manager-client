@@ -18,25 +18,26 @@ const createElements = ({ data, ...rest }, interact) =>
 export default (Component, options = {}) => {
   const {
     mapDataToProps = {},
-    defaultAction
+    interactOnMount
   } = options;
 
   return ({ ...props }) => {
     const dmsProps = useContext(DmsContext),
+      { interact } = dmsProps,
       newProps = { ...props, ...dmsProps };
 
-    let doDefaultAction = getValue(defaultAction, { props: newProps });
+    let defaultAction = getValue(interactOnMount, { props: newProps });
 
     useEffect(() => {
-      if (doDefaultAction) {
-        if (Array.isArray(doDefaultAction)) {
-          dmsProps.interact(...doDefaultAction);
+      if (defaultAction) {
+        if (Array.isArray(defaultAction)) {
+          interact(...defaultAction);
         }
         else {
-          dmsProps.interact(doDefaultAction);
+          interact(defaultAction);
         }
       }
-    }, [doDefaultAction]);
+    }, [interact, defaultAction]);
 
     const handleData = data => {
       if (Array.isArray(data)) {

@@ -2,8 +2,8 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { AuthContext, ButtonContext, DmsContext } from "./contexts"
-import { DmsButton, Title } from "./components/parts"
+import { ButtonContext } from "./contexts"
+import { DmsButton } from "./components/parts"
 
 import { Header } from 'components/avl-components/components'
 
@@ -27,67 +27,11 @@ class DmsManager extends React.Component {
     apiInteract: () => Promise.resolve()
   }
 
-  constructor(...args) {
-    super(...args);
-    this.state = {
-      stack: [{
-        dmsAction: this.props.defaultAction,
-        id: null,
-        props: null
-      }],
-      initialized: false
-    }
-    this.interact = this.interact.bind(this);
-  }
-
-  componentDidMount() {
-    const { action, id } = get(this.props, "params", {});
-    if (action) {
-      this.pushAction(action, id, null);
-    }
-  }
-
-  interact(dmsAction, id, props) {
-    if (/^(dms:)*back$/.test(dmsAction)) {
-      this.popAction();
-    }
-    else if (/^(dms:)*home$/.test(dmsAction)) {
-      this.clearStack();
-    }
-    else if (/^api:/.test(dmsAction)) {
-      return this.props.apiInteract(dmsAction, id, props);
-    }
-    else {
-      this.pushAction(dmsAction, id, props);
-    }
-  }
-
   compareActions(action1 = "", action2 = "") {
     return action1.replace("dms:", "") === action2.replace("dms:", "");
   }
 
-  pushAction(dmsAction, id, props) {
-    const stack = [...this.state.stack];
-    stack.push({ dmsAction, id, props });
-    this.setState({ stack });
-  }
-  popAction() {
-    if (this.state.stack.length > 1) {
-      const stack = [...this.state.stack];
-      stack.pop();
-      this.setState({ stack });
-    }
-  }
-  clearStack() {
-    const stack = [...this.state.stack].slice(0, 1);
-    this.setState({ stack });
-  }
-  getTop() {
-    const { stack } = this.state;
-    return stack[stack.length - 1];
-  }
-
-  renderChildren(dmsAction, id, props) {
+  renderChildren(dmsAction, item, props) {
     if (!this.props.format) return <NoFormat />;
 
     const child = React.Children.toArray(this.props.children)
@@ -108,7 +52,7 @@ class DmsManager extends React.Component {
       );
     }
 
-    const item = this.props.dataItems.reduce((a, c) => c.id === id ? c : a, null);
+    if (!item) return null;
 
     const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
     if (!hasAuth) return <NoAuth />;
@@ -125,45 +69,31 @@ class DmsManager extends React.Component {
     );
   }
 
-
-
   render() {
-    const { dmsAction, id, props } = this.getTop(),
-      { authRules, user, buttonColors, showHome, app, type, dataItems } = this.props;
+    const { buttonColors, showHome, stack, top } = this.props,
+      { dmsAction, item, props } = top;
 
-    if(!this.props.format) {
+    if (!this.props.format) {
       return <div> No Format </div>
     }
 
-    let actions = []
-    if(this.state.stack.length > 1) {
 
+    const actions = [];
+    if (stack.length > 1) {
       actions.push(<DmsButton action="dms:back" key="back"/>)
     }
-    if ((this.state.stack.length > 1) && showHome ){
+    if ((stack.length > 1) && showHome ) {
        actions.push(<DmsButton action="dms:home" key="home"/>)
     }
-    if( dmsAction === "list") {
+    if(dmsAction === "list") {
       actions.push(<DmsButton action="dms:create" key="create"/>)
     }
 
-    const dmsProps = {
-      dmsAction,
-      app,
-      type,
-      dataItems,
-      item: dataItems.reduce((a, c) => c.id === id ? c : a, null)
-    }
-
     return (
-      <DmsContext.Provider value={ dmsProps }>
-        <AuthContext.Provider value={ { authRules, user } }>
-          <ButtonContext.Provider value={ { buttonColors, interact: this.interact } }>
-            <Header title= { this.props.title || `${ this.props.app } Manager` } actions={ actions }/>
-            <main>{ this.renderChildren(dmsAction, id, props) }</main>
-          </ButtonContext.Provider>
-        </AuthContext.Provider>
-      </DmsContext.Provider>
+      <ButtonContext.Provider value={ { buttonColors } }>
+        <Header title= { this.props.title || `${ this.props.app } Manager` } actions={ actions }/>
+        <main>{ this.renderChildren(dmsAction, item, props) }</main>
+      </ButtonContext.Provider>
     )
   }
 }
