@@ -139,7 +139,7 @@ class DmsManager extends React.Component {
     let actions = []
     if(this.state.stack.length > 1) {
       // this should always be the same as home ??? 
-      // actions.push(<DmsButton action="dms:back"/>)
+      actions.push(<DmsButton action="dms:back"/>)
     }                          
     if ((this.state.stack.length > 1) && showHome ){
        //actions.push({href:`/${this.props.location.pathname.split('/')[1]}`, name:'Home', type: 'button'})   

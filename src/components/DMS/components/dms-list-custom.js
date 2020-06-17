@@ -38,7 +38,7 @@ const DmsList = ({ ...props }) => {
 
   return !props.dataItems.length ? null : (
     <div className={ props.className }>
-      { props.title ? <Title>{ props.title }</Title> : null } Custom
+      { props.title ? <Title>{ props.title }</Title> : null }
       <table className="w-full text-left">
         <thead>
           <tr>
