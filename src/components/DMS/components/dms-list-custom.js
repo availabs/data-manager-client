@@ -12,8 +12,8 @@ const DmsList = ({ ...props }) => {
   const attributes = props.attributes
     .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
 
-  const actions = props.attributes.filter(a => !attributes.includes(a)),
-    span = actions.reduce((a, c) => a + (c.showConfirm ? 2 : 1), 0);
+  const actions = props.attributes.filter(a => !attributes.includes(a));
+console.log("ACTIONS:", actions)
 
   const filter = makeFilter(props),
     dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
@@ -40,13 +40,13 @@ const DmsList = ({ ...props }) => {
   let columns = [
     ...attributes.map(d => {return {accessor: d, Header: d}}),
     ...actions
-      .map(a => { 
+      .map(a => {
         return {
-          accessor: get(a, "action", a), 
-          Header: get(a, "action", a), 
-          Cell: props =>  {
-            console.log('props', props)
-            return <DmsButton action={ props.value } item={ props.row } small/>
+          accessor: get(a, "action", a),
+          Header: d => null,
+          Cell: (props) =>  {
+            // console.log('props', props, props.row.original)
+            return <DmsButton action={ props.value } item={ props.row.original } small/>
           }
         }
       })
@@ -55,15 +55,16 @@ const DmsList = ({ ...props }) => {
   let data = dataItems
     .map(d => {
       return {
+        ...d,
         ...d.data,
         ...actions
           .reduce((o,a) => {
-            o[get(a, "action", a)] = get(a, "label", a)
+            o[get(a, "action", a)] = a
             return o
           },{})
       }
     })
-
+console.log("DATA:", columns, data)
   return !props.dataItems.length ? null : (
     <Content>
       { props.title ? <Title>{ props.title }</Title> : null }
@@ -75,8 +76,8 @@ const DmsList = ({ ...props }) => {
 
       <Title>actions</Title>
       {JSON.stringify(actions)}*/}
-      <Table 
-        columns={columns} 
+      <Table
+        columns={columns}
         data={data}
       />
     </Content>
