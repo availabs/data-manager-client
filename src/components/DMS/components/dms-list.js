@@ -6,6 +6,7 @@ import get from "lodash.get"
 
 import { prettyKey, makeFilter } from "../utils"
 import { useMakeOnClick } from "../wrappers/dms-provider"
+import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 const DmsList = ({ ...props }) => {
   const attributes = props.attributes
@@ -36,6 +37,7 @@ const DmsList = ({ ...props }) => {
     }
   }
 
+console.log("ACTIONS:", actions)
   return !props.dataItems.length ? null : (
     <div className={ props.className }>
       { props.title ? <Title>{ props.title }</Title> : null }
@@ -65,7 +67,7 @@ const DmsList = ({ ...props }) => {
                   { actions.map(a =>
                       <td key={ get(a, "action", a) } className="text-right p-1">
                         <div className="flex items-center justify-end">
-                          <DmsButton action={ a } item={ d } buttonTheme="buttonSmallPrimary"/>
+                          <DmsButton action={ a } item={ d } small/>
                         </div>
                       </td>
                     )
@@ -80,7 +82,7 @@ const DmsList = ({ ...props }) => {
 }
 const DmsListRow = ({ children, action, item, ...props }) => {
   return (
-    <tr onClick={ useMakeOnClick(action, item, props) }>
+    <tr onClick={ useMakeOnClick(action, item, props) } className={ `hover:${ useTheme().accent1 } cursor-pointer` }>
       { children }
     </tr>
   )

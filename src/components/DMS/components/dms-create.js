@@ -317,10 +317,12 @@ export default class DmsCreate extends React.Component {
                       onChange={ value => this.handleChange(att.key, value) }/>
                   )
               }
-              <div className="flex justify-end">
-                <DmsButton className="w-full max-w-xs" disabled={ !this.verify() } type="submit"
-                  label={ this.props.dmsAction } item={ item }
-                  action={ this.getButtonAction(values) }/>
+              <div className="grid grid-cols-6">
+                <div className="col-span-5 col-start-2 flex justify-end max-w-xl">
+                  <DmsButton className="w-full max-w-xs" buttonTheme="buttonLargeSuccess" disabled={ !this.verify() } type="submit"
+                    label={ this.props.dmsAction } item={ item }
+                    action={ this.getButtonAction(values) }/>
+                </div>
               </div>
 
           </div>

@@ -2,7 +2,6 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { ButtonContext } from "./contexts"
 import { DmsButton } from "./components/parts"
 
 import { Header } from 'components/avl-components/components'
@@ -23,7 +22,6 @@ class DmsManager extends React.Component {
     format: null,
     className: "border-2 p-5 rounded-lg",
     authRules: {},
-    buttonColors: {},
     apiInteract: () => Promise.resolve()
   }
 
@@ -66,7 +64,7 @@ class DmsManager extends React.Component {
   }
 
   render() {
-    const { buttonColors, showHome, stack, top, item } = this.props,
+    const { showHome, stack, top, item } = this.props,
       { dmsAction, props } = top;
 
     if (!this.props.format) {
@@ -104,10 +102,10 @@ class DmsManager extends React.Component {
     }
 
     return (
-      <ButtonContext.Provider value={ { buttonColors } }>
-        <Header title= { this.props.title || `${ this.props.app } Manager` } actions={ actions }/>
+      <>
+        <Header title={ this.props.title || `${ this.props.app } Manager` } actions={ actions }/>
         <main>{ this.renderChildren(dmsAction, item, props) }</main>
-      </ButtonContext.Provider>
+      </>
     )
   }
 }

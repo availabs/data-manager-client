@@ -6,7 +6,6 @@ import { useLocation, useHistory } from "react-router-dom"
 import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
 import { checkAuth } from "../utils"
 
-import { useTheme } from "components/avl-components/wrappers/with-theme"
 import { useMakeInteraction } from "../wrappers/dms-provider"
 
 import { Button, LinkButton } from "components/avl-components/components/Button/Button"
@@ -79,40 +78,55 @@ export const getButtonClassName = ({ color = "blue", large, small, block, classN
 //     { children }
 //   </Link>
 
-const getLabel = action =>
+const cleanAction = action =>
   action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
 
-const BUTTON_COLORS = {
-  create: "green",
-  back: "teal",
-  edit: "purple",
-  delete: "red"
+const BUTTON_THEMES = {
+  create: "button",
+  back: "button",
+  edit: "buttonPrimary",
+  delete: "buttonDanger"
 }
 
-const getButtonColor = (label, colors) =>
-  get(colors, label, get(BUTTON_COLORS, label))
+const getButtonTheme = (themes, action, small, large, block)=> {
+  action = cleanAction(action);
+  let button = get(themes, action) || get(BUTTON_THEMES, action, undefined);
+  small && (button += "Small");
+  large && (button += "Large");
+  block && (button += "Block");
+  return button;
+}
 
-export const ActionButton = ({ action, label, ...props }) => {
-  label = label || getLabel(action);
+
+export const ActionButton = ({ action, label, buttonTheme, small, large, block, ...props }) => {
+  label = label || cleanAction(action);
   return (
     <ButtonContext.Consumer>
-      { ({ buttonColors }) =>
-        <Button { ...props }>
-          { label }
-        </Button>
+      { ({ buttonThemes }) => {
+          buttonTheme = buttonTheme || getButtonTheme(buttonThemes, action, small, large, block);
+          return (
+            <Button { ...props } buttonTheme={ buttonTheme }>
+              { label }
+            </Button>
+          )
+        }
       }
     </ButtonContext.Consumer>
   )
 }
 
-export const ActionLink = ({ action, label, ...props }) => {
-  label = label || getLabel(action);
+export const ActionLink = ({ action, label, buttonTheme, small, large, block, ...props }) => {
+  label = label || cleanAction(action);
   return (
     <ButtonContext.Consumer>
-      { ({ buttonColors }) =>
-        <LinkButton { ...props }>
-          { label  }
-        </LinkButton>
+      { ({ buttonThemes }) => {
+          buttonTheme = buttonTheme || getButtonTheme(buttonThemes, action, small, large, block);
+          return (
+            <LinkButton { ...props } buttonTheme={ buttonTheme }>
+              { label  }
+            </LinkButton>
+          )
+        }
       }
     </ButtonContext.Consumer>
   )
@@ -173,7 +187,6 @@ export const DmsButton = ({ action, item, props = {}, disabled = false, ...other
   }
 
   if (showConfirm) {
-    const { action, label } = interaction;
     return <OpenConfirm Button={ RenderButton }
               interaction={ interaction } { ...others }/>
   }

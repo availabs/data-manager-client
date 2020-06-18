@@ -1,6 +1,6 @@
 import React, { useContext } from "react"
 
-import { AuthContext, DmsContext, RouterContext } from "../contexts"
+import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
 import { checkAuth } from "../utils"
 
 import get from "lodash.get"
@@ -61,63 +61,56 @@ const makeInteraction = (...args) => {
       state = get(location, "state", null) || [],
       length = state.length;
 
-      if (useRouter && hasAuth) {
-        const { push } = history,
-          { pathname } = location,
-          state = get(location, "state", null) || [],
-          length = state.length;
-
-        return /^(dms:)*back$/.test(action) ?
-          { type: "link",
-            key: action,
-            action, ...rest,
-            to: {
-              pathname: get(state, [length - 1], basePath),
-              state: state.slice(0, length - 1)
-            }
-          }
-          : /^(dms:)*home$/.test(action) ?
-            { type: "link",
-              key: action,
-              action, ...rest,
-              to: {
-                pathname: basePath,
-                state: []
-              }
-            }
-          : /^api:/.test(action) ?
-            { tpye: "button",
-              key: action,
-              action, ...rest,
-              onClick: e => {
-                e.stopPropagation();
-                return Promise.resolve(interact(action, itemId, seedProps(props)))
-                  .then(() => push({
-                    pathname: get(state, [length - 1], basePath),
-                    state: state.slice(0, length - 1)
-                  }))
-              }
-            }
-          : { type: "link",
-              key: action,
-              action, ...rest,
-              to: {
-                pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-                state: [...state, pathname]
-              }
-            }
-      }
-      return {
-        type: "button",
+    return /^(dms:)*back$/.test(action) ?
+      { type: "link",
         key: action,
         action, ...rest,
-        onClick: e => {
-          e.stopPropagation();
-          if (!hasAuth) return Promise.resolve();
-          return Promise.resolve(interact(action, itemId, seedProps(props)))
-            .then(() => /^api:/.test(action) && interact("dms:back"));
+        to: {
+          pathname: get(state, [length - 1], basePath),
+          state: state.slice(0, length - 1)
         }
       }
+      : /^(dms:)*home$/.test(action) ?
+        { type: "link",
+          key: action,
+          action, ...rest,
+          to: {
+            pathname: basePath,
+            state: []
+          }
+        }
+      : /^api:/.test(action) ?
+        { tpye: "button",
+          key: action,
+          action, ...rest,
+          onClick: e => {
+            e.stopPropagation();
+            return Promise.resolve(interact(action, itemId, seedProps(props)))
+              .then(() => push({
+                pathname: get(state, [length - 1], basePath),
+                state: state.slice(0, length - 1)
+              }))
+          }
+        }
+      : { type: "link",
+          key: action,
+          action, ...rest,
+          to: {
+            pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
+            state: [...state, pathname]
+          }
+        }
+  }
+  return {
+    type: "button",
+    key: action,
+    action, ...rest,
+    onClick: e => {
+      e.stopPropagation();
+      if (!hasAuth) return Promise.resolve();
+      return Promise.resolve(interact(action, itemId, seedProps(props)))
+        .then(() => /^api:/.test(action) && interact("dms:back"));
+    }
   }
 }
 export const useMakeInteraction = (dmsAction, item, props) => {
@@ -132,7 +125,7 @@ export const useMakeInteraction = (dmsAction, item, props) => {
 
 const makeOnClick = (...args) => {
   const [
-    { action, seedProps, ...rest },
+    { action, seedProps },
     item, itemId,
     props,
     interact
@@ -204,7 +197,7 @@ export default (Component, options = {}) => {
   const {
     // format,
     authRules = {},
-    // buttonColors,
+    buttonThemes = {},
     setDefaultTo = false
   } = options;
 
@@ -238,7 +231,6 @@ export default (Component, options = {}) => {
 
     componentDidMount() {
       const { action, id } = get(this.props, "params", {});
-console.log("componentDidMount", action, id);
       if (action) {
         this.interact(action, id, null);
       }
@@ -331,7 +323,9 @@ console.log("componentDidMount", action, id);
       return (
         <DmsContext.Provider value={ dmsProps }>
           <AuthContext.Provider value={ { authRules, user } }>
-            <Component { ...dmsProps } { ...this.props }/>
+            <ButtonContext.Provider value={ {buttonThemes} }>
+              <Component { ...dmsProps } { ...this.props }/>
+            </ButtonContext.Provider>
           </AuthContext.Provider>
         </DmsContext.Provider>
       )

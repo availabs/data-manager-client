@@ -8,7 +8,15 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-provider",
+    { type: "dms-provider",
+      options: {
+        buttonThemes: {
+          create: "buttonText",
+          back: "buttonText",
+          home: "buttonText"
+        }
+      }
+    },
     "dms-router",
     "show-loading", // receives loading prop
     "dms-falcor", // generates loading prop and passes to children
@@ -17,9 +25,6 @@ export default ({
   props: {
     format: DMS_DOCS,
     title: "DMS Docs",
-    buttonColors: {
-      reply: "green"
-    },
     authRules: {
       create: {
         args: ["props:user.authLevel"],
