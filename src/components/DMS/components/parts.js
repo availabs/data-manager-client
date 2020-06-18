@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react"
 
-import { Link } from "react-router-dom"
+// import { Link } from "react-router-dom"
 import { useLocation, useHistory } from "react-router-dom"
 
 import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
 import { checkAuth } from "../utils"
 
 import { useTheme } from "components/avl-components/wrappers/with-theme"
+import { useMakeInteraction } from "../wrappers/dms-provider"
 
 import { Button, LinkButton } from "components/avl-components/components/Button/Button"
 
@@ -91,12 +92,12 @@ const BUTTON_COLORS = {
 const getButtonColor = (label, colors) =>
   get(colors, label, get(BUTTON_COLORS, label))
 
-export const ActionButton = ({ action, label, color, waiting, ...props }) => {
+export const ActionButton = ({ action, label, ...props }) => {
   label = label || getLabel(action);
   return (
     <ButtonContext.Consumer>
       { ({ buttonColors }) =>
-        <Button { ...props } color={ color || getButtonColor(label, buttonColors) }>
+        <Button { ...props }>
           { label }
         </Button>
       }
@@ -104,12 +105,12 @@ export const ActionButton = ({ action, label, color, waiting, ...props }) => {
   )
 }
 
-export const ActionLink = ({ action, label, color, ...props }) => {
+export const ActionLink = ({ action, label, ...props }) => {
   label = label || getLabel(action);
   return (
     <ButtonContext.Consumer>
       { ({ buttonColors }) =>
-        <LinkButton { ...props } color={ color || getButtonColor(label, buttonColors) }>
+        <LinkButton { ...props }>
           { label  }
         </LinkButton>
       }
@@ -122,8 +123,7 @@ const processAction = arg => {
     action: "unknown",
     seedProps: () => null,
     showConfirm: false,
-    label: null,
-    color: null
+    label: null
   };
   if (typeof arg === "string") {
     response.action = arg;
@@ -134,7 +134,53 @@ const processAction = arg => {
   return response;
 }
 
-export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...rest }) => {
+const OpenConfirm = ({ Button, interaction, ...props }) => {
+  const OpenedAndWating = ({ setOpen }) => {
+    const [waiting, setWaiting] = useState(true);
+    useEffect(() => {
+      const timeout = waiting && setTimeout(setWaiting, 2000, false);
+      return () => clearTimeout(timeout);
+    }, [waiting])
+    return (
+      <div className="btn-group-horizontal">
+        <Button waiting={ waiting }/>
+        <ActionButton { ...props } action="cancel"
+          onClick={ e => {
+            e.stopPropagation();
+            setOpen(false);
+          } }/>
+      </div>
+    )
+  }
+  const [openConfirm, setOpen] = useState(false);
+  return openConfirm ? <OpenedAndWating setOpen={ setOpen }/> :
+    <ActionButton { ...props } { ...interaction }
+      onClick={ e => { e.stopPropagation(); setOpen(true); } }/>
+}
+
+export const DmsButton = ({ action, item, props = {}, disabled = false, ...others }) => {
+  const { type, showConfirm, ...interaction } = useMakeInteraction(action, item, props);
+
+  const RenderButton = ({ waiting }) => {
+    switch (type) {
+      case "link":
+        return <ActionLink { ...interaction } { ...others }
+          disabled={ waiting || disabled }/>
+      default:
+        return <ActionButton { ...interaction } { ...others }
+          disabled={ waiting || disabled } type={ type }/>
+    }
+  }
+
+  if (showConfirm) {
+    const { action, label } = interaction;
+    return <OpenConfirm Button={ RenderButton }
+              interaction={ interaction } { ...others }/>
+  }
+  return <RenderButton />;
+}
+
+export const DmsButtonOld = ({ action: arg, item, props = {}, disabled = false, ...rest }) => {
   let { pathname, state } = useLocation(),
     { push } = useHistory();
   state = state || [];

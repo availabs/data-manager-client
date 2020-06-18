@@ -318,7 +318,7 @@ export default class DmsCreate extends React.Component {
                   )
               }
               <div className="flex justify-end">
-                <DmsButton large className="w-full max-w-xs" disabled={ !this.verify() } type="submit"
+                <DmsButton className="w-full max-w-xs" disabled={ !this.verify() } type="submit"
                   label={ this.props.dmsAction } item={ item }
                   action={ this.getButtonAction(values) }/>
               </div>

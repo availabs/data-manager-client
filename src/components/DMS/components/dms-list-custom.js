@@ -45,7 +45,7 @@ const DmsList = ({ ...props }) => {
           Header: d => null,
           Cell: (props) =>  {
             // console.log('props', props, props.row.original)
-            return <DmsButton action={ props.value } item={ props.row.original } small/>
+            return <DmsButton action={ props.value } item={ props.row.original }/>
           }
         }
       })
@@ -62,7 +62,6 @@ const DmsList = ({ ...props }) => {
           },{})
       }
     })
-console.log("DATA:", columns, data)
   return !props.dataItems.length ? null : (
     <Content>
       { props.title ? <Title>{ props.title }</Title> : null }
