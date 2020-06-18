@@ -52,8 +52,6 @@ class DmsManager extends React.Component {
       );
     }
 
-    if (!item) return null;
-
     const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
     if (!hasAuth) return <NoAuth />;
 

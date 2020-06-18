@@ -48,10 +48,7 @@ export default ({
         attributes: [
           "title", "bloggerId",
           "dms:view", "dms:edit", "dms:delete",
-          { action: "api:delete",
-            label: "API delete",
-            color: "red",
-            showConfirm: true }
+         
         ],
         title: "Blogs",
         filter: {
