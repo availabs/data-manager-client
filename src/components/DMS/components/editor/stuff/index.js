@@ -34,9 +34,16 @@ const myBlockRenderMap = Immutable.Map({
 })
 const blockRenderMap = DefaultDraftBlockRenderMap.merge(myBlockRenderMap);
 
+const hasListSelected = editorState =>
+  editorState
+    .getCurrentContent()
+    .getBlockForKey(editorState.getSelection().getStartKey())
+    .getType().includes("ordered-list-item");
+
 const onTab = (store, e) => {
 
   if (!((+e.keyCode === 9) || (+e.code === 0x000f))) return getDefaultKeyBinding(e);
+  if (!hasListSelected(store.getEditorState())) return getDefaultKeyBinding(e);
   e.preventDefault();
 
   let found = false;

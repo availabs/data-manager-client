@@ -20,7 +20,7 @@ class DmsManager extends React.Component {
     app: "app-name",
     type: "format-type",
     format: null,
-    className: "border-2 p-5 rounded-lg",
+    className: "",
     authRules: {},
     apiInteract: () => Promise.resolve()
   }
@@ -102,10 +102,10 @@ class DmsManager extends React.Component {
     }
 
     return (
-      <>
+      <div className={ this.props.className }>
         <Header title={ this.props.title || `${ this.props.app } Manager` } actions={ actions }/>
         <main>{ this.renderChildren(dmsAction, item, props) }</main>
-      </>
+      </div>
     )
   }
 }

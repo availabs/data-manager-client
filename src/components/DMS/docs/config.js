@@ -22,6 +22,7 @@ export default ({
   ],
   props: {
     format: DMS_DOCS,
+    className: "max-w-6xl m-auto",
     title: "DMS Docs",
     authRules: {
       create: {

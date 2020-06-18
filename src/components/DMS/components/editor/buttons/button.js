@@ -1,7 +1,7 @@
 import React from "react"
 
 export default ({ active, disabled, children, ...props }) =>
-  <button { ...props } disabled={ disabled }
+  <button { ...props } disabled={ disabled } tabIndex={ -1 }
     onMouseDown={ e => e.preventDefault() }
     className={ `p-1 first:rounded-l last:rounded-r
       ${ active ? "bg-gray-300" : "bg-gray-100" }
