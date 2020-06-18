@@ -29,7 +29,7 @@ const DmsList = ({ ...props }) => {
     // add attributes
     ...attributes
       .map(a => {
-        console.log('a', a)
+        // console.log('a', a)
         return a.accessor ? a :
         {
           id: a,

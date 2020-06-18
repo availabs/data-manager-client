@@ -51,13 +51,13 @@ export default ({
             accessor: 'title',
             className: 'text-lg font-medium'
           },
-          "bloggerId",
-          "updated_at",
+          "userId",
           "dms:view",
           "dms:edit",
           "dms:delete"
         ],
-        title: "Pages"
+        title: "Pages",
+
       },
       wrappers: ["with-theme"]
     },
@@ -72,38 +72,15 @@ export default ({
 // prop: [...attributes]
               title: "item:data.title",
               body: [
-                "item:data.bloggerId",
+                "item:data.userId",
                 "item:data.body",
-                "item:data.tags",
-                "item:data.image",
                 "item:updated_at"
               ]
-            },
-            actions: ["dms:reply"]
+            }
           }
         }
       ],
-      children: [
-        { type: "dms-list",
-          props: {
-            attributes: ["title", "bloggerId", "body"],
-            className: "mt-5",
-            title: "Replies"
-          },
-          wrappers: [
-            "with-theme",
-            {
-              type: "dms-falcor",
-              options: {
-                filter: {
-                  args: ["self:data.replyTo", "props:blog-post.id"],
-                  comparator: (arg1, arg2) => +arg1 === +arg2
-                }
-              }
-            }
-          ]
-        }
-      ]
+
     },
     { type: "dms-create",
       props: { dmsAction: "create" },
@@ -124,23 +101,13 @@ export default ({
             mapDataToProps: {
               title: "item:data.title",
               body: [
-                "item:data.bloggerId",
+                "item:data.userId",
                 "item:data.body",
-                "item:data.tags",
-                "item:data.image",
                 "item:updated_at",
                 "props:user.id"
               ]
             },
-            actions: [{
-              action: "api:delete",
-              showConfirm: true,
-              seedProps: props =>
-              // these ids are sent to the api:delete function
-                get(props, "dataItems", []).reduce((a, c) =>
-                  get(c, ["data", "replyTo"]) === get(props, ["blog-post", "id"]) ? [...a, c.id] : a
-                , [])
-            }]
+            actions: []
           }
         },
         "with-auth"

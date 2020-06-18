@@ -21,7 +21,7 @@ export default {
   layoutSettings: {
     fixed: false,
     nav: 'side',
-    maxWidth: 'max-w-7xl',
+    maxWidth: '',
     headerBar: false,
     theme: 'flat'
   },
