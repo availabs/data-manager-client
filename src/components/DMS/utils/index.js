@@ -2,6 +2,9 @@ import React from "react"
 
 import get from "lodash.get"
 
+export const compareActions = (action1 = "", action2 = "") =>
+  action1.replace(/^dms:/, "") === action2.replace(/^dms:/, "")
+
 export const capitalize = string =>
   string.toLowerCase().split("")
     .map((c, i) => i === 0 ? c.toUpperCase() : c).join("");
@@ -176,7 +179,7 @@ const getValueFromPath = (pathArg, sources, directives = {}, _default = null) =>
     }, []).reverse();
 
   const value = reduceSplit(split, split.pop(), setPreserve);
-  
+
   if (preserveKeys) {
     return { key, value };
   }

@@ -227,7 +227,6 @@ export default (Component, options = {}) => {
         stack: [{
           dmsAction: this.props.defaultAction,
           id: null,
-          item: null,
           props: null
         }],
         initialized: false
@@ -239,6 +238,7 @@ export default (Component, options = {}) => {
 
     componentDidMount() {
       const { action, id } = get(this.props, "params", {});
+console.log("componentDidMount", action, id);
       if (action) {
         this.interact(action, id, null);
       }
@@ -254,7 +254,6 @@ export default (Component, options = {}) => {
     }
 
     makeOnClick(dmsAction, item, props) {
-console.log("makeOnClick:", dmsAction, item, props)
       return makeOnClick(dmsAction, item, { ...this.props, ...props, interact: this.interact })
     }
     makeInteraction(dmsAction, item, props) {
@@ -267,9 +266,7 @@ console.log("makeOnClick:", dmsAction, item, props)
         dmsAction = "click";
       }
 
-      const item = this.getItem(id)
-
-      const hasAuth = checkAuth(this.props.authRules, dmsAction, this.props, item);
+      const hasAuth = checkAuth(this.props.authRules, dmsAction, this.props, this.getItem(id));
       if (!hasAuth) return;
 
       if (/^(dms:)*back$/.test(dmsAction)) {
@@ -282,14 +279,14 @@ console.log("makeOnClick:", dmsAction, item, props)
         return this.props.apiInteract(dmsAction, id, props);
       }
       else {
-        this.pushAction(dmsAction, item, id, props);
+        this.pushAction(dmsAction, id, props);
       }
     }
 
-    pushAction(dmsAction, item, id, props) {
+    pushAction(dmsAction, id, props) {
       const stack = this.props.useRouter ? this.state.stack.slice(0, 1) : [...this.state.stack];
 
-      stack.push({ dmsAction, id, item, props });
+      stack.push({ dmsAction, id, props });
       this.setState({ stack });
     }
     popAction() {
@@ -310,7 +307,8 @@ console.log("makeOnClick:", dmsAction, item, props)
 
     getDmsProps() {
       const { app, type, dataItems } = this.props,
-        top = this.getTop();
+        { id, ...top } = this.getTop(),
+        item = this.getItem(id);
 
       return {
         interact: this.interact,
@@ -321,8 +319,10 @@ console.log("makeOnClick:", dmsAction, item, props)
         type,
         dataItems,
         top,
-        [type]: top.item,
-        ...top
+        [type]: item,
+        ...top,
+        id,
+        item
       }
     }
     render() {

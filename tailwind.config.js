@@ -14,7 +14,9 @@ module.exports = {
     margin: ['responsive', 'first', 'last'],
     padding: ['responsive', 'first', 'last'],
     backgroundColor: ['responsive', 'hover', 'focus', 'first', 'last', 'odd', 'even', 'disabled'],
-    cursor: ['disabled', 'responsive']
+    cursor: ['disabled', 'responsive'],
+    opacity: ['responsive', 'disabled', 'hover', 'focus'],
+    textColor: ['responsive', 'hover', 'focus', 'disabled']
   },
   plugins: [
     require('@tailwindcss/ui'),
