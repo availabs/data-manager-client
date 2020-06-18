@@ -8,6 +8,8 @@ import { checkAuth } from "../utils"
 
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
+import { Button, LinkButton } from "components/avl-components/components/Button/Button"
+
 import get from "lodash.get"
 
 export const Input = ({ large, small, className, disabled, children, ...props }) =>
@@ -64,17 +66,17 @@ export const getButtonClassName = ({ color = "blue", large, small, block, classN
     ${ className }
   `
 
-export const Button = ({ children, large, small, block, color = "blue", className = "", disabled = false, type = "button", ...props }) =>
-  <button { ...props } type={ type } disabled={ disabled }
-    className={ getButtonClassName({ color, large, small, block, className, disabled })}>
-    { children }
-  </button>
-
-const LinkButton = ({ children, href, large, small, block, color = "blue", className = "", disabled = false, ...props }) =>
-  <Link { ...props } disabled={ disabled } onClick={ e => e.stopPropagation() }
-    className={ getButtonClassName({ color, large, small, block, className, disabled })}>
-    { children }
-  </Link>
+// export const Button = ({ children, large, small, block, color = "blue", className = "", disabled = false, type = "button", ...props }) =>
+//   <button { ...props } type={ type } disabled={ disabled }
+//     className={ getButtonClassName({ color, large, small, block, className, disabled })}>
+//     { children }
+//   </button>
+//
+// const LinkButton = ({ children, href, large, small, block, color = "blue", className = "", disabled = false, ...props }) =>
+//   <Link { ...props } disabled={ disabled } onClick={ e => e.stopPropagation() }
+//     className={ getButtonClassName({ color, large, small, block, className, disabled })}>
+//     { children }
+//   </Link>
 
 const getLabel = action =>
   action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);

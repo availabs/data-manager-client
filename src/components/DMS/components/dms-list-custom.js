@@ -37,7 +37,7 @@ const DmsList = ({ ...props }) => {
     }
   }
   let columns = [
-    ...attributes.map(d => {return {accessor: d, Header: d => getAttributeName(d.column.id) }}),
+    ...attributes.map(a => {return {accessor: d => d.data[a], id: a, Header: d => getAttributeName(d.column.id) }}),
     ...actions
       .map(a => {
         return {
@@ -55,7 +55,6 @@ const DmsList = ({ ...props }) => {
     .map(d => {
       return {
         ...d,
-        ...d.data,
         ...actions
           .reduce((o,a) => {
             o[get(a, "action", a)] = a

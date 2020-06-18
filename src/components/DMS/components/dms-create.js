@@ -1,11 +1,13 @@
 import React from "react"
 
 import {
-  Button, DmsButton, Input, TextArea,
+  DmsButton, Input, TextArea,
   getButtonClassName,
 } from "./parts"
 import Select from "./select"
 import Editor from "./editor"
+
+import { Button } from "components/avl-components/components/Button/Button"
 
 import { prettyKey } from "../utils"
 
