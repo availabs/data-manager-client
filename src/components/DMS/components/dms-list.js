@@ -5,6 +5,7 @@ import { DmsButton, Title, DmsListRow } from "./parts"
 import get from "lodash.get"
 
 import { prettyKey, makeFilter } from "../utils"
+import { useMakeOnClick } from "../wrappers/dms-provider"
 
 const DmsList = ({ ...props }) => {
   const attributes = props.attributes
@@ -53,7 +54,7 @@ const DmsList = ({ ...props }) => {
         <tbody>
           { dataItems.sort(makeSort())
               .map(d =>
-                <DmsListRow key={ d.id } action="dms:view" item={ d }>
+                <TR action="dms:view" item={ d } key={ d.id }>
                   { attributes.map(a =>
                       <td key={ a } className="py-1 px-3">
                         { d.data[a] }
@@ -63,17 +64,60 @@ const DmsList = ({ ...props }) => {
                   { actions.map(a =>
                       <td key={ get(a, "action", a) } className="text-right p-1">
                         <div className="flex items-center justify-end">
-                          <DmsButton action={ a } item={ d } small/>
+                          <DmsButton action={ a } item={ d }/>
                         </div>
                       </td>
                     )
                   }
-                </DmsListRow>
+                </TR>
+              )
+          }
+        </tbody>
+      </table>
+
+      <table className="w-full text-left mt-5">
+        <thead>
+          <tr>
+            { attributes.map(a =>
+                <th key={ a } className="px-3 border-b-2">
+                  { getAttributeName(a) }
+                </th>
+              )
+            }
+            { actions.length ? <th className="border-b-2" colSpan={ actions.length }/> : null }
+          </tr>
+        </thead>
+        <tbody>
+          { dataItems.sort(makeSort())
+              .map(d =>
+                <tr onClick={ props.makeOnClick("dms:view", d) } key={ d.id }>
+                  { attributes.map(a =>
+                      <td key={ a } className="py-1 px-3">
+                        { d.data[a] }
+                      </td>
+                    )
+                  }
+                  { actions.map(a =>
+                      <td key={ get(a, "action", a) } className="text-right p-1">
+                        <div className="flex items-center justify-end">
+                          <DmsButton action={ a } item={ d }/>
+                        </div>
+                      </td>
+                    )
+                  }
+                </tr>
               )
           }
         </tbody>
       </table>
     </div>
+  )
+}
+const TR = ({ children, action, item, ...props }) => {
+  return (
+    <tr onClick={ useMakeOnClick(action, item, props) }>
+      { children }
+    </tr>
   )
 }
 DmsList.defaultProps = {

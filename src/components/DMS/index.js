@@ -3,7 +3,7 @@ import React from "react"
 import DmsComponents from "./components"
 
 import { ButtonContext } from "./contexts"
-// import { DmsButton } from "./components/parts"
+import { DmsButton } from "./components/parts"
 
 import { Header } from 'components/avl-components/components'
 
@@ -41,12 +41,14 @@ class DmsManager extends React.Component {
 
     if (/^(dms:)*list$/.test(dmsAction)) {
       return React.cloneElement(child,
-        { ...child.props,
-          ...props,
+        { ...props,
           app: this.props.app,
           type: this.props.type,
           format: this.props.format,
           dataItems: this.props.dataItems,
+          makeInteraction: this.props.makeInteraction,
+          makeOnClick: this.props.makeOnClick,
+          interact: this.props.interact,
           [this.props.type]: null
         }
       );
@@ -80,28 +82,28 @@ class DmsManager extends React.Component {
     if (stack.length > 1) {
       // actions.push(<DmsButton action="dms:back" key="back"/>)
       actions.push({
-        // comp: DmsButton,
-        // action: "dms:back",
-        ...this.props.makeInteraction("dms:back"),
-        children: "back"
+        comp: DmsButton,
+        action: "dms:back",
+        // ...this.props.makeInteraction("dms:back"),
+        // children: "back"
       })
     }
     if ((stack.length > 1) && showHome) {
        // actions.push(<DmsButton action="dms:home" key="home"/>)
        actions.push({
-         // comp: DmsButton,
-         // action: "dms:home",
-         ...this.props.makeInteraction("dms:home"),
-         children: "home"
+         comp: DmsButton,
+         action: "dms:home",
+         // ...this.props.makeInteraction("dms:home"),
+         // children: "home"
        })
     }
     if (dmsAction === "list") {
       // actions.push(<DmsButton action="dms:create" key="create"/>)
       actions.push({
-        // comp: DmsButton,
-        // action: "dms:create",
-        ...this.props.makeInteraction("dms:create"),
-        children: "create"
+        comp: DmsButton,
+        action: "dms:create",
+        // ...this.props.makeInteraction("dms:create"),
+        // children: "create"
       })
     }
 

@@ -40,9 +40,9 @@ export default ({
     }
   },
   children: [
-    // dms-manager children are special
-    // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list-custom", // generic dms component for viewing multiple data items
+// dms-manager children are special
+// they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
+    { type: "dms-list", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
         attributes: [

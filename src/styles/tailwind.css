@@ -4136,6 +4136,458 @@ DRAFT JS
   background-color: #751a3d;
 }
 
+.disabled\:bg-transparent:disabled {
+  background-color: transparent;
+}
+
+.disabled\:bg-white:disabled {
+  background-color: #ffffff;
+}
+
+.disabled\:bg-black:disabled {
+  background-color: #000000;
+}
+
+.disabled\:bg-gray-50:disabled {
+  background-color: #f9fafb;
+}
+
+.disabled\:bg-gray-100:disabled {
+  background-color: #f4f5f7;
+}
+
+.disabled\:bg-gray-200:disabled {
+  background-color: #e5e7eb;
+}
+
+.disabled\:bg-gray-300:disabled {
+  background-color: #d2d6dc;
+}
+
+.disabled\:bg-gray-400:disabled {
+  background-color: #9fa6b2;
+}
+
+.disabled\:bg-gray-500:disabled {
+  background-color: #6b7280;
+}
+
+.disabled\:bg-gray-600:disabled {
+  background-color: #4b5563;
+}
+
+.disabled\:bg-gray-700:disabled {
+  background-color: #374151;
+}
+
+.disabled\:bg-gray-800:disabled {
+  background-color: #252f3f;
+}
+
+.disabled\:bg-gray-900:disabled {
+  background-color: #161e2e;
+}
+
+.disabled\:bg-cool-gray-50:disabled {
+  background-color: #fbfdfe;
+}
+
+.disabled\:bg-cool-gray-100:disabled {
+  background-color: #f1f5f9;
+}
+
+.disabled\:bg-cool-gray-200:disabled {
+  background-color: #e2e8f0;
+}
+
+.disabled\:bg-cool-gray-300:disabled {
+  background-color: #cfd8e3;
+}
+
+.disabled\:bg-cool-gray-400:disabled {
+  background-color: #97a6ba;
+}
+
+.disabled\:bg-cool-gray-500:disabled {
+  background-color: #64748b;
+}
+
+.disabled\:bg-cool-gray-600:disabled {
+  background-color: #475569;
+}
+
+.disabled\:bg-cool-gray-700:disabled {
+  background-color: #364152;
+}
+
+.disabled\:bg-cool-gray-800:disabled {
+  background-color: #27303f;
+}
+
+.disabled\:bg-cool-gray-900:disabled {
+  background-color: #1a202e;
+}
+
+.disabled\:bg-red-50:disabled {
+  background-color: #fdf2f2;
+}
+
+.disabled\:bg-red-100:disabled {
+  background-color: #fde8e8;
+}
+
+.disabled\:bg-red-200:disabled {
+  background-color: #fbd5d5;
+}
+
+.disabled\:bg-red-300:disabled {
+  background-color: #f8b4b4;
+}
+
+.disabled\:bg-red-400:disabled {
+  background-color: #f98080;
+}
+
+.disabled\:bg-red-500:disabled {
+  background-color: #f05252;
+}
+
+.disabled\:bg-red-600:disabled {
+  background-color: #e02424;
+}
+
+.disabled\:bg-red-700:disabled {
+  background-color: #c81e1e;
+}
+
+.disabled\:bg-red-800:disabled {
+  background-color: #9b1c1c;
+}
+
+.disabled\:bg-red-900:disabled {
+  background-color: #771d1d;
+}
+
+.disabled\:bg-orange-50:disabled {
+  background-color: #fff8f1;
+}
+
+.disabled\:bg-orange-100:disabled {
+  background-color: #feecdc;
+}
+
+.disabled\:bg-orange-200:disabled {
+  background-color: #fcd9bd;
+}
+
+.disabled\:bg-orange-300:disabled {
+  background-color: #fdba8c;
+}
+
+.disabled\:bg-orange-400:disabled {
+  background-color: #ff8a4c;
+}
+
+.disabled\:bg-orange-500:disabled {
+  background-color: #ff5a1f;
+}
+
+.disabled\:bg-orange-600:disabled {
+  background-color: #d03801;
+}
+
+.disabled\:bg-orange-700:disabled {
+  background-color: #b43403;
+}
+
+.disabled\:bg-orange-800:disabled {
+  background-color: #8a2c0d;
+}
+
+.disabled\:bg-orange-900:disabled {
+  background-color: #771d1d;
+}
+
+.disabled\:bg-yellow-50:disabled {
+  background-color: #fdfdea;
+}
+
+.disabled\:bg-yellow-100:disabled {
+  background-color: #fdf6b2;
+}
+
+.disabled\:bg-yellow-200:disabled {
+  background-color: #fce96a;
+}
+
+.disabled\:bg-yellow-300:disabled {
+  background-color: #faca15;
+}
+
+.disabled\:bg-yellow-400:disabled {
+  background-color: #e3a008;
+}
+
+.disabled\:bg-yellow-500:disabled {
+  background-color: #c27803;
+}
+
+.disabled\:bg-yellow-600:disabled {
+  background-color: #9f580a;
+}
+
+.disabled\:bg-yellow-700:disabled {
+  background-color: #8e4b10;
+}
+
+.disabled\:bg-yellow-800:disabled {
+  background-color: #723b13;
+}
+
+.disabled\:bg-yellow-900:disabled {
+  background-color: #633112;
+}
+
+.disabled\:bg-green-50:disabled {
+  background-color: #f3faf7;
+}
+
+.disabled\:bg-green-100:disabled {
+  background-color: #def7ec;
+}
+
+.disabled\:bg-green-200:disabled {
+  background-color: #bcf0da;
+}
+
+.disabled\:bg-green-300:disabled {
+  background-color: #84e1bc;
+}
+
+.disabled\:bg-green-400:disabled {
+  background-color: #31c48d;
+}
+
+.disabled\:bg-green-500:disabled {
+  background-color: #0e9f6e;
+}
+
+.disabled\:bg-green-600:disabled {
+  background-color: #057a55;
+}
+
+.disabled\:bg-green-700:disabled {
+  background-color: #046c4e;
+}
+
+.disabled\:bg-green-800:disabled {
+  background-color: #03543f;
+}
+
+.disabled\:bg-green-900:disabled {
+  background-color: #014737;
+}
+
+.disabled\:bg-teal-50:disabled {
+  background-color: #edfafa;
+}
+
+.disabled\:bg-teal-100:disabled {
+  background-color: #d5f5f6;
+}
+
+.disabled\:bg-teal-200:disabled {
+  background-color: #afecef;
+}
+
+.disabled\:bg-teal-300:disabled {
+  background-color: #7edce2;
+}
+
+.disabled\:bg-teal-400:disabled {
+  background-color: #16bdca;
+}
+
+.disabled\:bg-teal-500:disabled {
+  background-color: #0694a2;
+}
+
+.disabled\:bg-teal-600:disabled {
+  background-color: #047481;
+}
+
+.disabled\:bg-teal-700:disabled {
+  background-color: #036672;
+}
+
+.disabled\:bg-teal-800:disabled {
+  background-color: #05505c;
+}
+
+.disabled\:bg-teal-900:disabled {
+  background-color: #014451;
+}
+
+.disabled\:bg-blue-50:disabled {
+  background-color: #ebf5ff;
+}
+
+.disabled\:bg-blue-100:disabled {
+  background-color: #e1effe;
+}
+
+.disabled\:bg-blue-200:disabled {
+  background-color: #c3ddfd;
+}
+
+.disabled\:bg-blue-300:disabled {
+  background-color: #a4cafe;
+}
+
+.disabled\:bg-blue-400:disabled {
+  background-color: #76a9fa;
+}
+
+.disabled\:bg-blue-500:disabled {
+  background-color: #3f83f8;
+}
+
+.disabled\:bg-blue-600:disabled {
+  background-color: #1c64f2;
+}
+
+.disabled\:bg-blue-700:disabled {
+  background-color: #1a56db;
+}
+
+.disabled\:bg-blue-800:disabled {
+  background-color: #1e429f;
+}
+
+.disabled\:bg-blue-900:disabled {
+  background-color: #233876;
+}
+
+.disabled\:bg-indigo-50:disabled {
+  background-color: #f0f5ff;
+}
+
+.disabled\:bg-indigo-100:disabled {
+  background-color: #e5edff;
+}
+
+.disabled\:bg-indigo-200:disabled {
+  background-color: #cddbfe;
+}
+
+.disabled\:bg-indigo-300:disabled {
+  background-color: #b4c6fc;
+}
+
+.disabled\:bg-indigo-400:disabled {
+  background-color: #8da2fb;
+}
+
+.disabled\:bg-indigo-500:disabled {
+  background-color: #6875f5;
+}
+
+.disabled\:bg-indigo-600:disabled {
+  background-color: #5850ec;
+}
+
+.disabled\:bg-indigo-700:disabled {
+  background-color: #5145cd;
+}
+
+.disabled\:bg-indigo-800:disabled {
+  background-color: #42389d;
+}
+
+.disabled\:bg-indigo-900:disabled {
+  background-color: #362f78;
+}
+
+.disabled\:bg-purple-50:disabled {
+  background-color: #f6f5ff;
+}
+
+.disabled\:bg-purple-100:disabled {
+  background-color: #edebfe;
+}
+
+.disabled\:bg-purple-200:disabled {
+  background-color: #dcd7fe;
+}
+
+.disabled\:bg-purple-300:disabled {
+  background-color: #cabffd;
+}
+
+.disabled\:bg-purple-400:disabled {
+  background-color: #ac94fa;
+}
+
+.disabled\:bg-purple-500:disabled {
+  background-color: #9061f9;
+}
+
+.disabled\:bg-purple-600:disabled {
+  background-color: #7e3af2;
+}
+
+.disabled\:bg-purple-700:disabled {
+  background-color: #6c2bd9;
+}
+
+.disabled\:bg-purple-800:disabled {
+  background-color: #5521b5;
+}
+
+.disabled\:bg-purple-900:disabled {
+  background-color: #4a1d96;
+}
+
+.disabled\:bg-pink-50:disabled {
+  background-color: #fdf2f8;
+}
+
+.disabled\:bg-pink-100:disabled {
+  background-color: #fce8f3;
+}
+
+.disabled\:bg-pink-200:disabled {
+  background-color: #fad1e8;
+}
+
+.disabled\:bg-pink-300:disabled {
+  background-color: #f8b4d9;
+}
+
+.disabled\:bg-pink-400:disabled {
+  background-color: #f17eb8;
+}
+
+.disabled\:bg-pink-500:disabled {
+  background-color: #e74694;
+}
+
+.disabled\:bg-pink-600:disabled {
+  background-color: #d61f69;
+}
+
+.disabled\:bg-pink-700:disabled {
+  background-color: #bf125d;
+}
+
+.disabled\:bg-pink-800:disabled {
+  background-color: #99154b;
+}
+
+.disabled\:bg-pink-900:disabled {
+  background-color: #751a3d;
+}
+
 .bg-bottom {
   background-position: bottom;
 }
@@ -7349,6 +7801,34 @@ DRAFT JS
 }
 
 .cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.disabled\:cursor-auto:disabled {
+  cursor: auto;
+}
+
+.disabled\:cursor-default:disabled {
+  cursor: default;
+}
+
+.disabled\:cursor-pointer:disabled {
+  cursor: pointer;
+}
+
+.disabled\:cursor-wait:disabled {
+  cursor: wait;
+}
+
+.disabled\:cursor-text:disabled {
+  cursor: text;
+}
+
+.disabled\:cursor-move:disabled {
+  cursor: move;
+}
+
+.disabled\:cursor-not-allowed:disabled {
   cursor: not-allowed;
 }
 
@@ -43472,6 +43952,458 @@ DRAFT JS
     background-color: #751a3d;
   }
 
+  .sm\:disabled\:bg-transparent:disabled {
+    background-color: transparent;
+  }
+
+  .sm\:disabled\:bg-white:disabled {
+    background-color: #ffffff;
+  }
+
+  .sm\:disabled\:bg-black:disabled {
+    background-color: #000000;
+  }
+
+  .sm\:disabled\:bg-gray-50:disabled {
+    background-color: #f9fafb;
+  }
+
+  .sm\:disabled\:bg-gray-100:disabled {
+    background-color: #f4f5f7;
+  }
+
+  .sm\:disabled\:bg-gray-200:disabled {
+    background-color: #e5e7eb;
+  }
+
+  .sm\:disabled\:bg-gray-300:disabled {
+    background-color: #d2d6dc;
+  }
+
+  .sm\:disabled\:bg-gray-400:disabled {
+    background-color: #9fa6b2;
+  }
+
+  .sm\:disabled\:bg-gray-500:disabled {
+    background-color: #6b7280;
+  }
+
+  .sm\:disabled\:bg-gray-600:disabled {
+    background-color: #4b5563;
+  }
+
+  .sm\:disabled\:bg-gray-700:disabled {
+    background-color: #374151;
+  }
+
+  .sm\:disabled\:bg-gray-800:disabled {
+    background-color: #252f3f;
+  }
+
+  .sm\:disabled\:bg-gray-900:disabled {
+    background-color: #161e2e;
+  }
+
+  .sm\:disabled\:bg-cool-gray-50:disabled {
+    background-color: #fbfdfe;
+  }
+
+  .sm\:disabled\:bg-cool-gray-100:disabled {
+    background-color: #f1f5f9;
+  }
+
+  .sm\:disabled\:bg-cool-gray-200:disabled {
+    background-color: #e2e8f0;
+  }
+
+  .sm\:disabled\:bg-cool-gray-300:disabled {
+    background-color: #cfd8e3;
+  }
+
+  .sm\:disabled\:bg-cool-gray-400:disabled {
+    background-color: #97a6ba;
+  }
+
+  .sm\:disabled\:bg-cool-gray-500:disabled {
+    background-color: #64748b;
+  }
+
+  .sm\:disabled\:bg-cool-gray-600:disabled {
+    background-color: #475569;
+  }
+
+  .sm\:disabled\:bg-cool-gray-700:disabled {
+    background-color: #364152;
+  }
+
+  .sm\:disabled\:bg-cool-gray-800:disabled {
+    background-color: #27303f;
+  }
+
+  .sm\:disabled\:bg-cool-gray-900:disabled {
+    background-color: #1a202e;
+  }
+
+  .sm\:disabled\:bg-red-50:disabled {
+    background-color: #fdf2f2;
+  }
+
+  .sm\:disabled\:bg-red-100:disabled {
+    background-color: #fde8e8;
+  }
+
+  .sm\:disabled\:bg-red-200:disabled {
+    background-color: #fbd5d5;
+  }
+
+  .sm\:disabled\:bg-red-300:disabled {
+    background-color: #f8b4b4;
+  }
+
+  .sm\:disabled\:bg-red-400:disabled {
+    background-color: #f98080;
+  }
+
+  .sm\:disabled\:bg-red-500:disabled {
+    background-color: #f05252;
+  }
+
+  .sm\:disabled\:bg-red-600:disabled {
+    background-color: #e02424;
+  }
+
+  .sm\:disabled\:bg-red-700:disabled {
+    background-color: #c81e1e;
+  }
+
+  .sm\:disabled\:bg-red-800:disabled {
+    background-color: #9b1c1c;
+  }
+
+  .sm\:disabled\:bg-red-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .sm\:disabled\:bg-orange-50:disabled {
+    background-color: #fff8f1;
+  }
+
+  .sm\:disabled\:bg-orange-100:disabled {
+    background-color: #feecdc;
+  }
+
+  .sm\:disabled\:bg-orange-200:disabled {
+    background-color: #fcd9bd;
+  }
+
+  .sm\:disabled\:bg-orange-300:disabled {
+    background-color: #fdba8c;
+  }
+
+  .sm\:disabled\:bg-orange-400:disabled {
+    background-color: #ff8a4c;
+  }
+
+  .sm\:disabled\:bg-orange-500:disabled {
+    background-color: #ff5a1f;
+  }
+
+  .sm\:disabled\:bg-orange-600:disabled {
+    background-color: #d03801;
+  }
+
+  .sm\:disabled\:bg-orange-700:disabled {
+    background-color: #b43403;
+  }
+
+  .sm\:disabled\:bg-orange-800:disabled {
+    background-color: #8a2c0d;
+  }
+
+  .sm\:disabled\:bg-orange-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .sm\:disabled\:bg-yellow-50:disabled {
+    background-color: #fdfdea;
+  }
+
+  .sm\:disabled\:bg-yellow-100:disabled {
+    background-color: #fdf6b2;
+  }
+
+  .sm\:disabled\:bg-yellow-200:disabled {
+    background-color: #fce96a;
+  }
+
+  .sm\:disabled\:bg-yellow-300:disabled {
+    background-color: #faca15;
+  }
+
+  .sm\:disabled\:bg-yellow-400:disabled {
+    background-color: #e3a008;
+  }
+
+  .sm\:disabled\:bg-yellow-500:disabled {
+    background-color: #c27803;
+  }
+
+  .sm\:disabled\:bg-yellow-600:disabled {
+    background-color: #9f580a;
+  }
+
+  .sm\:disabled\:bg-yellow-700:disabled {
+    background-color: #8e4b10;
+  }
+
+  .sm\:disabled\:bg-yellow-800:disabled {
+    background-color: #723b13;
+  }
+
+  .sm\:disabled\:bg-yellow-900:disabled {
+    background-color: #633112;
+  }
+
+  .sm\:disabled\:bg-green-50:disabled {
+    background-color: #f3faf7;
+  }
+
+  .sm\:disabled\:bg-green-100:disabled {
+    background-color: #def7ec;
+  }
+
+  .sm\:disabled\:bg-green-200:disabled {
+    background-color: #bcf0da;
+  }
+
+  .sm\:disabled\:bg-green-300:disabled {
+    background-color: #84e1bc;
+  }
+
+  .sm\:disabled\:bg-green-400:disabled {
+    background-color: #31c48d;
+  }
+
+  .sm\:disabled\:bg-green-500:disabled {
+    background-color: #0e9f6e;
+  }
+
+  .sm\:disabled\:bg-green-600:disabled {
+    background-color: #057a55;
+  }
+
+  .sm\:disabled\:bg-green-700:disabled {
+    background-color: #046c4e;
+  }
+
+  .sm\:disabled\:bg-green-800:disabled {
+    background-color: #03543f;
+  }
+
+  .sm\:disabled\:bg-green-900:disabled {
+    background-color: #014737;
+  }
+
+  .sm\:disabled\:bg-teal-50:disabled {
+    background-color: #edfafa;
+  }
+
+  .sm\:disabled\:bg-teal-100:disabled {
+    background-color: #d5f5f6;
+  }
+
+  .sm\:disabled\:bg-teal-200:disabled {
+    background-color: #afecef;
+  }
+
+  .sm\:disabled\:bg-teal-300:disabled {
+    background-color: #7edce2;
+  }
+
+  .sm\:disabled\:bg-teal-400:disabled {
+    background-color: #16bdca;
+  }
+
+  .sm\:disabled\:bg-teal-500:disabled {
+    background-color: #0694a2;
+  }
+
+  .sm\:disabled\:bg-teal-600:disabled {
+    background-color: #047481;
+  }
+
+  .sm\:disabled\:bg-teal-700:disabled {
+    background-color: #036672;
+  }
+
+  .sm\:disabled\:bg-teal-800:disabled {
+    background-color: #05505c;
+  }
+
+  .sm\:disabled\:bg-teal-900:disabled {
+    background-color: #014451;
+  }
+
+  .sm\:disabled\:bg-blue-50:disabled {
+    background-color: #ebf5ff;
+  }
+
+  .sm\:disabled\:bg-blue-100:disabled {
+    background-color: #e1effe;
+  }
+
+  .sm\:disabled\:bg-blue-200:disabled {
+    background-color: #c3ddfd;
+  }
+
+  .sm\:disabled\:bg-blue-300:disabled {
+    background-color: #a4cafe;
+  }
+
+  .sm\:disabled\:bg-blue-400:disabled {
+    background-color: #76a9fa;
+  }
+
+  .sm\:disabled\:bg-blue-500:disabled {
+    background-color: #3f83f8;
+  }
+
+  .sm\:disabled\:bg-blue-600:disabled {
+    background-color: #1c64f2;
+  }
+
+  .sm\:disabled\:bg-blue-700:disabled {
+    background-color: #1a56db;
+  }
+
+  .sm\:disabled\:bg-blue-800:disabled {
+    background-color: #1e429f;
+  }
+
+  .sm\:disabled\:bg-blue-900:disabled {
+    background-color: #233876;
+  }
+
+  .sm\:disabled\:bg-indigo-50:disabled {
+    background-color: #f0f5ff;
+  }
+
+  .sm\:disabled\:bg-indigo-100:disabled {
+    background-color: #e5edff;
+  }
+
+  .sm\:disabled\:bg-indigo-200:disabled {
+    background-color: #cddbfe;
+  }
+
+  .sm\:disabled\:bg-indigo-300:disabled {
+    background-color: #b4c6fc;
+  }
+
+  .sm\:disabled\:bg-indigo-400:disabled {
+    background-color: #8da2fb;
+  }
+
+  .sm\:disabled\:bg-indigo-500:disabled {
+    background-color: #6875f5;
+  }
+
+  .sm\:disabled\:bg-indigo-600:disabled {
+    background-color: #5850ec;
+  }
+
+  .sm\:disabled\:bg-indigo-700:disabled {
+    background-color: #5145cd;
+  }
+
+  .sm\:disabled\:bg-indigo-800:disabled {
+    background-color: #42389d;
+  }
+
+  .sm\:disabled\:bg-indigo-900:disabled {
+    background-color: #362f78;
+  }
+
+  .sm\:disabled\:bg-purple-50:disabled {
+    background-color: #f6f5ff;
+  }
+
+  .sm\:disabled\:bg-purple-100:disabled {
+    background-color: #edebfe;
+  }
+
+  .sm\:disabled\:bg-purple-200:disabled {
+    background-color: #dcd7fe;
+  }
+
+  .sm\:disabled\:bg-purple-300:disabled {
+    background-color: #cabffd;
+  }
+
+  .sm\:disabled\:bg-purple-400:disabled {
+    background-color: #ac94fa;
+  }
+
+  .sm\:disabled\:bg-purple-500:disabled {
+    background-color: #9061f9;
+  }
+
+  .sm\:disabled\:bg-purple-600:disabled {
+    background-color: #7e3af2;
+  }
+
+  .sm\:disabled\:bg-purple-700:disabled {
+    background-color: #6c2bd9;
+  }
+
+  .sm\:disabled\:bg-purple-800:disabled {
+    background-color: #5521b5;
+  }
+
+  .sm\:disabled\:bg-purple-900:disabled {
+    background-color: #4a1d96;
+  }
+
+  .sm\:disabled\:bg-pink-50:disabled {
+    background-color: #fdf2f8;
+  }
+
+  .sm\:disabled\:bg-pink-100:disabled {
+    background-color: #fce8f3;
+  }
+
+  .sm\:disabled\:bg-pink-200:disabled {
+    background-color: #fad1e8;
+  }
+
+  .sm\:disabled\:bg-pink-300:disabled {
+    background-color: #f8b4d9;
+  }
+
+  .sm\:disabled\:bg-pink-400:disabled {
+    background-color: #f17eb8;
+  }
+
+  .sm\:disabled\:bg-pink-500:disabled {
+    background-color: #e74694;
+  }
+
+  .sm\:disabled\:bg-pink-600:disabled {
+    background-color: #d61f69;
+  }
+
+  .sm\:disabled\:bg-pink-700:disabled {
+    background-color: #bf125d;
+  }
+
+  .sm\:disabled\:bg-pink-800:disabled {
+    background-color: #99154b;
+  }
+
+  .sm\:disabled\:bg-pink-900:disabled {
+    background-color: #751a3d;
+  }
+
   .sm\:bg-bottom {
     background-position: bottom;
   }
@@ -46685,6 +47617,34 @@ DRAFT JS
   }
 
   .sm\:cursor-not-allowed {
+    cursor: not-allowed;
+  }
+
+  .sm\:disabled\:cursor-auto:disabled {
+    cursor: auto;
+  }
+
+  .sm\:disabled\:cursor-default:disabled {
+    cursor: default;
+  }
+
+  .sm\:disabled\:cursor-pointer:disabled {
+    cursor: pointer;
+  }
+
+  .sm\:disabled\:cursor-wait:disabled {
+    cursor: wait;
+  }
+
+  .sm\:disabled\:cursor-text:disabled {
+    cursor: text;
+  }
+
+  .sm\:disabled\:cursor-move:disabled {
+    cursor: move;
+  }
+
+  .sm\:disabled\:cursor-not-allowed:disabled {
     cursor: not-allowed;
   }
 
@@ -82805,6 +83765,458 @@ DRAFT JS
     background-color: #751a3d;
   }
 
+  .md\:disabled\:bg-transparent:disabled {
+    background-color: transparent;
+  }
+
+  .md\:disabled\:bg-white:disabled {
+    background-color: #ffffff;
+  }
+
+  .md\:disabled\:bg-black:disabled {
+    background-color: #000000;
+  }
+
+  .md\:disabled\:bg-gray-50:disabled {
+    background-color: #f9fafb;
+  }
+
+  .md\:disabled\:bg-gray-100:disabled {
+    background-color: #f4f5f7;
+  }
+
+  .md\:disabled\:bg-gray-200:disabled {
+    background-color: #e5e7eb;
+  }
+
+  .md\:disabled\:bg-gray-300:disabled {
+    background-color: #d2d6dc;
+  }
+
+  .md\:disabled\:bg-gray-400:disabled {
+    background-color: #9fa6b2;
+  }
+
+  .md\:disabled\:bg-gray-500:disabled {
+    background-color: #6b7280;
+  }
+
+  .md\:disabled\:bg-gray-600:disabled {
+    background-color: #4b5563;
+  }
+
+  .md\:disabled\:bg-gray-700:disabled {
+    background-color: #374151;
+  }
+
+  .md\:disabled\:bg-gray-800:disabled {
+    background-color: #252f3f;
+  }
+
+  .md\:disabled\:bg-gray-900:disabled {
+    background-color: #161e2e;
+  }
+
+  .md\:disabled\:bg-cool-gray-50:disabled {
+    background-color: #fbfdfe;
+  }
+
+  .md\:disabled\:bg-cool-gray-100:disabled {
+    background-color: #f1f5f9;
+  }
+
+  .md\:disabled\:bg-cool-gray-200:disabled {
+    background-color: #e2e8f0;
+  }
+
+  .md\:disabled\:bg-cool-gray-300:disabled {
+    background-color: #cfd8e3;
+  }
+
+  .md\:disabled\:bg-cool-gray-400:disabled {
+    background-color: #97a6ba;
+  }
+
+  .md\:disabled\:bg-cool-gray-500:disabled {
+    background-color: #64748b;
+  }
+
+  .md\:disabled\:bg-cool-gray-600:disabled {
+    background-color: #475569;
+  }
+
+  .md\:disabled\:bg-cool-gray-700:disabled {
+    background-color: #364152;
+  }
+
+  .md\:disabled\:bg-cool-gray-800:disabled {
+    background-color: #27303f;
+  }
+
+  .md\:disabled\:bg-cool-gray-900:disabled {
+    background-color: #1a202e;
+  }
+
+  .md\:disabled\:bg-red-50:disabled {
+    background-color: #fdf2f2;
+  }
+
+  .md\:disabled\:bg-red-100:disabled {
+    background-color: #fde8e8;
+  }
+
+  .md\:disabled\:bg-red-200:disabled {
+    background-color: #fbd5d5;
+  }
+
+  .md\:disabled\:bg-red-300:disabled {
+    background-color: #f8b4b4;
+  }
+
+  .md\:disabled\:bg-red-400:disabled {
+    background-color: #f98080;
+  }
+
+  .md\:disabled\:bg-red-500:disabled {
+    background-color: #f05252;
+  }
+
+  .md\:disabled\:bg-red-600:disabled {
+    background-color: #e02424;
+  }
+
+  .md\:disabled\:bg-red-700:disabled {
+    background-color: #c81e1e;
+  }
+
+  .md\:disabled\:bg-red-800:disabled {
+    background-color: #9b1c1c;
+  }
+
+  .md\:disabled\:bg-red-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .md\:disabled\:bg-orange-50:disabled {
+    background-color: #fff8f1;
+  }
+
+  .md\:disabled\:bg-orange-100:disabled {
+    background-color: #feecdc;
+  }
+
+  .md\:disabled\:bg-orange-200:disabled {
+    background-color: #fcd9bd;
+  }
+
+  .md\:disabled\:bg-orange-300:disabled {
+    background-color: #fdba8c;
+  }
+
+  .md\:disabled\:bg-orange-400:disabled {
+    background-color: #ff8a4c;
+  }
+
+  .md\:disabled\:bg-orange-500:disabled {
+    background-color: #ff5a1f;
+  }
+
+  .md\:disabled\:bg-orange-600:disabled {
+    background-color: #d03801;
+  }
+
+  .md\:disabled\:bg-orange-700:disabled {
+    background-color: #b43403;
+  }
+
+  .md\:disabled\:bg-orange-800:disabled {
+    background-color: #8a2c0d;
+  }
+
+  .md\:disabled\:bg-orange-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .md\:disabled\:bg-yellow-50:disabled {
+    background-color: #fdfdea;
+  }
+
+  .md\:disabled\:bg-yellow-100:disabled {
+    background-color: #fdf6b2;
+  }
+
+  .md\:disabled\:bg-yellow-200:disabled {
+    background-color: #fce96a;
+  }
+
+  .md\:disabled\:bg-yellow-300:disabled {
+    background-color: #faca15;
+  }
+
+  .md\:disabled\:bg-yellow-400:disabled {
+    background-color: #e3a008;
+  }
+
+  .md\:disabled\:bg-yellow-500:disabled {
+    background-color: #c27803;
+  }
+
+  .md\:disabled\:bg-yellow-600:disabled {
+    background-color: #9f580a;
+  }
+
+  .md\:disabled\:bg-yellow-700:disabled {
+    background-color: #8e4b10;
+  }
+
+  .md\:disabled\:bg-yellow-800:disabled {
+    background-color: #723b13;
+  }
+
+  .md\:disabled\:bg-yellow-900:disabled {
+    background-color: #633112;
+  }
+
+  .md\:disabled\:bg-green-50:disabled {
+    background-color: #f3faf7;
+  }
+
+  .md\:disabled\:bg-green-100:disabled {
+    background-color: #def7ec;
+  }
+
+  .md\:disabled\:bg-green-200:disabled {
+    background-color: #bcf0da;
+  }
+
+  .md\:disabled\:bg-green-300:disabled {
+    background-color: #84e1bc;
+  }
+
+  .md\:disabled\:bg-green-400:disabled {
+    background-color: #31c48d;
+  }
+
+  .md\:disabled\:bg-green-500:disabled {
+    background-color: #0e9f6e;
+  }
+
+  .md\:disabled\:bg-green-600:disabled {
+    background-color: #057a55;
+  }
+
+  .md\:disabled\:bg-green-700:disabled {
+    background-color: #046c4e;
+  }
+
+  .md\:disabled\:bg-green-800:disabled {
+    background-color: #03543f;
+  }
+
+  .md\:disabled\:bg-green-900:disabled {
+    background-color: #014737;
+  }
+
+  .md\:disabled\:bg-teal-50:disabled {
+    background-color: #edfafa;
+  }
+
+  .md\:disabled\:bg-teal-100:disabled {
+    background-color: #d5f5f6;
+  }
+
+  .md\:disabled\:bg-teal-200:disabled {
+    background-color: #afecef;
+  }
+
+  .md\:disabled\:bg-teal-300:disabled {
+    background-color: #7edce2;
+  }
+
+  .md\:disabled\:bg-teal-400:disabled {
+    background-color: #16bdca;
+  }
+
+  .md\:disabled\:bg-teal-500:disabled {
+    background-color: #0694a2;
+  }
+
+  .md\:disabled\:bg-teal-600:disabled {
+    background-color: #047481;
+  }
+
+  .md\:disabled\:bg-teal-700:disabled {
+    background-color: #036672;
+  }
+
+  .md\:disabled\:bg-teal-800:disabled {
+    background-color: #05505c;
+  }
+
+  .md\:disabled\:bg-teal-900:disabled {
+    background-color: #014451;
+  }
+
+  .md\:disabled\:bg-blue-50:disabled {
+    background-color: #ebf5ff;
+  }
+
+  .md\:disabled\:bg-blue-100:disabled {
+    background-color: #e1effe;
+  }
+
+  .md\:disabled\:bg-blue-200:disabled {
+    background-color: #c3ddfd;
+  }
+
+  .md\:disabled\:bg-blue-300:disabled {
+    background-color: #a4cafe;
+  }
+
+  .md\:disabled\:bg-blue-400:disabled {
+    background-color: #76a9fa;
+  }
+
+  .md\:disabled\:bg-blue-500:disabled {
+    background-color: #3f83f8;
+  }
+
+  .md\:disabled\:bg-blue-600:disabled {
+    background-color: #1c64f2;
+  }
+
+  .md\:disabled\:bg-blue-700:disabled {
+    background-color: #1a56db;
+  }
+
+  .md\:disabled\:bg-blue-800:disabled {
+    background-color: #1e429f;
+  }
+
+  .md\:disabled\:bg-blue-900:disabled {
+    background-color: #233876;
+  }
+
+  .md\:disabled\:bg-indigo-50:disabled {
+    background-color: #f0f5ff;
+  }
+
+  .md\:disabled\:bg-indigo-100:disabled {
+    background-color: #e5edff;
+  }
+
+  .md\:disabled\:bg-indigo-200:disabled {
+    background-color: #cddbfe;
+  }
+
+  .md\:disabled\:bg-indigo-300:disabled {
+    background-color: #b4c6fc;
+  }
+
+  .md\:disabled\:bg-indigo-400:disabled {
+    background-color: #8da2fb;
+  }
+
+  .md\:disabled\:bg-indigo-500:disabled {
+    background-color: #6875f5;
+  }
+
+  .md\:disabled\:bg-indigo-600:disabled {
+    background-color: #5850ec;
+  }
+
+  .md\:disabled\:bg-indigo-700:disabled {
+    background-color: #5145cd;
+  }
+
+  .md\:disabled\:bg-indigo-800:disabled {
+    background-color: #42389d;
+  }
+
+  .md\:disabled\:bg-indigo-900:disabled {
+    background-color: #362f78;
+  }
+
+  .md\:disabled\:bg-purple-50:disabled {
+    background-color: #f6f5ff;
+  }
+
+  .md\:disabled\:bg-purple-100:disabled {
+    background-color: #edebfe;
+  }
+
+  .md\:disabled\:bg-purple-200:disabled {
+    background-color: #dcd7fe;
+  }
+
+  .md\:disabled\:bg-purple-300:disabled {
+    background-color: #cabffd;
+  }
+
+  .md\:disabled\:bg-purple-400:disabled {
+    background-color: #ac94fa;
+  }
+
+  .md\:disabled\:bg-purple-500:disabled {
+    background-color: #9061f9;
+  }
+
+  .md\:disabled\:bg-purple-600:disabled {
+    background-color: #7e3af2;
+  }
+
+  .md\:disabled\:bg-purple-700:disabled {
+    background-color: #6c2bd9;
+  }
+
+  .md\:disabled\:bg-purple-800:disabled {
+    background-color: #5521b5;
+  }
+
+  .md\:disabled\:bg-purple-900:disabled {
+    background-color: #4a1d96;
+  }
+
+  .md\:disabled\:bg-pink-50:disabled {
+    background-color: #fdf2f8;
+  }
+
+  .md\:disabled\:bg-pink-100:disabled {
+    background-color: #fce8f3;
+  }
+
+  .md\:disabled\:bg-pink-200:disabled {
+    background-color: #fad1e8;
+  }
+
+  .md\:disabled\:bg-pink-300:disabled {
+    background-color: #f8b4d9;
+  }
+
+  .md\:disabled\:bg-pink-400:disabled {
+    background-color: #f17eb8;
+  }
+
+  .md\:disabled\:bg-pink-500:disabled {
+    background-color: #e74694;
+  }
+
+  .md\:disabled\:bg-pink-600:disabled {
+    background-color: #d61f69;
+  }
+
+  .md\:disabled\:bg-pink-700:disabled {
+    background-color: #bf125d;
+  }
+
+  .md\:disabled\:bg-pink-800:disabled {
+    background-color: #99154b;
+  }
+
+  .md\:disabled\:bg-pink-900:disabled {
+    background-color: #751a3d;
+  }
+
   .md\:bg-bottom {
     background-position: bottom;
   }
@@ -86018,6 +87430,34 @@ DRAFT JS
   }
 
   .md\:cursor-not-allowed {
+    cursor: not-allowed;
+  }
+
+  .md\:disabled\:cursor-auto:disabled {
+    cursor: auto;
+  }
+
+  .md\:disabled\:cursor-default:disabled {
+    cursor: default;
+  }
+
+  .md\:disabled\:cursor-pointer:disabled {
+    cursor: pointer;
+  }
+
+  .md\:disabled\:cursor-wait:disabled {
+    cursor: wait;
+  }
+
+  .md\:disabled\:cursor-text:disabled {
+    cursor: text;
+  }
+
+  .md\:disabled\:cursor-move:disabled {
+    cursor: move;
+  }
+
+  .md\:disabled\:cursor-not-allowed:disabled {
     cursor: not-allowed;
   }
 
@@ -122138,6 +123578,458 @@ DRAFT JS
     background-color: #751a3d;
   }
 
+  .lg\:disabled\:bg-transparent:disabled {
+    background-color: transparent;
+  }
+
+  .lg\:disabled\:bg-white:disabled {
+    background-color: #ffffff;
+  }
+
+  .lg\:disabled\:bg-black:disabled {
+    background-color: #000000;
+  }
+
+  .lg\:disabled\:bg-gray-50:disabled {
+    background-color: #f9fafb;
+  }
+
+  .lg\:disabled\:bg-gray-100:disabled {
+    background-color: #f4f5f7;
+  }
+
+  .lg\:disabled\:bg-gray-200:disabled {
+    background-color: #e5e7eb;
+  }
+
+  .lg\:disabled\:bg-gray-300:disabled {
+    background-color: #d2d6dc;
+  }
+
+  .lg\:disabled\:bg-gray-400:disabled {
+    background-color: #9fa6b2;
+  }
+
+  .lg\:disabled\:bg-gray-500:disabled {
+    background-color: #6b7280;
+  }
+
+  .lg\:disabled\:bg-gray-600:disabled {
+    background-color: #4b5563;
+  }
+
+  .lg\:disabled\:bg-gray-700:disabled {
+    background-color: #374151;
+  }
+
+  .lg\:disabled\:bg-gray-800:disabled {
+    background-color: #252f3f;
+  }
+
+  .lg\:disabled\:bg-gray-900:disabled {
+    background-color: #161e2e;
+  }
+
+  .lg\:disabled\:bg-cool-gray-50:disabled {
+    background-color: #fbfdfe;
+  }
+
+  .lg\:disabled\:bg-cool-gray-100:disabled {
+    background-color: #f1f5f9;
+  }
+
+  .lg\:disabled\:bg-cool-gray-200:disabled {
+    background-color: #e2e8f0;
+  }
+
+  .lg\:disabled\:bg-cool-gray-300:disabled {
+    background-color: #cfd8e3;
+  }
+
+  .lg\:disabled\:bg-cool-gray-400:disabled {
+    background-color: #97a6ba;
+  }
+
+  .lg\:disabled\:bg-cool-gray-500:disabled {
+    background-color: #64748b;
+  }
+
+  .lg\:disabled\:bg-cool-gray-600:disabled {
+    background-color: #475569;
+  }
+
+  .lg\:disabled\:bg-cool-gray-700:disabled {
+    background-color: #364152;
+  }
+
+  .lg\:disabled\:bg-cool-gray-800:disabled {
+    background-color: #27303f;
+  }
+
+  .lg\:disabled\:bg-cool-gray-900:disabled {
+    background-color: #1a202e;
+  }
+
+  .lg\:disabled\:bg-red-50:disabled {
+    background-color: #fdf2f2;
+  }
+
+  .lg\:disabled\:bg-red-100:disabled {
+    background-color: #fde8e8;
+  }
+
+  .lg\:disabled\:bg-red-200:disabled {
+    background-color: #fbd5d5;
+  }
+
+  .lg\:disabled\:bg-red-300:disabled {
+    background-color: #f8b4b4;
+  }
+
+  .lg\:disabled\:bg-red-400:disabled {
+    background-color: #f98080;
+  }
+
+  .lg\:disabled\:bg-red-500:disabled {
+    background-color: #f05252;
+  }
+
+  .lg\:disabled\:bg-red-600:disabled {
+    background-color: #e02424;
+  }
+
+  .lg\:disabled\:bg-red-700:disabled {
+    background-color: #c81e1e;
+  }
+
+  .lg\:disabled\:bg-red-800:disabled {
+    background-color: #9b1c1c;
+  }
+
+  .lg\:disabled\:bg-red-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .lg\:disabled\:bg-orange-50:disabled {
+    background-color: #fff8f1;
+  }
+
+  .lg\:disabled\:bg-orange-100:disabled {
+    background-color: #feecdc;
+  }
+
+  .lg\:disabled\:bg-orange-200:disabled {
+    background-color: #fcd9bd;
+  }
+
+  .lg\:disabled\:bg-orange-300:disabled {
+    background-color: #fdba8c;
+  }
+
+  .lg\:disabled\:bg-orange-400:disabled {
+    background-color: #ff8a4c;
+  }
+
+  .lg\:disabled\:bg-orange-500:disabled {
+    background-color: #ff5a1f;
+  }
+
+  .lg\:disabled\:bg-orange-600:disabled {
+    background-color: #d03801;
+  }
+
+  .lg\:disabled\:bg-orange-700:disabled {
+    background-color: #b43403;
+  }
+
+  .lg\:disabled\:bg-orange-800:disabled {
+    background-color: #8a2c0d;
+  }
+
+  .lg\:disabled\:bg-orange-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .lg\:disabled\:bg-yellow-50:disabled {
+    background-color: #fdfdea;
+  }
+
+  .lg\:disabled\:bg-yellow-100:disabled {
+    background-color: #fdf6b2;
+  }
+
+  .lg\:disabled\:bg-yellow-200:disabled {
+    background-color: #fce96a;
+  }
+
+  .lg\:disabled\:bg-yellow-300:disabled {
+    background-color: #faca15;
+  }
+
+  .lg\:disabled\:bg-yellow-400:disabled {
+    background-color: #e3a008;
+  }
+
+  .lg\:disabled\:bg-yellow-500:disabled {
+    background-color: #c27803;
+  }
+
+  .lg\:disabled\:bg-yellow-600:disabled {
+    background-color: #9f580a;
+  }
+
+  .lg\:disabled\:bg-yellow-700:disabled {
+    background-color: #8e4b10;
+  }
+
+  .lg\:disabled\:bg-yellow-800:disabled {
+    background-color: #723b13;
+  }
+
+  .lg\:disabled\:bg-yellow-900:disabled {
+    background-color: #633112;
+  }
+
+  .lg\:disabled\:bg-green-50:disabled {
+    background-color: #f3faf7;
+  }
+
+  .lg\:disabled\:bg-green-100:disabled {
+    background-color: #def7ec;
+  }
+
+  .lg\:disabled\:bg-green-200:disabled {
+    background-color: #bcf0da;
+  }
+
+  .lg\:disabled\:bg-green-300:disabled {
+    background-color: #84e1bc;
+  }
+
+  .lg\:disabled\:bg-green-400:disabled {
+    background-color: #31c48d;
+  }
+
+  .lg\:disabled\:bg-green-500:disabled {
+    background-color: #0e9f6e;
+  }
+
+  .lg\:disabled\:bg-green-600:disabled {
+    background-color: #057a55;
+  }
+
+  .lg\:disabled\:bg-green-700:disabled {
+    background-color: #046c4e;
+  }
+
+  .lg\:disabled\:bg-green-800:disabled {
+    background-color: #03543f;
+  }
+
+  .lg\:disabled\:bg-green-900:disabled {
+    background-color: #014737;
+  }
+
+  .lg\:disabled\:bg-teal-50:disabled {
+    background-color: #edfafa;
+  }
+
+  .lg\:disabled\:bg-teal-100:disabled {
+    background-color: #d5f5f6;
+  }
+
+  .lg\:disabled\:bg-teal-200:disabled {
+    background-color: #afecef;
+  }
+
+  .lg\:disabled\:bg-teal-300:disabled {
+    background-color: #7edce2;
+  }
+
+  .lg\:disabled\:bg-teal-400:disabled {
+    background-color: #16bdca;
+  }
+
+  .lg\:disabled\:bg-teal-500:disabled {
+    background-color: #0694a2;
+  }
+
+  .lg\:disabled\:bg-teal-600:disabled {
+    background-color: #047481;
+  }
+
+  .lg\:disabled\:bg-teal-700:disabled {
+    background-color: #036672;
+  }
+
+  .lg\:disabled\:bg-teal-800:disabled {
+    background-color: #05505c;
+  }
+
+  .lg\:disabled\:bg-teal-900:disabled {
+    background-color: #014451;
+  }
+
+  .lg\:disabled\:bg-blue-50:disabled {
+    background-color: #ebf5ff;
+  }
+
+  .lg\:disabled\:bg-blue-100:disabled {
+    background-color: #e1effe;
+  }
+
+  .lg\:disabled\:bg-blue-200:disabled {
+    background-color: #c3ddfd;
+  }
+
+  .lg\:disabled\:bg-blue-300:disabled {
+    background-color: #a4cafe;
+  }
+
+  .lg\:disabled\:bg-blue-400:disabled {
+    background-color: #76a9fa;
+  }
+
+  .lg\:disabled\:bg-blue-500:disabled {
+    background-color: #3f83f8;
+  }
+
+  .lg\:disabled\:bg-blue-600:disabled {
+    background-color: #1c64f2;
+  }
+
+  .lg\:disabled\:bg-blue-700:disabled {
+    background-color: #1a56db;
+  }
+
+  .lg\:disabled\:bg-blue-800:disabled {
+    background-color: #1e429f;
+  }
+
+  .lg\:disabled\:bg-blue-900:disabled {
+    background-color: #233876;
+  }
+
+  .lg\:disabled\:bg-indigo-50:disabled {
+    background-color: #f0f5ff;
+  }
+
+  .lg\:disabled\:bg-indigo-100:disabled {
+    background-color: #e5edff;
+  }
+
+  .lg\:disabled\:bg-indigo-200:disabled {
+    background-color: #cddbfe;
+  }
+
+  .lg\:disabled\:bg-indigo-300:disabled {
+    background-color: #b4c6fc;
+  }
+
+  .lg\:disabled\:bg-indigo-400:disabled {
+    background-color: #8da2fb;
+  }
+
+  .lg\:disabled\:bg-indigo-500:disabled {
+    background-color: #6875f5;
+  }
+
+  .lg\:disabled\:bg-indigo-600:disabled {
+    background-color: #5850ec;
+  }
+
+  .lg\:disabled\:bg-indigo-700:disabled {
+    background-color: #5145cd;
+  }
+
+  .lg\:disabled\:bg-indigo-800:disabled {
+    background-color: #42389d;
+  }
+
+  .lg\:disabled\:bg-indigo-900:disabled {
+    background-color: #362f78;
+  }
+
+  .lg\:disabled\:bg-purple-50:disabled {
+    background-color: #f6f5ff;
+  }
+
+  .lg\:disabled\:bg-purple-100:disabled {
+    background-color: #edebfe;
+  }
+
+  .lg\:disabled\:bg-purple-200:disabled {
+    background-color: #dcd7fe;
+  }
+
+  .lg\:disabled\:bg-purple-300:disabled {
+    background-color: #cabffd;
+  }
+
+  .lg\:disabled\:bg-purple-400:disabled {
+    background-color: #ac94fa;
+  }
+
+  .lg\:disabled\:bg-purple-500:disabled {
+    background-color: #9061f9;
+  }
+
+  .lg\:disabled\:bg-purple-600:disabled {
+    background-color: #7e3af2;
+  }
+
+  .lg\:disabled\:bg-purple-700:disabled {
+    background-color: #6c2bd9;
+  }
+
+  .lg\:disabled\:bg-purple-800:disabled {
+    background-color: #5521b5;
+  }
+
+  .lg\:disabled\:bg-purple-900:disabled {
+    background-color: #4a1d96;
+  }
+
+  .lg\:disabled\:bg-pink-50:disabled {
+    background-color: #fdf2f8;
+  }
+
+  .lg\:disabled\:bg-pink-100:disabled {
+    background-color: #fce8f3;
+  }
+
+  .lg\:disabled\:bg-pink-200:disabled {
+    background-color: #fad1e8;
+  }
+
+  .lg\:disabled\:bg-pink-300:disabled {
+    background-color: #f8b4d9;
+  }
+
+  .lg\:disabled\:bg-pink-400:disabled {
+    background-color: #f17eb8;
+  }
+
+  .lg\:disabled\:bg-pink-500:disabled {
+    background-color: #e74694;
+  }
+
+  .lg\:disabled\:bg-pink-600:disabled {
+    background-color: #d61f69;
+  }
+
+  .lg\:disabled\:bg-pink-700:disabled {
+    background-color: #bf125d;
+  }
+
+  .lg\:disabled\:bg-pink-800:disabled {
+    background-color: #99154b;
+  }
+
+  .lg\:disabled\:bg-pink-900:disabled {
+    background-color: #751a3d;
+  }
+
   .lg\:bg-bottom {
     background-position: bottom;
   }
@@ -125351,6 +127243,34 @@ DRAFT JS
   }
 
   .lg\:cursor-not-allowed {
+    cursor: not-allowed;
+  }
+
+  .lg\:disabled\:cursor-auto:disabled {
+    cursor: auto;
+  }
+
+  .lg\:disabled\:cursor-default:disabled {
+    cursor: default;
+  }
+
+  .lg\:disabled\:cursor-pointer:disabled {
+    cursor: pointer;
+  }
+
+  .lg\:disabled\:cursor-wait:disabled {
+    cursor: wait;
+  }
+
+  .lg\:disabled\:cursor-text:disabled {
+    cursor: text;
+  }
+
+  .lg\:disabled\:cursor-move:disabled {
+    cursor: move;
+  }
+
+  .lg\:disabled\:cursor-not-allowed:disabled {
     cursor: not-allowed;
   }
 
@@ -161471,6 +163391,458 @@ DRAFT JS
     background-color: #751a3d;
   }
 
+  .xl\:disabled\:bg-transparent:disabled {
+    background-color: transparent;
+  }
+
+  .xl\:disabled\:bg-white:disabled {
+    background-color: #ffffff;
+  }
+
+  .xl\:disabled\:bg-black:disabled {
+    background-color: #000000;
+  }
+
+  .xl\:disabled\:bg-gray-50:disabled {
+    background-color: #f9fafb;
+  }
+
+  .xl\:disabled\:bg-gray-100:disabled {
+    background-color: #f4f5f7;
+  }
+
+  .xl\:disabled\:bg-gray-200:disabled {
+    background-color: #e5e7eb;
+  }
+
+  .xl\:disabled\:bg-gray-300:disabled {
+    background-color: #d2d6dc;
+  }
+
+  .xl\:disabled\:bg-gray-400:disabled {
+    background-color: #9fa6b2;
+  }
+
+  .xl\:disabled\:bg-gray-500:disabled {
+    background-color: #6b7280;
+  }
+
+  .xl\:disabled\:bg-gray-600:disabled {
+    background-color: #4b5563;
+  }
+
+  .xl\:disabled\:bg-gray-700:disabled {
+    background-color: #374151;
+  }
+
+  .xl\:disabled\:bg-gray-800:disabled {
+    background-color: #252f3f;
+  }
+
+  .xl\:disabled\:bg-gray-900:disabled {
+    background-color: #161e2e;
+  }
+
+  .xl\:disabled\:bg-cool-gray-50:disabled {
+    background-color: #fbfdfe;
+  }
+
+  .xl\:disabled\:bg-cool-gray-100:disabled {
+    background-color: #f1f5f9;
+  }
+
+  .xl\:disabled\:bg-cool-gray-200:disabled {
+    background-color: #e2e8f0;
+  }
+
+  .xl\:disabled\:bg-cool-gray-300:disabled {
+    background-color: #cfd8e3;
+  }
+
+  .xl\:disabled\:bg-cool-gray-400:disabled {
+    background-color: #97a6ba;
+  }
+
+  .xl\:disabled\:bg-cool-gray-500:disabled {
+    background-color: #64748b;
+  }
+
+  .xl\:disabled\:bg-cool-gray-600:disabled {
+    background-color: #475569;
+  }
+
+  .xl\:disabled\:bg-cool-gray-700:disabled {
+    background-color: #364152;
+  }
+
+  .xl\:disabled\:bg-cool-gray-800:disabled {
+    background-color: #27303f;
+  }
+
+  .xl\:disabled\:bg-cool-gray-900:disabled {
+    background-color: #1a202e;
+  }
+
+  .xl\:disabled\:bg-red-50:disabled {
+    background-color: #fdf2f2;
+  }
+
+  .xl\:disabled\:bg-red-100:disabled {
+    background-color: #fde8e8;
+  }
+
+  .xl\:disabled\:bg-red-200:disabled {
+    background-color: #fbd5d5;
+  }
+
+  .xl\:disabled\:bg-red-300:disabled {
+    background-color: #f8b4b4;
+  }
+
+  .xl\:disabled\:bg-red-400:disabled {
+    background-color: #f98080;
+  }
+
+  .xl\:disabled\:bg-red-500:disabled {
+    background-color: #f05252;
+  }
+
+  .xl\:disabled\:bg-red-600:disabled {
+    background-color: #e02424;
+  }
+
+  .xl\:disabled\:bg-red-700:disabled {
+    background-color: #c81e1e;
+  }
+
+  .xl\:disabled\:bg-red-800:disabled {
+    background-color: #9b1c1c;
+  }
+
+  .xl\:disabled\:bg-red-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .xl\:disabled\:bg-orange-50:disabled {
+    background-color: #fff8f1;
+  }
+
+  .xl\:disabled\:bg-orange-100:disabled {
+    background-color: #feecdc;
+  }
+
+  .xl\:disabled\:bg-orange-200:disabled {
+    background-color: #fcd9bd;
+  }
+
+  .xl\:disabled\:bg-orange-300:disabled {
+    background-color: #fdba8c;
+  }
+
+  .xl\:disabled\:bg-orange-400:disabled {
+    background-color: #ff8a4c;
+  }
+
+  .xl\:disabled\:bg-orange-500:disabled {
+    background-color: #ff5a1f;
+  }
+
+  .xl\:disabled\:bg-orange-600:disabled {
+    background-color: #d03801;
+  }
+
+  .xl\:disabled\:bg-orange-700:disabled {
+    background-color: #b43403;
+  }
+
+  .xl\:disabled\:bg-orange-800:disabled {
+    background-color: #8a2c0d;
+  }
+
+  .xl\:disabled\:bg-orange-900:disabled {
+    background-color: #771d1d;
+  }
+
+  .xl\:disabled\:bg-yellow-50:disabled {
+    background-color: #fdfdea;
+  }
+
+  .xl\:disabled\:bg-yellow-100:disabled {
+    background-color: #fdf6b2;
+  }
+
+  .xl\:disabled\:bg-yellow-200:disabled {
+    background-color: #fce96a;
+  }
+
+  .xl\:disabled\:bg-yellow-300:disabled {
+    background-color: #faca15;
+  }
+
+  .xl\:disabled\:bg-yellow-400:disabled {
+    background-color: #e3a008;
+  }
+
+  .xl\:disabled\:bg-yellow-500:disabled {
+    background-color: #c27803;
+  }
+
+  .xl\:disabled\:bg-yellow-600:disabled {
+    background-color: #9f580a;
+  }
+
+  .xl\:disabled\:bg-yellow-700:disabled {
+    background-color: #8e4b10;
+  }
+
+  .xl\:disabled\:bg-yellow-800:disabled {
+    background-color: #723b13;
+  }
+
+  .xl\:disabled\:bg-yellow-900:disabled {
+    background-color: #633112;
+  }
+
+  .xl\:disabled\:bg-green-50:disabled {
+    background-color: #f3faf7;
+  }
+
+  .xl\:disabled\:bg-green-100:disabled {
+    background-color: #def7ec;
+  }
+
+  .xl\:disabled\:bg-green-200:disabled {
+    background-color: #bcf0da;
+  }
+
+  .xl\:disabled\:bg-green-300:disabled {
+    background-color: #84e1bc;
+  }
+
+  .xl\:disabled\:bg-green-400:disabled {
+    background-color: #31c48d;
+  }
+
+  .xl\:disabled\:bg-green-500:disabled {
+    background-color: #0e9f6e;
+  }
+
+  .xl\:disabled\:bg-green-600:disabled {
+    background-color: #057a55;
+  }
+
+  .xl\:disabled\:bg-green-700:disabled {
+    background-color: #046c4e;
+  }
+
+  .xl\:disabled\:bg-green-800:disabled {
+    background-color: #03543f;
+  }
+
+  .xl\:disabled\:bg-green-900:disabled {
+    background-color: #014737;
+  }
+
+  .xl\:disabled\:bg-teal-50:disabled {
+    background-color: #edfafa;
+  }
+
+  .xl\:disabled\:bg-teal-100:disabled {
+    background-color: #d5f5f6;
+  }
+
+  .xl\:disabled\:bg-teal-200:disabled {
+    background-color: #afecef;
+  }
+
+  .xl\:disabled\:bg-teal-300:disabled {
+    background-color: #7edce2;
+  }
+
+  .xl\:disabled\:bg-teal-400:disabled {
+    background-color: #16bdca;
+  }
+
+  .xl\:disabled\:bg-teal-500:disabled {
+    background-color: #0694a2;
+  }
+
+  .xl\:disabled\:bg-teal-600:disabled {
+    background-color: #047481;
+  }
+
+  .xl\:disabled\:bg-teal-700:disabled {
+    background-color: #036672;
+  }
+
+  .xl\:disabled\:bg-teal-800:disabled {
+    background-color: #05505c;
+  }
+
+  .xl\:disabled\:bg-teal-900:disabled {
+    background-color: #014451;
+  }
+
+  .xl\:disabled\:bg-blue-50:disabled {
+    background-color: #ebf5ff;
+  }
+
+  .xl\:disabled\:bg-blue-100:disabled {
+    background-color: #e1effe;
+  }
+
+  .xl\:disabled\:bg-blue-200:disabled {
+    background-color: #c3ddfd;
+  }
+
+  .xl\:disabled\:bg-blue-300:disabled {
+    background-color: #a4cafe;
+  }
+
+  .xl\:disabled\:bg-blue-400:disabled {
+    background-color: #76a9fa;
+  }
+
+  .xl\:disabled\:bg-blue-500:disabled {
+    background-color: #3f83f8;
+  }
+
+  .xl\:disabled\:bg-blue-600:disabled {
+    background-color: #1c64f2;
+  }
+
+  .xl\:disabled\:bg-blue-700:disabled {
+    background-color: #1a56db;
+  }
+
+  .xl\:disabled\:bg-blue-800:disabled {
+    background-color: #1e429f;
+  }
+
+  .xl\:disabled\:bg-blue-900:disabled {
+    background-color: #233876;
+  }
+
+  .xl\:disabled\:bg-indigo-50:disabled {
+    background-color: #f0f5ff;
+  }
+
+  .xl\:disabled\:bg-indigo-100:disabled {
+    background-color: #e5edff;
+  }
+
+  .xl\:disabled\:bg-indigo-200:disabled {
+    background-color: #cddbfe;
+  }
+
+  .xl\:disabled\:bg-indigo-300:disabled {
+    background-color: #b4c6fc;
+  }
+
+  .xl\:disabled\:bg-indigo-400:disabled {
+    background-color: #8da2fb;
+  }
+
+  .xl\:disabled\:bg-indigo-500:disabled {
+    background-color: #6875f5;
+  }
+
+  .xl\:disabled\:bg-indigo-600:disabled {
+    background-color: #5850ec;
+  }
+
+  .xl\:disabled\:bg-indigo-700:disabled {
+    background-color: #5145cd;
+  }
+
+  .xl\:disabled\:bg-indigo-800:disabled {
+    background-color: #42389d;
+  }
+
+  .xl\:disabled\:bg-indigo-900:disabled {
+    background-color: #362f78;
+  }
+
+  .xl\:disabled\:bg-purple-50:disabled {
+    background-color: #f6f5ff;
+  }
+
+  .xl\:disabled\:bg-purple-100:disabled {
+    background-color: #edebfe;
+  }
+
+  .xl\:disabled\:bg-purple-200:disabled {
+    background-color: #dcd7fe;
+  }
+
+  .xl\:disabled\:bg-purple-300:disabled {
+    background-color: #cabffd;
+  }
+
+  .xl\:disabled\:bg-purple-400:disabled {
+    background-color: #ac94fa;
+  }
+
+  .xl\:disabled\:bg-purple-500:disabled {
+    background-color: #9061f9;
+  }
+
+  .xl\:disabled\:bg-purple-600:disabled {
+    background-color: #7e3af2;
+  }
+
+  .xl\:disabled\:bg-purple-700:disabled {
+    background-color: #6c2bd9;
+  }
+
+  .xl\:disabled\:bg-purple-800:disabled {
+    background-color: #5521b5;
+  }
+
+  .xl\:disabled\:bg-purple-900:disabled {
+    background-color: #4a1d96;
+  }
+
+  .xl\:disabled\:bg-pink-50:disabled {
+    background-color: #fdf2f8;
+  }
+
+  .xl\:disabled\:bg-pink-100:disabled {
+    background-color: #fce8f3;
+  }
+
+  .xl\:disabled\:bg-pink-200:disabled {
+    background-color: #fad1e8;
+  }
+
+  .xl\:disabled\:bg-pink-300:disabled {
+    background-color: #f8b4d9;
+  }
+
+  .xl\:disabled\:bg-pink-400:disabled {
+    background-color: #f17eb8;
+  }
+
+  .xl\:disabled\:bg-pink-500:disabled {
+    background-color: #e74694;
+  }
+
+  .xl\:disabled\:bg-pink-600:disabled {
+    background-color: #d61f69;
+  }
+
+  .xl\:disabled\:bg-pink-700:disabled {
+    background-color: #bf125d;
+  }
+
+  .xl\:disabled\:bg-pink-800:disabled {
+    background-color: #99154b;
+  }
+
+  .xl\:disabled\:bg-pink-900:disabled {
+    background-color: #751a3d;
+  }
+
   .xl\:bg-bottom {
     background-position: bottom;
   }
@@ -164684,6 +167056,34 @@ DRAFT JS
   }
 
   .xl\:cursor-not-allowed {
+    cursor: not-allowed;
+  }
+
+  .xl\:disabled\:cursor-auto:disabled {
+    cursor: auto;
+  }
+
+  .xl\:disabled\:cursor-default:disabled {
+    cursor: default;
+  }
+
+  .xl\:disabled\:cursor-pointer:disabled {
+    cursor: pointer;
+  }
+
+  .xl\:disabled\:cursor-wait:disabled {
+    cursor: wait;
+  }
+
+  .xl\:disabled\:cursor-text:disabled {
+    cursor: text;
+  }
+
+  .xl\:disabled\:cursor-move:disabled {
+    cursor: move;
+  }
+
+  .xl\:disabled\:cursor-not-allowed:disabled {
     cursor: not-allowed;
   }
 

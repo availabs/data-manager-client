@@ -1,9 +1,204 @@
-import React from "react"
+import React, { useContext } from "react"
 
-import { AuthContext, DmsContext } from "../contexts"
+import { AuthContext, DmsContext, RouterContext } from "../contexts"
 import { checkAuth } from "../utils"
 
 import get from "lodash.get"
+
+const processAction = arg => {
+  let response = {
+    action: "unknown",
+    seedProps: () => null,
+    showConfirm: false,
+    label: null
+  };
+  if (typeof arg === "string") {
+    response.action = arg;
+  }
+  else {
+    response = { ...response, ...arg };
+  }
+  return response;
+}
+
+const getItem = (id, props) => {
+  return (props.dataItems || []).reduce((a, c) => c.id === id ? c : a, null);
+}
+
+const normalizeArgs = (dmsAction, item, props, ...rest) => {
+  let itemId = null;
+  if (typeof item === "object") {
+    itemId = get(item, "id", null);
+  }
+  else {
+    itemId = item;
+    item = getItem(itemId, props);
+  }
+  return [
+    processAction(dmsAction),
+    item,
+    itemId,
+    props,
+    props.interact,
+    ...rest
+  ]
+}
+const makeInteraction = (...args) => {
+  const [
+    { action, seedProps, ...rest },
+    item, itemId,
+    props,
+    interact
+  ] = normalizeArgs(...args);
+
+  const { authRules, useRouter, basePath, location, history } = props,
+
+    hasAuth = checkAuth(authRules, action, props, item);
+
+  if (useRouter && hasAuth) {
+    const { push } = history,
+      { pathname } = location,
+      state = get(location, "state", null) || [],
+      length = state.length;
+
+      if (useRouter && hasAuth) {
+        const { push } = history,
+          { pathname } = location,
+          state = get(location, "state", null) || [],
+          length = state.length;
+
+        return /^(dms:)*back$/.test(action) ?
+          { type: "link",
+            key: action,
+            action, ...rest,
+            to: {
+              pathname: get(state, [length - 1], basePath),
+              state: state.slice(0, length - 1)
+            }
+          }
+          : /^(dms:)*home$/.test(action) ?
+            { type: "link",
+              key: action,
+              action, ...rest,
+              to: {
+                pathname: basePath,
+                state: []
+              }
+            }
+          : /^api:/.test(action) ?
+            { tpye: "button",
+              key: action,
+              action, ...rest,
+              onClick: e => {
+                e.stopPropagation();
+                return Promise.resolve(interact(action, itemId, seedProps(props)))
+                  .then(() => push({
+                    pathname: get(state, [length - 1], basePath),
+                    state: state.slice(0, length - 1)
+                  }))
+              }
+            }
+          : { type: "link",
+              key: action,
+              action, ...rest,
+              to: {
+                pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
+                state: [...state, pathname]
+              }
+            }
+      }
+      return {
+        type: "button",
+        key: action,
+        action, ...rest,
+        onClick: e => {
+          e.stopPropagation();
+          if (!hasAuth) return Promise.resolve();
+          return Promise.resolve(interact(action, itemId, seedProps(props)))
+            .then(() => /^api:/.test(action) && interact("dms:back"));
+        }
+      }
+  }
+}
+export const useMakeInteraction = (dmsAction, item, props) => {
+  props = {
+    ...props,
+    ...useContext(DmsContext),
+    ...useContext(AuthContext),
+    ...useContext(RouterContext)
+  }
+  return makeInteraction(dmsAction, item, props)
+}
+
+const makeOnClick = (...args) => {
+  const [
+    { action, seedProps, ...rest },
+    item, itemId,
+    props,
+    interact
+  ] = normalizeArgs(...args);
+
+  const { authRules, useRouter, basePath, location, history } = props,
+
+    hasAuth = checkAuth(authRules, action, props, item);
+
+  if (useRouter && hasAuth) {
+    const { push } = history,
+      { pathname } = location,
+      state = get(location, "state", null) || [],
+      length = state.length;
+
+    return /^(dms:)*back$/.test(action) ?
+      (e => {
+        e.stopPropagation();
+        push({
+          pathname: get(state, [length - 1], basePath),
+          state: state.slice(0, length - 1)
+        });
+      })
+      : /^(dms:)*home$/.test(action) ?
+        (e => {
+          e.stopPropagation();
+          push({
+            pathname: basePath,
+            state: []
+          });
+        })
+      : /^api:/.test(action) ?
+        (e => {
+          e.stopPropagation();
+          return Promise.resolve(interact(action, itemId, seedProps(props)))
+            .then(() => push({
+              pathname: get(state, [length - 1], basePath),
+              state: state.slice(0, length - 1)
+            }))
+        })
+      : (e => {
+          e.stopPropagation();
+          push({
+            pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
+            state: [...state, pathname]
+          })
+        })
+  }
+  return (
+    e => {
+      e.stopPropagation();
+      if (!hasAuth) return Promise.resolve();
+      return Promise.resolve(interact(action, itemId, seedProps(props)))
+        .then(() => /^api:/.test(action) && interact("dms:back"));
+    }
+  )
+}
+export const useMakeOnClick = (dmsAction, item, props) => {
+  props = {
+    ...props,
+    ...useContext(DmsContext),
+    ...useContext(AuthContext),
+    ...useContext(RouterContext)
+  }
+  return makeOnClick(dmsAction, item, props)
+}
 
 export default (Component, options = {}) => {
   const {
@@ -42,10 +237,6 @@ export default (Component, options = {}) => {
       this.makeOnClick = this.makeOnClick.bind(this);
     }
 
-    getItem(id) {
-      return this.props.dataItems.reduce((a, c) => c.id === id ? c : a, null)
-    }
-
     componentDidMount() {
       const { action, id } = get(this.props, "params", {});
       if (action) {
@@ -58,170 +249,16 @@ export default (Component, options = {}) => {
       }
     }
 
-    processAction(arg) {
-      let response = {
-        action: "unknown",
-        seedProps: () => null,
-        showConfirm: false,
-        label: null,
-        color: null
-      };
-      if (typeof arg === "string") {
-        response.action = arg;
-      }
-      else {
-        response = { ...response, ...arg };
-      }
-      return response;
+    getItem(id) {
+      return getItem(id, this.props);
     }
 
-    normalizeArgs(dmsAction, item, props) {
-      let itemId = null;
-      if (typeof item === "object") {
-        itemId = get(item, "id", null);
-      }
-      else {
-        itemId = item;
-        item = this.getItem(itemId);
-      }
-      return [
-        this.processAction(dmsAction),
-        item,
-        itemId,
-        { ...this.props, ...props }
-      ]
+    makeOnClick(dmsAction, item, props) {
+console.log("makeOnClick:", dmsAction, item, props)
+      return makeOnClick(dmsAction, item, { ...this.props, ...props, interact: this.interact })
     }
-    makeOnClick(...args) {
-      const [
-        { action, seedProps },
-        item, itemId,
-        props
-      ] = this.normalizeArgs(...args);
-
-      const { authRules, useRouter, basePath, location, history } = props,
-
-        hasAuth = checkAuth(authRules, action, props, item);
-
-      if (useRouter && hasAuth) {
-        const { push } = history,
-          { pathname } = location,
-          state = get(location, "state", null) || [],
-          length = state.length;
-
-        return /^(dms:)*back$/.test(action) ?
-          { key: action,
-            onClick: e => {
-              e.stopPropagation();
-              push({
-                pathname: get(state, [length - 1], basePath),
-                state: state.slice(0, length - 1)
-              });
-            }
-          }
-          : /^(dms:)*home$/.test(action) ?
-            { key: action,
-              onClick: e => {
-                e.stopPropagation();
-                push({
-                  pathname: basePath,
-                  state: []
-                });
-              }
-            }
-          : /^api:/.test(action) ?
-            { key: action,
-              onClick: e => {
-                e.stopPropagation();
-                return Promise.resolve(this.interact(action, itemId, seedProps(props)))
-                  .then(() => push({
-                    pathname: get(state, [length - 1], basePath),
-                    state: state.slice(0, length - 1)
-                  }))
-              }
-            }
-          : { key: action,
-            onClick: e => {
-                e.stopPropagation();
-                push({
-                  pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-                  state: [...state, pathname]
-                });
-              }
-            }
-      }
-      return {
-        key: action,
-        onClick: e => {
-          e.stopPropagation();
-          if (!hasAuth) return Promise.resolve();
-          return Promise.resolve(this.interact(action, itemId, seedProps(props)))
-            .then(() => /^api:/.test(action) && this.interact("dms:back"));
-        }
-      }
-    }
-    makeInteraction(...args) {
-      const [
-        { action, seedProps },
-        item, itemId,
-        props
-      ] = this.normalizeArgs(...args);
-
-      const { authRules, useRouter, basePath, location, history } = props,
-
-        hasAuth = checkAuth(authRules, action, props, item);
-
-      if (useRouter && hasAuth) {
-        const { push } = history,
-          { pathname } = location,
-          state = get(location, "state", null) || [],
-          length = state.length;
-
-        return /^(dms:)*back$/.test(action) ?
-          { type: "link",
-            key: action,
-            to: {
-              pathname: get(state, [length - 1], basePath),
-              state: state.slice(0, length - 1)
-            }
-          }
-          : /^(dms:)*home$/.test(action) ?
-            { type: "link",
-              key: action,
-              to: {
-                pathname: basePath,
-                state: []
-              }
-            }
-          : /^api:/.test(action) ?
-            { tpye: "button",
-              key: action,
-              onClick: e => {
-                e.stopPropagation();
-                return Promise.resolve(this.interact(action, itemId, seedProps(props)))
-                  .then(() => push({
-                    pathname: get(state, [length - 1], basePath),
-                    state: state.slice(0, length - 1)
-                  }))
-              }
-            }
-          : { type: "link",
-              key: action,
-              to: {
-                pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-                state: [...state, pathname]
-              }
-            }
-      }
-      return {
-        type: "button",
-        key: action,
-        onClick: e => {
-          e.stopPropagation();
-          if (!hasAuth) return Promise.resolve();
-          return Promise.resolve(this.interact(action, itemId, seedProps(props)))
-            .then(() => /^api:/.test(action) && this.interact("dms:back"));
-        }
-      }
+    makeInteraction(dmsAction, item, props) {
+      return makeInteraction(dmsAction, item, { ...this.props, ...props, interact: this.interact });
     }
 
     interact(dmsAction, id, props) {

@@ -44,9 +44,7 @@ const DmsList = ({ ...props }) => {
           accessor: get(a, "action", a),
           Header: d => null,
           Cell: (props) =>  {
-            // console.log('props', props, props.row.original)
             return <DmsButton action={ props.value } item={ props.row } buttonTheme="buttonText" />
-
           }
         }
       })
@@ -64,7 +62,6 @@ const DmsList = ({ ...props }) => {
       }
     })
 
-  //console.log("DATA:", columns, data)
   return !props.dataItems.length ? null : (
     <Content>
       { props.title ? <Header title={ props.title } /> : null } 
