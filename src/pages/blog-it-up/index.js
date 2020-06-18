@@ -17,7 +17,7 @@ export default {
   // exact: true,
   auth: true,
   name: 'Blog It Up',
-  icon: '',
+  icon: 'fas fa-blog',
   layoutSettings: {
     fixed: false,
     nav: 'side',

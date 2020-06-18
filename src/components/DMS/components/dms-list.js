@@ -37,7 +37,6 @@ const DmsList = ({ ...props }) => {
     }
   }
 
-console.log("ACTIONS:", actions)
   return !props.dataItems.length ? null : (
     <div className={ props.className }>
       { props.title ? <Title>{ props.title }</Title> : null }

@@ -15,7 +15,13 @@ export const DMS_DOCS = {
     },
     { key: "chapter",
       type: "text",
-      required: true
+      required: true,
+      verify: ["^\\d+([.]\\d+)*$"]
+    },
+    { key: "test2",
+      type: "number",
+      min: 0,
+      max: 10
     },
     { key: 'tags',
       type: 'text-array'

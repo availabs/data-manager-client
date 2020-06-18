@@ -11,9 +11,7 @@ export default ({
     { type: "dms-provider",
       options: {
         buttonThemes: {
-          create: "buttonText",
-          back: "buttonText",
-          home: "buttonText"
+          delete: "buttonDanger"
         }
       }
     },
@@ -123,14 +121,11 @@ export default ({
           options: {
             mapDataToProps: {
               title: "item:data.title",
-              chapter: ["item:data.chapter"],
+              chapter: "item:data.chapter",
               body: "item:data.body",
-              footer: ["item:updated_at"]
+              updated_at: "item:updated_at"
             },
-            actions: [{
-              action: "api:delete",
-              showConfirm: true
-            }]
+            actions: ["api:delete"]
           }
         }
       ]

@@ -15,6 +15,15 @@ export const ITEM_REGEX = /^item:(.+)$/;
 export const PROPS_REGEX = /^props:(.+)$/;
 const SELF_REGEX = /^self:(.+)$/;
 
+export const dmsIsNum = value => {
+  if ((value === "") ||
+      (value === null) ||
+      isNaN(value)) {
+    return false
+  }
+  return true
+}
+
 export const makeFilter = (filter, sources) => {
   if (!sources) {
     sources = { props: filter }

@@ -20,7 +20,7 @@ export default {
   // exact: true,
   auth: true,
   name: 'DMS Docs',
-  icon: 'HomeOutline',
+  icon: 'far fa-sticky-note',
   layoutSettings: {
     fixed: true,
     nav: 'side',

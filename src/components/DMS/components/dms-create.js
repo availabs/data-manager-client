@@ -2,14 +2,14 @@ import React from "react"
 
 import {
   DmsButton, Input, TextArea,
-  getButtonClassName,
+  // getButtonClassName,
 } from "./parts"
 import Select from "./select"
 import Editor from "./editor"
 
 import { Button } from "components/avl-components/components/Button/Button"
 
-import { prettyKey } from "../utils"
+import { prettyKey, dmsIsNum } from "../utils"
 
 import deepequal from "deep-equal"
 import get from "lodash.get"
@@ -172,7 +172,7 @@ class ImgInput extends React.Component {
           :
             <div className="flex flex-col items-center">
               <div>
-                <label className={ getButtonClassName({}) }
+                <label className={ null }
                   htmlFor={ this.props.id }>Select an image file...</label>
                 <input className="py-1 px-2 w-full rounded hidden" id={ this.props.id }
                   type="file" accept="image/*" placeholder="..."
@@ -257,8 +257,17 @@ export default class DmsCreate extends React.Component {
     return get(this.props, ["format", "attributes"], [])
       .filter(att => att.editable !== false)
       .reduce((a, c) => {
-        if (!c.required) return a;
-        return a && Boolean(this.state[c.key]);
+        const value = this.state[c.key];
+
+        if ((c.type === "number") && dmsIsNum(value)) {
+          if (!/^(-(?=[1-9]|(0[.]0*[1-9]+)))?\d*[.]?\d+/.test(value)) return false;
+        }
+        else if (c.verify && Boolean(value)) {
+          const args = Array.isArray(c.verify) ? c.verify : [c.verify],
+            regex = new RegExp(...args);
+          if (!regex.test(value)) return false;
+        }
+        return !c.required ? a : (a && Boolean(value));
       }, !deepequal(data, this.state))
   }
   getDefaultValue(att) {
