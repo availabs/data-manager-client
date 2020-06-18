@@ -12,8 +12,8 @@ export const doc = {
       type: "textarea",
       required: true
     },
-    { key: "bloggerId",
-      name: "Blogger ID",
+    { key: "userId",
+      name: "User",
       type: "text",
       default: "from:user.id", // default value will be pulled from props.user.id
       editable: false

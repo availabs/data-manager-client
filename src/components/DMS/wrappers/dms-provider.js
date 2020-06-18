@@ -238,7 +238,7 @@ export default (Component, options = {}) => {
 
     componentDidMount() {
       const { action, id } = get(this.props, "params", {});
-console.log("componentDidMount", action, id);
+      console.log("componentDidMount", action, id);
       if (action) {
         this.interact(action, id, null);
       }
