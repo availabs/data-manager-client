@@ -202,13 +202,13 @@ class ImgInput extends React.Component {
 }
 
 const InputRow = ({ att, onChange, ...props }) =>
-  <div className="grid grid-cols-6 my-2">
-    <div className="col-span-1">
+  <div className="my-2">
+    <div>
       <label className="block w-full py-1" htmlFor={ `att:${ att.key }` }>
         { att.name || prettyKey(att.key) }
       </label>
     </div>
-    <div className="col-span-5">
+    <div>
       { /^(.+?)-array$/.test(att.type) ?
         <div className="max-w-xl">
           <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }/>
@@ -326,12 +326,10 @@ export default class DmsCreate extends React.Component {
                       onChange={ value => this.handleChange(att.key, value) }/>
                   )
               }
-              <div className="grid grid-cols-6">
-                <div className="col-span-5 col-start-2 flex justify-end max-w-xl">
-                  <DmsButton className="w-full max-w-xs" buttonTheme="buttonLargeSuccess" disabled={ !this.verify() } type="submit"
-                    label={ this.props.dmsAction } item={ item }
-                    action={ this.getButtonAction(values) }/>
-                </div>
+              <div className="flex justify-end max-w-xl">
+                <DmsButton className="w-full max-w-xs" buttonTheme="buttonLargeSuccess" disabled={ !this.verify() } type="submit"
+                  label={ this.props.dmsAction } item={ item }
+                  action={ this.getButtonAction(values) }/>
               </div>
 
           </div>

@@ -16,9 +16,9 @@ export default ({
   ],
   props: {
     format: BLOG_POST,
-    title: " ",
+    className: "max-w-7xl m-auto pb-10",
     buttonThemes: {
-      reply: "Success"
+      reply: "button"
     },
     authRules: {
       create: {
@@ -42,14 +42,11 @@ export default ({
   children: [
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list-custom",
+    { type: "dms-list",
       props: {
         dmsAction: "list",
         attributes: [
-          { Header: 'Title',
-            accessor: 'title',
-            className: 'text-lg font-medium'
-          },
+          "title",
           "bloggerId",
           "updated_at",
           "dms:view",

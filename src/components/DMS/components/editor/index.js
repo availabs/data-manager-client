@@ -122,7 +122,7 @@ class MyEditor extends React.Component {
         className={ `pt-14 relative bg-white rounded draft-js-editor clearfix border-2
           ${ hasFocus ? "border-black" : "border-transparent" }
         ` }
-        // onClick={ e => this.focusEditor(e) }
+        onClick={ e => this.focusEditor(e) }
         onDrop={ e => this.dropIt(e) }>
 
         { !loading ? null :
