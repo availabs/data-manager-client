@@ -40,9 +40,9 @@ export default ({
     }
   },
   children: [
-// dms-manager children are special
-// they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list", // generic dms component for viewing multiple data items
+    // dms-manager children are special
+    // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
+    { type: "dms-list-custom", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
         attributes: [
@@ -147,7 +147,7 @@ export default ({
               action: "api:delete",
               showConfirm: true,
               seedProps: props =>
-// these ids are sent to the api:delete function
+              // these ids are sent to the api:delete function
                 get(props, "dataItems", []).reduce((a, c) =>
                   get(c, ["data", "replyTo"]) === get(props, ["blog-post", "id"]) ? [...a, c.id] : a
                 , [])

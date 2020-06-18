@@ -1,18 +1,20 @@
 import React from "react"
 
-import { DmsButton, Title, DmsListRow } from "./parts"
+import { DmsButton } from "./parts"
 
-import { Content, Table } from 'components/avl-components/components'
+import { Content, Table, Header } from 'components/avl-components/components'
 
 import get from "lodash.get"
 
-import { prettyKey, makeFilter } from "../utils"
+import { makeFilter,prettyKey } from "../utils"
 
 const DmsList = ({ ...props }) => {
   const attributes = props.attributes
-    .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
+    .filter(a => ((typeof a === "string") && !/^(dms|api):(.+)$/.test(a)) || typeof a === "object");
+
 
   const actions = props.attributes.filter(a => !attributes.includes(a));
+
 
   const filter = makeFilter(props),
     dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
@@ -21,31 +23,28 @@ const DmsList = ({ ...props }) => {
     get(props, ["format", "attributes"], [])
       .reduce((a, c) => c.key === att ? (c.name || prettyKey(c.key)) : a, att);
 
-  const makeSort = () =>{
-    let { sortBy, sortOrder, transform } = props,
-      dir = sortOrder === "desc" ? -1 : 1;
-    if (!transform && (sortBy === "updated_at")) {
-      transform = v => new Date(v).valueOf();
-    }
-    else if (!transform) {
-      transform = v => v;
-    }
-    return (a, b) => {
-      const av = transform(get(a, sortBy)),
-        bv = transform(get(b, sortBy));
-      return (av < bv ? -1 : bv < av ? 1 : 0) * dir;
-    }
-  }
+  
+
   let columns = [
-    ...attributes.map(a => {return {accessor: d => d.data[a], id: a, Header: d => getAttributeName(d.column.id) }}),
+    // add attributes
+    ...attributes
+      .map(a => {
+        console.log('a', a)
+        return a.accessor ? a : 
+        {
+          id: a,
+          accessor: a,  
+          Header: d => getAttributeName(d.column.id) 
+        }
+      }),
+    // add actions    
     ...actions
       .map(a => {
         return {
           accessor: get(a, "action", a),
           Header: d => null,
           Cell: (props) =>  {
-            // console.log('props', props, props.row.original)
-            return <DmsButton action={ props.value } item={ props.row.original }/>
+            return <DmsButton action={ props.value } item={ props.row } buttonTheme="buttonText" />
           }
         }
       })
@@ -54,7 +53,7 @@ const DmsList = ({ ...props }) => {
   let data = dataItems
     .map(d => {
       return {
-        ...d,
+        ...d.data,
         ...actions
           .reduce((o,a) => {
             o[get(a, "action", a)] = a
@@ -62,20 +61,14 @@ const DmsList = ({ ...props }) => {
           },{})
       }
     })
+
   return !props.dataItems.length ? null : (
     <Content>
-      { props.title ? <Title>{ props.title }</Title> : null }
-      {/*<Title>Columns</Title>
-      {JSON.stringify(columns)}
-
-      <Title>dataItems</Title>
-      {JSON.stringify(data)}
-
-      <Title>actions</Title>
-      {JSON.stringify(actions)}*/}
-      <Table
-        columns={columns}
+      { props.title ? <Header title={ props.title } /> : null } 
+      <Table 
+        columns={columns} 
         data={data}
+        //onRowClick={d => props.makeInteraction('dms:view', d.original)}
       />
     </Content>
   )
