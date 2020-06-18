@@ -1,10 +1,6 @@
 import React from "react"
 
-<<<<<<< HEAD
-import { DmsButton, Title  } from "./parts"
-=======
 import { DmsButton, Title } from "./parts"
->>>>>>> c262d3a230ec70936a92b16cb424293b1e98a57f
 
 import get from "lodash.get"
 
