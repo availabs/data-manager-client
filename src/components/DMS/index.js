@@ -9,7 +9,7 @@ import { Header } from 'components/avl-components/components'
 
 import get from "lodash.get"
 
-import { checkAuth } from "./utils"
+import { checkAuth, compareActions } from "./utils"
 
 import "./styles.css"
 
@@ -27,15 +27,14 @@ class DmsManager extends React.Component {
     apiInteract: () => Promise.resolve()
   }
 
-  compareActions(action1 = "", action2 = "") {
-    return action1.replace("dms:", "") === action2.replace("dms:", "");
-  }
-
   renderChildren(dmsAction, item, props) {
     if (!this.props.format) return <NoFormat />;
 
+    const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
+    if (!hasAuth) return <NoAuth />;
+
     const child = React.Children.toArray(this.props.children)
-      .reduce((a, c) => this.compareActions(get(c, ["props", "dmsAction"], ""), dmsAction) ? c : a, null);
+      .reduce((a, c) => compareActions(get(c, ["props", "dmsAction"], ""), dmsAction) ? c : a, null);
 
     if (child === null) return null;
 
@@ -54,9 +53,6 @@ class DmsManager extends React.Component {
       );
     }
 
-    const hasAuth = checkAuth(this.props.authRules, dmsAction, { user: this.props.user }, item);
-    if (!hasAuth) return <NoAuth />;
-
     return React.cloneElement(child,
       { ...child.props,
         ...props,
@@ -70,8 +66,8 @@ class DmsManager extends React.Component {
   }
 
   render() {
-    const { buttonColors, showHome, stack, top } = this.props,
-      { dmsAction, item, props } = top;
+    const { buttonColors, showHome, stack, top, item } = this.props,
+      { dmsAction, props } = top;
 
     if (!this.props.format) {
       return <div> No Format </div>

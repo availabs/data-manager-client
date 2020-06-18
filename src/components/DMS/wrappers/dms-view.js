@@ -119,6 +119,7 @@ export default (Component, options = {}) => {
         }
       }
 
+console.log("DMS VIEW:", props)
       return (
         <div>
           <Component { ...props } { ...this.props }/>
