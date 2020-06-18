@@ -12,11 +12,11 @@ import config from "./config"
 // addWrappers(DmsWrappers)
 
 export default {
-  path: "/blog",
+  path: "/docs",
   mainNav: true,
   // exact: true,
   auth: true,
-  name: 'Blog It Up',
+  name: 'Docs',
   icon: '',
   layoutSettings: {
     fixed: false,

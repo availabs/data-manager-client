@@ -6,34 +6,47 @@ import { Content, Table, Header } from 'components/avl-components/components'
 
 import get from "lodash.get"
 
-import { makeFilter } from "../utils"
+import { makeFilter,prettyKey } from "../utils"
 
 const DmsList = ({ ...props }) => {
   const attributes = props.attributes
-    .filter(a => (typeof a === "string") && !/^(dms|api):(.+)$/.test(a));
+    .filter(a => ((typeof a === "string") && !/^(dms|api):(.+)$/.test(a)) || typeof a === "object");
 
-  const actions = props.attributes.filter(a => !attributes.includes(a))
-    //span = actions.reduce((a, c) => a + (c.showConfirm ? 2 : 1), 0);
+
+  const actions = props.attributes.filter(a => !attributes.includes(a));
+
 
   const filter = makeFilter(props),
     dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
 
-  // const getAttributeName = att =>
-  //   get(props, ["format", "attributes"], [])
-  //     .reduce((a, c) => c.key === att ? (c.name || prettyKey(c.key)) : a, att);
+  const getAttributeName = att =>
+    get(props, ["format", "attributes"], [])
+      .reduce((a, c) => c.key === att ? (c.name || prettyKey(c.key)) : a, att);
 
   
 
   let columns = [
-    ...attributes.map(d => {return {accessor: d, Header: d}}),
+    // add attributes
+    ...attributes
+      .map(a => {
+        console.log('a', a)
+        return a.accessor ? a : 
+        {
+          id: a,
+          accessor: a,  
+          Header: d => getAttributeName(d.column.id) 
+        }
+      }),
+    // add actions    
     ...actions
-      .map(a => { 
+      .map(a => {
         return {
-          accessor: get(a, "action", a), 
-          Header: get(a, "action", a).split(':')[1], 
-          Cell: props =>  {
-            console.log('props', props)
-            return <DmsButton action={ props.value } item={ props.row } small/>
+          accessor: get(a, "action", a),
+          Header: d => null,
+          Cell: (props) =>  {
+            // console.log('props', props, props.row.original)
+            return <DmsButton action={ props.value } item={ props.row } buttonTheme="buttonText" />
+
           }
         }
       })
@@ -45,19 +58,20 @@ const DmsList = ({ ...props }) => {
         ...d.data,
         ...actions
           .reduce((o,a) => {
-            o[get(a, "action", a)] = get(a, "label", a)
+            o[get(a, "action", a)] = a
             return o
           },{})
       }
     })
 
+  //console.log("DATA:", columns, data)
   return !props.dataItems.length ? null : (
     <Content>
       { props.title ? <Header title={ props.title } /> : null } 
       <Table 
         columns={columns} 
         data={data}
-
+        //onRowClick={d => props.makeInteraction('dms:view', d.original)}
       />
     </Content>
   )

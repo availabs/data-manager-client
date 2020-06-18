@@ -147,7 +147,7 @@ export default ({
               action: "api:delete",
               showConfirm: true,
               seedProps: props =>
-// these ids are sent to the api:delete function
+              // these ids are sent to the api:delete function
                 get(props, "dataItems", []).reduce((a, c) =>
                   get(c, ["data", "replyTo"]) === get(props, ["blog-post", "id"]) ? [...a, c.id] : a
                 , [])
