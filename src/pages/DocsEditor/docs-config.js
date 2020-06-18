@@ -1,4 +1,4 @@
-import { BLOG_POST } from "./blog-post.type"
+import { doc } from "./doc-page"
 
 import get from "lodash.get"
 
@@ -15,7 +15,7 @@ export default ({
     "with-auth"
   ],
   props: {
-    format: BLOG_POST,
+    format: doc,
     title: " ",
     buttonColors: {
       reply: "green"
@@ -57,7 +57,7 @@ export default ({
           "dms:edit", 
           "dms:delete"
         ],
-        title: "Posts",
+        title: "Pages",
         filter: {
           args: ["self:data.replyTo"],
           comparator: arg1 => arg1 === null
@@ -109,19 +109,12 @@ export default ({
         }
       ]
     },
-
     { type: "dms-create",
       props: { dmsAction: "create" },
-// dms-create defaults to dmsAction: "create"
-// the prop is required here due to the wrapper
+      // dms-create defaults to dmsAction: "create"
+      // the prop is required here due to the wrapper
       wrappers: ["with-auth"]
     },
-
-    { type: "dms-create",
-      props: { dmsAction: "reply" },
-      wrappers: ["with-auth"]
-    },
-
     { type: "dms-edit",
       props: { dmsAction: "edit" },
       wrappers: ["with-auth"]

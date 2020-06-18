@@ -1,6 +1,6 @@
 import React from "react"
 
-import { DmsButton, Title, DmsListRow } from "./parts"
+import { DmsButton, Title  } from "./parts"
 
 import get from "lodash.get"
 

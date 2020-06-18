@@ -82,15 +82,15 @@ export const getButtonClassName = ({ color = "blue", large, small, block, classN
 const getLabel = action =>
   action.replace(/^(dms|api):(.+)$/, (m, c1, c2) => c2);
 
-const BUTTON_COLORS = {
-  create: "green",
-  back: "teal",
-  edit: "purple",
-  delete: "red"
-}
+// const BUTTON_COLORS = {
+//   create: "green",
+//   back: "teal",
+//   edit: "purple",
+//   delete: "red"
+// }
 
-const getButtonColor = (label, colors) =>
-  get(colors, label, get(BUTTON_COLORS, label))
+// const getButtonColor = (label, colors) =>
+//   get(colors, label, get(BUTTON_COLORS, label))
 
 export const ActionButton = ({ action, label, ...props }) => {
   label = label || getLabel(action);
