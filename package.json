@@ -38,8 +38,10 @@
     "start": "npm run build:style && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "lint": "eslint src/**/*.js",
     "eject": "react-scripts eject"
   },
+  
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -57,6 +59,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^9.7.6",
+    "husky": "^4.2.5",
     "postcss-cli": "^7.1.0",
     "tailwindcss": "^1.2.0"
   }

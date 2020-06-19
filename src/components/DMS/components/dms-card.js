@@ -5,6 +5,7 @@ import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 export default ({ title = "", body = null }) => {
   const theme = useTheme();
+  console.log('dms-card', title, body)
   return (
     <div>
       { title ? <Title>{ title }</Title> : null }
