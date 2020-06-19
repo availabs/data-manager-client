@@ -41,12 +41,13 @@
     "start": "npm run build:style && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:nowatch": "CI=true react-scripts test --env=jsdom",
     "lint": "eslint --fix src/**/*.js --max-warnings=0",
     "eject": "react-scripts eject"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && react-scripts test",
+      "pre-commit": "npm run lint",
       "pre-push": "npm run lint"
     }
   },
