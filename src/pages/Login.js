@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 // import { withRouter } from "react-router"
 import { Redirect, withRouter } from "react-router-dom"
 
-import { Button } from "components/avl-components/components/Button/Button"
+import { Button } from "components/avl-components/components/Button"
 
 import { login } from "store/user"
 

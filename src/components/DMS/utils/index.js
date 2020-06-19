@@ -2,6 +2,8 @@ import React from "react"
 
 import get from "lodash.get"
 
+import { hasValue } from "components/avl-components/components/Inputs/utils"
+
 export const compareActions = (action1 = "", action2 = "") =>
   action1.replace(/^dms:/, "") === action2.replace(/^dms:/, "")
 
@@ -14,14 +16,6 @@ export const prettyKey = key =>
 export const ITEM_REGEX = /^item:(.+)$/;
 export const PROPS_REGEX = /^props:(.+)$/;
 const SELF_REGEX = /^self:(.+)$/;
-
-export const hasValue = value => {
-  if (value === null || value === undefined) return false;
-  if (typeof value === "string" && !value.length) return false;
-  if (Array.isArray(value) && !value.length) return false;
-  if (typeof value === "number" && isNaN(value)) return false;
-  return true;
-}
 
 export const hasBeenUpdated = (base, data) => {
   const checked = [];

@@ -4,35 +4,9 @@ import {  ButtonContext } from "../contexts"
 
 import { useMakeInteraction } from "../wrappers/dms-provider"
 
-import { Button, LinkButton } from "components/avl-components/components/Button/Button"
+import { Button, LinkButton } from "components/avl-components/components/Button"
 
 import get from "lodash.get"
-
-export const Input = ({ large, small, className, disabled, children, ...props }) =>
-  <input { ...props } disabled={ disabled }
-    className={ `
-      w-full block
-      ${ large ? "py-2 px-4" : small ? "py-0 px-1" : "py-1 px-2" }
-      ${ large ? "text-lg" : small ? "text-sm" : "" }
-      ${ large ? "rounded-lg" : "rounded" }
-      ${ disabled ? "cursor-not-allowed" : `cursor-pointer` }
-      ${ className }
-    ` }>
-    { children }
-  </input>
-
-export const TextArea = ({ large, small, className, disabled, children, ...props }) =>
-  <textarea { ...props } disabled={ disabled }
-    className={ `
-      w-full block
-      ${ large ? "py-2 px-4" : small ? "py-0 px-1" : "py-1 px-2" }
-      ${ large ? "text-lg" : small ? "text-sm" : "" }
-      ${ large ? "rounded-lg" : "rounded" }
-      ${ disabled ? "cursor-not-allowed" : `cursor-pointer` }
-      ${ className }
-    ` }>
-    { children }
-  </textarea>
 
 export const Title = ({ children, ...props }) =>
   <div className={ `
@@ -62,7 +36,6 @@ const getButtonTheme = (themes, action, small, large, block)=> {
   block && (button += "Block");
   return button;
 }
-
 
 export const ActionButton = ({ action, label, buttonTheme, small, large, block, ...props }) => {
   label = label || cleanAction(action);

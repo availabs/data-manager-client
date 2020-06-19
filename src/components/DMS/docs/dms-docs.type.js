@@ -43,13 +43,22 @@ export const DMS_DOCS = {
     { key: "test-editor",
       type: "rich-text"
     },
+    { key: "test-number-array",
+      type: "number-array",
+      min: 0,
+      max: 10
+    },
     { key: "test-number",
       type: "number",
       min: 0,
       max: 10
     },
+    { key: "test-date-array",
+      type: 'date-array'
+    },
     { key: 'test-select',
       type: "text",
+      searchable: false,
       domain
     },
     { key: 'test-multi-select',

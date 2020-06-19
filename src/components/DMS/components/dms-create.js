@@ -1,72 +1,14 @@
-import React, { useState, /*useEffect*/ } from "react"
+import React from "react"
 
-import {
-  DmsButton, Input, TextArea,
-  // getButtonClassName,
-} from "./parts"
-import Select from "./select"
+import { DmsButton } from "./parts"
 import Editor from "./editor"
 
-import { Button } from "components/avl-components/components/Button/Button"
-import { ValueContainer, ValueItem } from "./select"
+import { Input, TextArea, ArrayInput, Select } from "components/avl-components/components/Inputs"
+import { verifyValue, hasValue } from "components/avl-components/components/Inputs/utils"
 
-import { prettyKey, dmsIsNum, hasBeenUpdated, hasValue } from "../utils"
+import { prettyKey, hasBeenUpdated } from "../utils"
 
 import { get } from "lodash"
-
-const ArrayInput = ({ ...props }) => {
-  const [newValue, setValue] = useState("");
-
-  const addToArray = () => {
-    const propsValue = Array.isArray(props.value) ? props.value : [];
-    if (!propsValue.includes(newValue)) {
-      props.onChange([...propsValue, newValue]);
-    }
-    setValue("");
-    document.getElementById(props.id).focus();
-  }
-  const removeFromArray = v => {
-    let value = Array.isArray(props.value) ? props.value : [];
-    if (value.includes(v)) {
-      value = value.filter(vv => vv !== v);
-    }
-    if (value.length === 0) {
-      value = null;
-    }
-    props.onChange(value);
-  }
-
-  const { value, type, disabled, ...rest } = props;
-
-  return (
-    <div className="w-full">
-      <div className="flex">
-        <Input { ...rest } type={ type } className="mr-1"
-          value={ newValue }  min={ rest.min } max={ rest.max }
-          onChange={ e => setValue(e.target.value) } disabled={ disabled }
-          placeholder={ `Type a value...`}>
-        </Input>
-        <Button onClick={ e => addToArray() }
-          disabled={ disabled || !newValue || value.includes(newValue) }>
-          add
-        </Button>
-      </div>
-      { !value ? null :
-        <div className="mt-1 ml-10">
-          <ValueContainer className="cursor-default">
-            { value.map((v, i) =>
-                <ValueItem key={ v }
-                  remove={ e => removeFromArray(v) }>
-                  { v }
-                </ValueItem>
-              )
-            }
-          </ValueContainer>
-        </div>
-      }
-    </div>
-  )
-}
 
 class ImgInput extends React.Component {
   state = {
@@ -142,7 +84,7 @@ class ImgInput extends React.Component {
           w-full h-64 border-2 rounded p-2 border-dashed
           flex items-center justify-center relative
           ${ this.state.draggingOver ? "border-gray-500" : "" }
-          has-remove-button
+          hoverable
         ` }
         onDragOver={ e => this.dragOver(e) }
         onDragLeave={ e => this.onDragExit(e) }
@@ -170,7 +112,7 @@ class ImgInput extends React.Component {
               absolute right-2 top-2 z-10
               rounded bg-red-500 p-1
               cursor-pointer
-              remove-button
+              show-on-hover
             ` }
             onClick={ e => this.removeImage(e) }>
             <svg width="20" height="20">
@@ -196,13 +138,13 @@ const InputRow = ({ att, onChange, ...props }) =>
         <div className="max-w-xl">
           <Select { ...props } id={ `att:${ att.key }` }
             multi={ true } domain={ att.domain }
-            onChange={ v => onChange(v) }/>
+            onChange={ v => onChange(v) } searchable={ att.searchable }/>
         </div>
       : /^(.+?)-array$/.test(att.type) ?
         <div className="max-w-xl">
-          <ArrayInput id={ `att:${ att.key }` } { ...props } { ...att }
+          <ArrayInput id={ `att:${ att.key }` } { ...props }
             type={  att.type.replace("-array", "") }
-            onChange={ v => onChange(v) }/>
+            onChange={ v => onChange(v) } placeholder={ `Type a value...`}/>
         </div>
       : att.type === "rich-text" ?
         <Editor { ...props } id={ `att:${ att.key }` }
@@ -210,24 +152,24 @@ const InputRow = ({ att, onChange, ...props }) =>
       : att.type === "textarea" ?
           <div className="max-w-xl">
             <TextArea { ...props } id={ `att:${ att.key }` } rows="6"
-              onChange={ e => onChange(e.target.value) }
+              onChange={ v => onChange(v) }
               placeholder={ `Type a value...`}/>
           </div>
         : att.type === "img" ?
           <div className="max-w-xl">
             <ImgInput { ...props } id={ `att:${ att.key }` }
-              att={ att } onChange={ v => onChange(v) }/>
+              onChange={ v => onChange(v) }/>
           </div>
         : att.domain ?
           <div className="max-w-xl">
             <Select domain={ att.domain } { ...props }  id={ `att:${ att.key }` }
-              onChange={ v => onChange(v) } multi={ false }/>
+              onChange={ v => onChange(v) } multi={ false } searchable={ att.searchable }/>
           </div>
         :
           <div className="max-w-xl">
             <Input { ...props } id={ `att:${ att.key }` } type={ att.type }
               min={ att.min } max={ att.max } placeholder={ `Type a value...`}
-              onChange={ e => onChange(e.target.value) }/>
+              onChange={ v => onChange(v) } required={ att.required }/>
           </div>
       }
     </div>
@@ -243,21 +185,27 @@ export default class DmsCreate extends React.Component {
   }
   verify() {
     const item = get(this.props, this.props.type, null),
-      data = get(item, "data");
+      data = get(item, "data", {});
 
     return get(this.props, ["format", "attributes"], [])
       .filter(att => att.editable !== false)
       .reduce((a, c) => {
-        const value = this.state[c.key];
+        const value = this.state[c.key],
+          asArray = !Array.isArray(value) ? [value] : value,
+          has = hasValue(value);
 
-        if ((c.type === "number") && dmsIsNum(value)) {
-          if (!/^(-(?=[1-9]|(0[.]0*[1-9]+)))?\d*[.]?\d+/.test(value)) return false;
+        if (c.type !== "rich-text") {
+          if (!asArray.reduce((a, v) =>
+            has ? a && verifyValue(v, c.type, c.verify) : a
+          , true)) return false;
+
+          if (has && (c.type === "number")) {
+            const { min, max } = c;
+            if ((min !== undefined) && (+value < min)) return false;
+            if ((max !== undefined) && (+value > max)) return false;
+          }
         }
-        else if (c.verify && Boolean(value)) {
-          const args = Array.isArray(c.verify) ? c.verify : [c.verify],
-            regex = new RegExp(...args);
-          if (!regex.test(value)) return false;
-        }
+
         return !c.required ? a : (a && Boolean(value));
       }, hasBeenUpdated(data, this.state))
   }

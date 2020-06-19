@@ -1,14 +1,14 @@
 import React from "react"
 
 import {
-  DmsButton, Input, TextArea,
+  DmsButton
   // getButtonClassName,
 } from "./parts"
-import Select from "./select"
 import Editor from "./editor"
 
 import { Content, Table, Header, Button, FormSection, InputContainer } from "components/avl-components/components"
-import { ValueContainer, ValueItem } from "./select"
+import { Input, TextArea, Select } from "components/avl-components/components/Inputs"
+import { ValueContainer, ValueItem } from "components/avl-components/components/Inputs/parts"
 
 import { prettyKey, dmsIsNum, hasBeenUpdated } from "../utils"
 

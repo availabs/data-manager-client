@@ -51,7 +51,7 @@ const DmsList = ({ ...props }) => {
       })
   ]
 
-  console.log('dataItems', dataItems)
+  // console.log('dataItems', dataItems)
   let data = dataItems
     .map(d => {
       return {
@@ -64,7 +64,7 @@ const DmsList = ({ ...props }) => {
           },{})
       }
     })
-console.log("DATA ITEMS:", dataItems)
+// console.log("DATA ITEMS:", dataItems)
   return !props.dataItems.length ? null : (
     <Content>
       { props.title ? <Header title={ props.title } /> : null }

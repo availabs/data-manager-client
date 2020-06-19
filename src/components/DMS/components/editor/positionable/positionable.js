@@ -47,9 +47,9 @@ export default store =>
       return (
         <div className={ `${ POSITIONS[position] } relative z-10 my-2` }
           onDrop={ e => {alert("??????"); e.preventDefault();} }>
-          <div className="inline-block relative hoverable pointer-events-auto">
+          <div className="inline-block relative hoverable pointer-events-auto top-0">
 
-            <div className={ `absolute show-on-hover ${ hoverPosition } p-1 w-full` }>
+            <div className={ `absolute show-on-hover top-0 ${ hoverPosition } p-1 w-full` }>
               <div className="w-full flex justify-center">
                 { BUTTONS.map((b, i) =>
                     <button className={ `
