@@ -11,7 +11,8 @@ export default ({
     { type: "dms-provider",
       options: {
         buttonThemes: {
-          delete: "buttonDanger"
+          delete: "buttonDanger",
+          edit: "buttonPrimary"
         }
       }
     },
@@ -66,7 +67,10 @@ export default ({
       wrappers: [
         { type: "dms-view",
           options: {
-            actions: [["dms:edit", "dms:delete"], ["dms:create"]],
+            actions: [
+              ["dms:edit", "dms:delete"],
+              [{ action: "dms:create", buttonTheme: "buttonSuccess" }]
+            ],
             mapDataToProps: {
               // $preserveKeys: true,
 // mapDataToProps is used by dms-view to map data items to wrapped component props

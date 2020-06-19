@@ -15,6 +15,32 @@ export const ITEM_REGEX = /^item:(.+)$/;
 export const PROPS_REGEX = /^props:(.+)$/;
 const SELF_REGEX = /^self:(.+)$/;
 
+export const hasValue = value => {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string" && !value.length) return false;
+  if (Array.isArray(value) && !value.length) return false;
+  if (typeof value === "number" && isNaN(value)) return false;
+  return true;
+}
+
+export const hasBeenUpdated = (base, data) => {
+  const checked = [];
+  for (const key in base) {
+    checked.push(key);
+    const baseHasValue = hasValue(base[key]),
+      dataHasValue = hasValue(data[key]);
+    if (baseHasValue && dataHasValue) {
+      if (base[key] !== data[key]) return true;
+    }
+    if (baseHasValue ^ dataHasValue) return true;
+  }
+  for (const key in data) {
+    if (checked.includes(key)) continue;
+    if (hasValue(data[key])) return true;
+  }
+  return false;
+}
+
 export const dmsIsNum = value => {
   if ((value === "") ||
       (value === null) ||

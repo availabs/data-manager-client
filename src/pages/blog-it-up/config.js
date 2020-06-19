@@ -16,6 +16,7 @@ export default ({
   ],
   props: {
     format: BLOG_POST,
+    title: "Blog it Up",
     className: "max-w-7xl m-auto pb-10",
     buttonThemes: {
       reply: "button"

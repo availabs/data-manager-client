@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react"
 
-// import { Link } from "react-router-dom"
-import { useLocation, useHistory } from "react-router-dom"
-
-import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
-import { checkAuth } from "../utils"
+import {  ButtonContext } from "../contexts"
 
 import { useMakeInteraction } from "../wrappers/dms-provider"
 

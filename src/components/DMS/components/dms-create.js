@@ -9,9 +9,8 @@ import Editor from "./editor"
 
 import { Button } from "components/avl-components/components/Button/Button"
 
-import { prettyKey, dmsIsNum } from "../utils"
+import { prettyKey, dmsIsNum, hasBeenUpdated } from "../utils"
 
-import deepequal from "deep-equal"
 import get from "lodash.get"
 
 const ArrayItem = ({ children, onClick, ...props }) =>
@@ -153,7 +152,7 @@ class ImgInput extends React.Component {
     this.props.onChange(null);
   }
   render() {
-    const { /* att,  onChange, */ value } = this.props;
+    const { value } = this.props;
 
     return (
       <div className={ `
@@ -268,7 +267,7 @@ export default class DmsCreate extends React.Component {
           if (!regex.test(value)) return false;
         }
         return !c.required ? a : (a && Boolean(value));
-      }, !deepequal(data, this.state))
+      }, hasBeenUpdated(data, this.state))
   }
   getDefaultValue(att) {
     const _default = att.default;

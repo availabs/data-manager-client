@@ -38,6 +38,8 @@ export const DMS_DOCS = {
     { key: 'tags',
       type: 'text-array'
     },
+
+    
     { key: "test-editor",
       type: "rich-text"
     },

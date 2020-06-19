@@ -10,7 +10,8 @@ const processAction = arg => {
     action: "unknown",
     seedProps: () => null,
     showConfirm: false,
-    label: null
+    label: null,
+    buttonTheme: null
   };
   if (typeof arg === "string") {
     response.action = arg;
