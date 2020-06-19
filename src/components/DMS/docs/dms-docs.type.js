@@ -33,13 +33,13 @@ export const DMS_DOCS = {
     { key: "chapter",
       type: "text",
       required: true,
-      verify: ["^\\d+([.]\\d+)*$"]
+      verify: "^\\d+([.]\\d+)*$"
     },
     { key: 'tags',
       type: 'text-array'
     },
 
-    
+
     { key: "test-editor",
       type: "rich-text"
     },

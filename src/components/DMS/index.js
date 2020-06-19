@@ -64,40 +64,30 @@ class DmsManager extends React.Component {
   }
 
   render() {
-    const { showHome, stack, top, item } = this.props,
-      { dmsAction, props } = top;
-
     if (!this.props.format) {
       return <div> No Format </div>
     }
 
+    const { showHome, stack, top, item } = this.props,
+      { dmsAction, props } = top,
+      actions = [];
 
-    const actions = [];
     if (stack.length > 1) {
-      // actions.push(<DmsButton action="dms:back" key="back"/>)
       actions.push({
         comp: DmsButton,
-        action: "dms:back",
-        // ...this.props.makeInteraction("dms:back"),
-        // children: "back"
+        action: "dms:back"
       })
     }
     if ((stack.length > 1) && showHome) {
-       // actions.push(<DmsButton action="dms:home" key="home"/>)
        actions.push({
          comp: DmsButton,
-         action: "dms:home",
-         // ...this.props.makeInteraction("dms:home"),
-         // children: "home"
+         action: "dms:home"
        })
     }
     if (dmsAction === "list") {
-      // actions.push(<DmsButton action="dms:create" key="create"/>)
       actions.push({
         comp: DmsButton,
-        action: "dms:create",
-        // ...this.props.makeInteraction("dms:create"),
-        // children: "create"
+        action: "dms:create"
       })
     }
 

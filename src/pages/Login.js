@@ -4,6 +4,8 @@ import { connect } from "react-redux"
 // import { withRouter } from "react-router"
 import { Redirect, withRouter } from "react-router-dom"
 
+import { Button } from "components/avl-components/components/Button/Button"
+
 import { login } from "store/user"
 
 import get from "lodash.get"
@@ -23,7 +25,9 @@ class Login extends React.Component {
       from = get(this.props, ["location", "state", "from"], null);
 
     if (this.props.authed) {
-      return <Redirect to={ from || "/" }/>
+      const { pathname } = this.props.location,
+        to = pathname != from ? from : "/";
+      return <Redirect to={ to }/>
     }
 
     return (
@@ -45,15 +49,10 @@ class Login extends React.Component {
                   onChange={ e => this.setState({ password: e.target.value }) }/>
               </div>
               <div className="my-2">
-                <button className={
-                    ` bg-blue-500 w-full
-                      text-white font-bold py-2 px-4 rounded focus:outline-none
-                      ${ disabled ? "cursor-not-allowed opacity-50" : "hover:bg-blue-700" }
-                    `
-                  }
-                  disabled={ disabled }>
+                <Button disabled={ disabled } type="submit"
+                  buttonTheme="buttonPrimaryLargeBlock">
                   Login
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -76,6 +75,6 @@ export default {
   layoutSettings: {
     fixed: true,
     headerBar: true,
-    theme: 'light'
+    theme: 'TEST_THEME'
   }
 }
