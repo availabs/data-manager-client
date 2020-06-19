@@ -81,7 +81,7 @@ const DmsList = ({ ...props }) => {
 }
 const DmsListRow = ({ children, action, item, ...props }) => {
   return (
-    <tr onClick={ useMakeOnClick(action, item, props) } className={ `hover:${ useTheme().accent1 } cursor-pointer` }>
+    <tr onClick={ useMakeOnClick(action, item, props) } className={ `hover:${ useTheme().accent1 } cursor-pointer transition ease-in-out duration-150` }>
       { children }
     </tr>
   )

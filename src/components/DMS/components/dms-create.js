@@ -8,21 +8,11 @@ import Select from "./select"
 import Editor from "./editor"
 
 import { Button } from "components/avl-components/components/Button/Button"
+import { SelectValue, SelectItem } from "./select"
 
 import { prettyKey, dmsIsNum, hasBeenUpdated } from "../utils"
 
 import get from "lodash.get"
-
-const ArrayItem = ({ children, onClick, ...props }) =>
-  <div className="flex mt-1" style={ { paddingLeft: "10%" } }>
-    <div className="py-1 mr-1 px-2 bg-white rounded inline-block flex-grow"
-      { ...props }>
-      { children }
-    </div>
-    <Button onClick={ onClick }>
-      remove
-    </Button>
-  </div>
 
 class ArrayInput extends React.Component {
   state = {
@@ -52,33 +42,30 @@ class ArrayInput extends React.Component {
 
     return (
       <div className="w-full">
-        { att.domain ?
-          <Select domain={ att.domain } { ...props } id={ `att:${ att.key }` }
-            value={ value } multi={ true }
-            onChange={ v => this.props.onChange(v) }/> :
-          <>
-            <div className="flex">
-              <Input { ...props } id={ `att:${ att.key }` } type={ type } className="mr-1"
-                value={ this.state.value }  min={ att.min } max={ att.max }
-                onChange={ e => this.setState({ value: e.target.value }) }
-                placeholder={ `Type a value...`}>
-                { children }
-              </Input>
-              <Button onClick={ e => this.addToArray() }
-                disabled={ !this.state.value }>
-                add
-              </Button>
-            </div>
-            <div className="flex flex-col">
-              { !value ? null : value.map((v, i) =>
-                  <ArrayItem key={ v }
-                    onClick={ e => this.removeFromArray(v) }>
+        <div className="flex">
+          <Input { ...props } id={ `att:${ att.key }` } type={ type } className="mr-1"
+            value={ this.state.value }  min={ att.min } max={ att.max }
+            onChange={ e => this.setState({ value: e.target.value }) }
+            placeholder={ `Type a value...`}>
+            { children }
+          </Input>
+          <Button onClick={ e => this.addToArray() }
+            disabled={ !this.state.value || value.includes(this.state.value) }>
+            add
+          </Button>
+        </div>
+        { !value ? null :
+          <div className="mt-1 ml-10">
+            <SelectValue className="cursor-default">
+              { value.map((v, i) =>
+                  <SelectItem key={ v }
+                    remove={ e => this.removeFromArray(v) }>
                     { v }
-                  </ArrayItem>
+                  </SelectItem>
                 )
               }
-            </div>
-          </>
+            </SelectValue>
+          </div>
         }
       </div>
     )
@@ -208,7 +195,13 @@ const InputRow = ({ att, onChange, ...props }) =>
       </label>
     </div>
     <div>
-      { /^(.+?)-array$/.test(att.type) ?
+      { /^(.+?)-array$/.test(att.type) && att.domain ?
+        <div className="max-w-xl">
+          <Select { ...props } id={ `att:${ att.key }` }
+            multi={ true } domain={ att.domain }
+            onChange={ v => onChange(v) }/>
+        </div>
+      : /^(.+?)-array$/.test(att.type) ?
         <div className="max-w-xl">
           <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }/>
         </div>

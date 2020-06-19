@@ -3,38 +3,42 @@ import React from "react"
 import { Input } from "./parts"
 import { hasValue } from "../utils"
 
-const SelectItem = ({ isPlaceholder, children, remove }) =>
-  <div className={ `
-      ${ isPlaceholder ? "text-gray-400" : "bg-gray-200 mx-1 px-2" }
-      rounded whitespace-no-wrap my-0.5 relative flex items-center
-    ` }>
-    { children }
-    { isPlaceholder ? null :
-      <div className="bg-gray-400 hover:bg-gray-500 ml-2 p-1 text-white flex justify-center items-center rounded"
-        style={ { marginRight: "-.25rem" } }
-        onClick={ remove }>
-        <svg width="8" height="8">
-          <line x2="8" y2="8" style={ { stroke: "#fff", strokeWidth: 2 } }/>
-          <line y1="8" x2="8" style={ { stroke: "#fff", strokeWidth: 2 } }/>
-        </svg>
-      </div>
-    }
-  </div>
-const SelectValue = ({ children, large, small, className, disabled, ...props }) =>
-  <div { ...props } disabled={ disabled }
+import { useTheme } from "components/avl-components/wrappers/with-theme"
+
+export const SelectItem = ({ isPlaceholder, children, remove }) => {
+  const theme = useTheme();
+  return (
+    <div className={ `
+        ${ isPlaceholder ? "text-gray-400" : "bg-gray-200 mr-1 pl-2 pr-1" }
+        rounded whitespace-no-wrap my-0.5 relative flex items-center
+      ` }>
+      { children }
+      { isPlaceholder ? null :
+        <div className="bg-gray-400 hover:bg-gray-500 ml-2 p-1 text-white flex justify-center items-center rounded cursor-pointer"
+          onClick={ remove }>
+          <svg width="8" height="8">
+            <line x2="8" y2="8" style={ { stroke: "#fff", strokeWidth: 2 } }/>
+            <line y1="8" x2="8" style={ { stroke: "#fff", strokeWidth: 2 } }/>
+          </svg>
+        </div>
+      }
+    </div>
+  )
+}
+export const SelectValue = ({ children, large, small, className, ...props }) =>
+  <div { ...props }
     className={ `
       w-full flex flex-row flex-wrap bg-white border-2 border-transparent
-      ${ large ? "py-2 px-4" : small ? "py-0 px-1" : "py-1 px-2" }
+      ${ large ? "py-1 px-4" : small ? "py-0 px-1" : "py-0 px-2" }
       ${ large ? "text-lg" : small ? "text-sm" : "" }
       ${ large ? "rounded-lg" : "rounded" }
-      ${ disabled ? "cursor-not-allowed" : `cursor-pointer` }
       ${ className }
     ` }>
     { children }
   </div>
 
 const Dropdown = ({ children }) =>
-  <div className="absolute left-0 bg-gray-200 z-40 overflow-hidden w-full"
+  <div className="absolute left-0 z-40 overflow-hidden w-full rounded-b-lg"
     style={ { top: "calc(100%)", minWidth: "50%" } }>
     { children }
   </div>
@@ -110,35 +114,39 @@ class Select extends React.Component {
         .filter(d => d.toString().includes(this.state.search));
     return (
       <div className="relative" onMouseLeave={ e => this.closeDropdown() }>
-        <SelectValue id={ this.props.id } tabIndex="0"
-          onClick={ e => this.openDropdown(e) }
-          style={ { borderColor: this.state.opened ? "black" : "transparent" } }>
-          { values.map((v, i) =>
-              <SelectItem key={ i } isPlaceholder={ v === this.props.placeholder }
-                remove={ e => this.removeItem(e, v) }>
-                { v }
-              </SelectItem>
-            )
-          }
-        </SelectValue>
+        <div className="cursor-pointer">
+          <SelectValue id={ this.props.id } tabIndex="0"
+            onClick={ e => this.openDropdown(e) }
+            style={ { borderColor: this.state.opened ? "black" : "transparent" } }>
+            { values.map((v, i) =>
+                <SelectItem key={ i } isPlaceholder={ v === this.props.placeholder }
+                  remove={ e => this.removeItem(e, v) }>
+                  { v }
+                </SelectItem>
+              )
+            }
+          </SelectValue>
+        </div>
         { !this.state.opened ? null :
           <Dropdown>
-            <div className="m-2">
-              <Input id={ `${ this.props.id }-search` } type="text"
-                value={ this.state.search } onChange={ e => this.setSearch(e, e.target.value) }
-                autoFocus placeholder="search..."/>
-            </div>
-            { !domain.length ? null :
-              <div className="scrollbar overflow-y-auto"
-                style={ { maxHeight: "300px" } }>
-                { domain.map(d =>
-                    <DropdownItem key={ d } onClick={ e => this.addItem(e, d) }>
-                      { d }
-                    </DropdownItem>
-                  )
-                }
+            <div className="bg-gray-200 mt-1 pt-1">
+              <div className="m-2 mt-1">
+                <Input id={ `${ this.props.id }-search` } type="text"
+                  value={ this.state.search } onChange={ e => this.setSearch(e, e.target.value) }
+                  autoFocus placeholder="search..."/>
               </div>
-            }
+              { !domain.length ? null :
+                <div className="scrollbar overflow-y-auto"
+                  style={ { maxHeight: "300px" } }>
+                  { domain.map(d =>
+                      <DropdownItem key={ d } onClick={ e => this.addItem(e, d) }>
+                        { d }
+                      </DropdownItem>
+                    )
+                  }
+                </div>
+              }
+            </div>
           </Dropdown>
         }
       </div>

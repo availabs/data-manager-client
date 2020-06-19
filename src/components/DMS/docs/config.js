@@ -9,12 +9,12 @@ export default ({
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
     { type: "dms-provider",
-      options: {
-        buttonThemes: {
-          delete: "buttonDanger",
-          edit: "buttonPrimary"
-        }
-      }
+      // options: {
+      //   buttonThemes: {
+      //     delete: "buttonDanger",
+      //     edit: "button"
+      //   }
+      // }
     },
     "dms-router",
     "show-loading", // receives loading prop
