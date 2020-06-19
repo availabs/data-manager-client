@@ -38,13 +38,12 @@
     "start": "npm run build:style && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "lint": "eslint src/**/*.js",
-    "lint:fix": "eslint --fix src/**/*.js",
+    "lint": "eslint --fix src/**/*.js --max-warnings=0",
     "eject": "react-scripts eject"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint:fix",
+      "pre-commit": "npm run lint",
       "pre-push": "npm run lint"
     }
   },
