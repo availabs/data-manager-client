@@ -44,15 +44,18 @@ const DmsList = ({ ...props }) => {
           accessor: get(a, "action", a),
           Header: d => null,
           Cell: (props) =>  {
-            return <DmsButton action={ props.value } item={ props.row } buttonTheme="buttonText" />
+            //console.log('action', props.row, props.value, props)
+            return <DmsButton action={ props.value } item={ props.row.id } buttonTheme="buttonText" />
           }
         }
       })
   ]
 
+  console.log('dataItems', dataItems)
   let data = dataItems
     .map(d => {
       return {
+        id: d.id,
         ...d.data,
         ...actions
           .reduce((o,a) => {

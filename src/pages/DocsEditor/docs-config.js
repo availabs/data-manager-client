@@ -67,8 +67,8 @@ export default ({
         { type: "dms-view",
           options: {
             mapDataToProps: {
-// mapDataToProps is used by dms-view to map data items to wrapped component props
-// prop: [...attributes]
+              // mapDataToProps is used by dms-view to map data items to wrapped component props
+              // prop: [...attributes]
               title: "item:data.title",
               body: [
                 "item:data.userId",
