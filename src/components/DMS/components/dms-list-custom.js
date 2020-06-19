@@ -44,8 +44,6 @@ const DmsList = ({ ...props }) => {
           accessor: get(a, "action", a),
           Header: d => null,
           Cell: (props) =>  {
-            console.log('action', props.row, props.row.original)// props.value, props)
-            //return <DmsButton action={ props.value } item={ props.row.id } buttonTheme="buttonText" />
             return <DmsButton action={ props.value } item={ props.row.original } buttonTheme="buttonText" />
 
           }
@@ -59,7 +57,6 @@ const DmsList = ({ ...props }) => {
       return {
         id: d.id,
         ...d.data,
-        ...d,
         ...actions
           .reduce((o,a) => {
             o[get(a, "action", a)] = a
