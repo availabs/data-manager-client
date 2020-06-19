@@ -2,7 +2,7 @@ import React from "react"
 
 import { ScalableLoading } from "components/avl-components/components/Loading/LoadingPage"
 
-import { throttle, get } from "lodash"
+import { throttle, get, debounce } from "lodash"
 
 import {
   EditorState,
@@ -40,7 +40,10 @@ const buttonPlugin = makeButtonPlugin(),
     UnderlineButton,
     LeftAlignButton,
     CenterAlignButton,
-    RightAlignButton
+    JustifyAlignButton,
+    RightAlignButton,
+    TextIndentButton,
+    TextOutdentButton
   } = buttonPlugin;
 
 const toolbarPlugin = makeToolbarPlugin(),
@@ -72,11 +75,13 @@ class MyEditor extends React.Component {
     hasFocus: false
   }
   componentDidMount() {
+    this.loadFromLocalStorage();
+  }
+  loadFromLocalStorage() {
 //     if (window.localStorage) {
 //       const saved = window.localStorage.getItem("saved-editor-state");
 //       if (saved) {
 //         const editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(saved)));
-// console.log("EDITOR STATE:", editorState)
 //         this.setState({ editorState });
 //       }
 //     }
@@ -95,8 +100,10 @@ class MyEditor extends React.Component {
   }
   handleChange(editorState) {
     this.setState(state => ({ editorState }));
+    this.updateProps(editorState);
     this.saveToLocalStorage()
   }
+  updateProps = debounce(this.props.onChange, 250);
   dropIt(e) {
     e.preventDefault();
 
@@ -108,10 +115,8 @@ class MyEditor extends React.Component {
         setTimeout(resolve, 2000)
       })
       .then(() => {
-        this.setState({
-          editorState: addImage(URL.createObjectURL(file), this.state.editorState),
-          loading: false
-        });
+        this.handleChange(addImage(URL.createObjectURL(file), this.state.editorState));
+        this.setState({ loading: false });
       });
     }
   }
@@ -125,15 +130,7 @@ class MyEditor extends React.Component {
         onClick={ e => this.focusEditor(e) }
         onDrop={ e => this.dropIt(e) }>
 
-        { !loading ? null :
-          <div className={ `
-            absolute top-0 bottom-0 left-0 right-0
-            bg-black opacity-50 z-30 rounded
-            flex items-center justify-center
-          ` }>
-            <ScalableLoading />
-          </div>
-        }
+        { !loading ? null : <LoadingIndicator /> }
 
         <div className="px-2 pb-1 relative">
           <Editor ref={ this.editor } placeholder="Type a value..."
@@ -172,7 +169,13 @@ class MyEditor extends React.Component {
 
           <LeftAlignButton />
           <CenterAlignButton />
+          <JustifyAlignButton />
           <RightAlignButton />
+
+          <Separator />
+
+          <TextOutdentButton />
+          <TextIndentButton />
         </Toolbar>
 
       </div>
@@ -180,3 +183,12 @@ class MyEditor extends React.Component {
   }
 }
 export default MyEditor;
+
+const LoadingIndicator = () =>
+  <div className={ `
+    absolute top-0 bottom-0 left-0 right-0
+    bg-black opacity-50 z-30 rounded
+    flex items-center justify-center
+  ` }>
+    <ScalableLoading />
+  </div>

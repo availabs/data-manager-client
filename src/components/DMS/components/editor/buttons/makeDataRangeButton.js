@@ -5,7 +5,7 @@ import { Modifier, EditorState } from 'draft-js';
 import Button from "./button"
 import ICONS from "./icons"
 
-export default (buttonType, store) =>
+export default (dataType, buttonType, store, shift, max, min = 0) =>
   () => {
     const {
       getEditorState,
@@ -19,21 +19,25 @@ export default (buttonType, store) =>
         .getData()
 
     const isActive = () => {
+      if (shift > 0) return false;
       const data = getStartData(editorState.getCurrentContent());
-      return data.get("textAlign") === buttonType;
+      return data.get(dataType) > min;
     }
 
     const click = e => {
       e.preventDefault();
       const contentState = editorState.getCurrentContent(),
         selectionState = editorState.getSelection(),
-        blockData = getStartData(contentState),
+        blockData = getStartData(contentState);
 
-        newContentState = Modifier.setBlockData(
-          contentState,
-          selectionState,
-          isActive() ? blockData.delete("textAlign") : blockData.set("textAlign", buttonType)
-        );
+      let value = blockData.get(dataType) || min;
+      value = Math.max(min, Math.min(max, value + shift));
+
+      const newContentState = Modifier.setBlockData(
+        contentState,
+        selectionState,
+        value > min ? blockData.set(dataType, value) : blockData.delete(dataType)
+      );
 
       setEditorState(
         EditorState.set(

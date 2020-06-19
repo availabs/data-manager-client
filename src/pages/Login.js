@@ -26,7 +26,7 @@ class Login extends React.Component {
 
     if (this.props.authed) {
       const { pathname } = this.props.location,
-        to = pathname != from ? from : "/";
+        to = pathname !== from ? from : "/";
       return <Redirect to={ to }/>
     }
 

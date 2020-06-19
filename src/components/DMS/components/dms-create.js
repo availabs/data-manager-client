@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, /*useEffect*/ } from "react"
 
 import {
   DmsButton, Input, TextArea,
@@ -8,85 +8,81 @@ import Select from "./select"
 import Editor from "./editor"
 
 import { Button } from "components/avl-components/components/Button/Button"
-import { SelectValue, SelectItem } from "./select"
+import { ValueContainer, ValueItem } from "./select"
 
-import { prettyKey, dmsIsNum, hasBeenUpdated } from "../utils"
+import { prettyKey, dmsIsNum, hasBeenUpdated, hasValue } from "../utils"
 
-import get from "lodash.get"
+import { get } from "lodash"
 
-class ArrayInput extends React.Component {
-  state = {
-    value: ""
-  }
-  addToArray() {
-    const value = Array.isArray(this.props.value) ? this.props.value : [];
-    if (!value.includes(this.state.value)) {
-      this.props.onChange([...value, this.state.value]);
+const ArrayInput = ({ ...props }) => {
+  const [newValue, setValue] = useState("");
+
+  const addToArray = () => {
+    const propsValue = Array.isArray(props.value) ? props.value : [];
+    if (!propsValue.includes(newValue)) {
+      props.onChange([...propsValue, newValue]);
     }
-    this.setState({ value: "" });
-    document.getElementById(`att:${ this.props.att.key }`).focus();
+    setValue("");
+    document.getElementById(props.id).focus();
   }
-  removeFromArray(v) {
-    let value = Array.isArray(this.props.value) ? this.props.value : [];
+  const removeFromArray = v => {
+    let value = Array.isArray(props.value) ? props.value : [];
     if (value.includes(v)) {
       value = value.filter(vv => vv !== v);
     }
     if (value.length === 0) {
       value = null;
     }
-    this.props.onChange(value);
+    props.onChange(value);
   }
-  render() {
-    const { att, value, children, ...props } = this.props,
-      [, type] = /^(.+?)-array$/.exec(att.type);
 
-    return (
-      <div className="w-full">
-        <div className="flex">
-          <Input { ...props } id={ `att:${ att.key }` } type={ type } className="mr-1"
-            value={ this.state.value }  min={ att.min } max={ att.max }
-            onChange={ e => this.setState({ value: e.target.value }) }
-            placeholder={ `Type a value...`}>
-            { children }
-          </Input>
-          <Button onClick={ e => this.addToArray() }
-            disabled={ !this.state.value || value.includes(this.state.value) }>
-            add
-          </Button>
-        </div>
-        { !value ? null :
-          <div className="mt-1 ml-10">
-            <SelectValue className="cursor-default">
-              { value.map((v, i) =>
-                  <SelectItem key={ v }
-                    remove={ e => this.removeFromArray(v) }>
-                    { v }
-                  </SelectItem>
-                )
-              }
-            </SelectValue>
-          </div>
-        }
+  const { value, type, disabled, ...rest } = props;
+
+  return (
+    <div className="w-full">
+      <div className="flex">
+        <Input { ...rest } type={ type } className="mr-1"
+          value={ newValue }  min={ rest.min } max={ rest.max }
+          onChange={ e => setValue(e.target.value) } disabled={ disabled }
+          placeholder={ `Type a value...`}>
+        </Input>
+        <Button onClick={ e => addToArray() }
+          disabled={ disabled || !newValue || value.includes(newValue) }>
+          add
+        </Button>
       </div>
-    )
-  }
+      { !value ? null :
+        <div className="mt-1 ml-10">
+          <ValueContainer className="cursor-default">
+            { value.map((v, i) =>
+                <ValueItem key={ v }
+                  remove={ e => removeFromArray(v) }>
+                  { v }
+                </ValueItem>
+              )
+            }
+          </ValueContainer>
+        </div>
+      }
+    </div>
+  )
 }
 
 class ImgInput extends React.Component {
   state = {
     value: "",
-    hovering: false,
+    draggingOver: false,
     message: ""
   }
-  dragEnter(e) {
+  dragOver(e) {
     this.stopIt(e);
 
-    this.setState({ hovering: true });
+    this.setState(state => ({ draggingOver: true }));
   }
   onDragExit(e) {
     this.stopIt(e);
 
-    this.setState({ hovering: false });
+    this.setState(state => ({ draggingOver: false }));
   }
   stopIt(e) {
     e.preventDefault();
@@ -96,7 +92,7 @@ class ImgInput extends React.Component {
     e.preventDefault();
     e.stopPropagation();
 
-    this.setState({ hovering: false });
+    this.setState({ draggingOver: false });
 
     await this.loadImage(get(e, ["dataTransfer", "files", 0], null));
   }
@@ -145,16 +141,17 @@ class ImgInput extends React.Component {
       <div className={ `
           w-full h-64 border-2 rounded p-2 border-dashed
           flex items-center justify-center relative
-          ${ this.state.hovering ? "border-gray-500" : "" }
+          ${ this.state.draggingOver ? "border-gray-500" : "" }
           has-remove-button
         ` }
-        onDragEnter={ e => this.dragEnter(e) }
+        onDragOver={ e => this.dragOver(e) }
         onDragLeave={ e => this.onDragExit(e) }
-        onDragOver={ e => this.stopIt(e) }
         onDrop={ e => this.dropIt(e) }>
 
         { value ?
             <img src={ value } alt={ value  }className="max-w-full max-h-full"/>
+          : this.state.draggingOver ?
+            <span className="far fa-image fa-9x pointer-events-none opacity-50"/>
           :
             <div className="flex flex-col items-center">
               <div>
@@ -203,11 +200,13 @@ const InputRow = ({ att, onChange, ...props }) =>
         </div>
       : /^(.+?)-array$/.test(att.type) ?
         <div className="max-w-xl">
-          <ArrayInput { ...props } att={ att } onChange={ v => onChange(v) }/>
+          <ArrayInput id={ `att:${ att.key }` } { ...props } { ...att }
+            type={  att.type.replace("-array", "") }
+            onChange={ v => onChange(v) }/>
         </div>
       : att.type === "rich-text" ?
         <Editor { ...props } id={ `att:${ att.key }` }
-          onChnage={ v => onChange(v) }/>
+          onChange={ v => onChange(v) }/>
       : att.type === "textarea" ?
           <div className="max-w-xl">
             <TextArea { ...props } id={ `att:${ att.key }` } rows="6"
@@ -281,6 +280,9 @@ export default class DmsCreate extends React.Component {
         if (("default" in att) && !(att.key in values)) {
           values[att.key] = this.getDefaultValue(att);
         }
+        else if (!hasValue(values[att.key])) {
+          delete values[att.key];
+        }
       })
     return values;
   }
@@ -302,28 +304,23 @@ export default class DmsCreate extends React.Component {
       const value = get(values, key, null);
       return value || "";
     }
-
     const attributes = get(this.props, ["format", "attributes"], []);
 
     return (
       <div className="flex w-full justify-center">
         <form onSubmit={ e => e.preventDefault() } className="w-full">
-          <div>
-              { attributes
-                  .map((att, i) =>
-                    <InputRow key={ att.key } autoFocus={ i === 0 }
-                      disabled={ att.editable === false }
-                      att={ att }
-                      value={ getValue(att.key) }
-                      onChange={ value => this.handleChange(att.key, value) }/>
-                  )
-              }
-              <div className="flex justify-end max-w-xl">
-                <DmsButton className="w-full max-w-xs" buttonTheme="buttonLargeSuccess" disabled={ !this.verify() } type="submit"
-                  label={ this.props.dmsAction } item={ item }
-                  action={ this.getButtonAction(values) }/>
-              </div>
-
+          { attributes.map((att, i) =>
+              <InputRow key={ att.key } autoFocus={ i === 0 }
+                disabled={ att.editable === false }
+                att={ att }
+                value={ getValue(att.key) }
+                onChange={ value => this.handleChange(att.key, value) }/>
+            )
+          }
+          <div className="flex justify-end max-w-xl">
+            <DmsButton className="w-full max-w-xs" buttonTheme="buttonLargeSuccess" disabled={ !this.verify() } type="submit"
+              label={ this.props.dmsAction } item={ item }
+              action={ this.getButtonAction(values) }/>
           </div>
         </form>
       </div>

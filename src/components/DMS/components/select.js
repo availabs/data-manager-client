@@ -3,10 +3,10 @@ import React from "react"
 import { Input } from "./parts"
 import { hasValue } from "../utils"
 
-import { useTheme } from "components/avl-components/wrappers/with-theme"
+// import { useTheme } from "components/avl-components/wrappers/with-theme"
 
-export const SelectItem = ({ isPlaceholder, children, remove }) => {
-  const theme = useTheme();
+export const ValueItem = ({ isPlaceholder, children, remove }) => {
+  // const theme = useTheme();
   return (
     <div className={ `
         ${ isPlaceholder ? "text-gray-400" : "bg-gray-200 mr-1 pl-2 pr-1" }
@@ -25,7 +25,7 @@ export const SelectItem = ({ isPlaceholder, children, remove }) => {
     </div>
   )
 }
-export const SelectValue = ({ children, large, small, className, ...props }) =>
+export const ValueContainer = ({ children, large, small, className, ...props }) =>
   <div { ...props }
     className={ `
       w-full flex flex-row flex-wrap bg-white border-2 border-transparent
@@ -115,17 +115,17 @@ class Select extends React.Component {
     return (
       <div className="relative" onMouseLeave={ e => this.closeDropdown() }>
         <div className="cursor-pointer">
-          <SelectValue id={ this.props.id } tabIndex="0"
+          <ValueContainer id={ this.props.id } tabIndex="0"
             onClick={ e => this.openDropdown(e) }
             style={ { borderColor: this.state.opened ? "black" : "transparent" } }>
             { values.map((v, i) =>
-                <SelectItem key={ i } isPlaceholder={ v === this.props.placeholder }
+                <ValueItem key={ i } isPlaceholder={ v === this.props.placeholder }
                   remove={ e => this.removeItem(e, v) }>
                   { v }
-                </SelectItem>
+                </ValueItem>
               )
             }
-          </SelectValue>
+          </ValueContainer>
         </div>
         { !this.state.opened ? null :
           <Dropdown>

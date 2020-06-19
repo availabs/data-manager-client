@@ -62,7 +62,7 @@ const DmsList = ({ ...props }) => {
           },{})
       }
     })
-
+console.log("DATA ITEMS:", dataItems)
   return !props.dataItems.length ? null : (
     <Content>
       { props.title ? <Header title={ props.title } /> : null }

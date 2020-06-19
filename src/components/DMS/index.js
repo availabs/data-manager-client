@@ -72,17 +72,17 @@ class DmsManager extends React.Component {
       { dmsAction, props } = top,
       actions = [];
 
-    if (stack.length > 1) {
-      actions.push({
-        comp: DmsButton,
-        action: "dms:back"
-      })
-    }
     if ((stack.length > 1) && showHome) {
        actions.push({
          comp: DmsButton,
          action: "dms:home"
        })
+    }
+    if (stack.length > 1) {
+      actions.push({
+        comp: DmsButton,
+        action: "dms:back"
+      })
     }
     if (dmsAction === "list") {
       actions.push({

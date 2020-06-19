@@ -1,7 +1,5 @@
 import { doc } from "./doc-page"
 
-import get from "lodash.get"
-
 export default ({
   type: "dms-manager", // top level component for managing data items
   wrappers: [

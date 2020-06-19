@@ -2,7 +2,8 @@
 
 import Immutable from "draft-js/node_modules/immutable"
 
-import makeAlignButton from "./makeAlignButton"
+import makeBlockDataButton from "./makeBlockDataButton"
+import makeDataRangeButton from "./makeDataRangeButton"
 import makeBlockStyleButton from "./makeBlockStyleButton"
 import makeInlineStyleButton from "./makeInlineStyleButton"
 
@@ -44,7 +45,12 @@ export default () => {
       return editorState;
     },
     blockStyleFn: block => {
-      return block.getData().get("textAlign");
+      const textAlign = block.getData().get("textAlign"),
+        textIndent = block.getData().get("textIndent")
+      return [
+        textIndent ? `indent-${ textIndent }` : "",
+        textAlign || ""
+      ].filter(Boolean).join(" ");
     },
     BlockQuoteButton: makeBlockStyleButton("blockquote", store),
     CodeBlockButton: makeBlockStyleButton("code-block", store),
@@ -62,8 +68,12 @@ export default () => {
     SuperScriptButton: makeInlineStyleButton("SUPERSCRIPT", store),
     UnderlineButton: makeInlineStyleButton("UNDERLINE", store),
 
-    LeftAlignButton: makeAlignButton("text-left", store),
-    CenterAlignButton: makeAlignButton("text-center", store),
-    RightAlignButton: makeAlignButton("text-right", store),
+    LeftAlignButton: makeBlockDataButton("textAlign", "text-left", store),
+    CenterAlignButton: makeBlockDataButton("textAlign", "text-center", store),
+    RightAlignButton: makeBlockDataButton("textAlign", "text-right", store),
+    JustifyAlignButton: makeBlockDataButton("textAlign", "text-justify", store),
+
+    TextIndentButton: makeDataRangeButton("textIndent", "indent", store, 1, 4),
+    TextOutdentButton: makeDataRangeButton("textIndent", "outdent", store, -1, 4)
   }
 }
