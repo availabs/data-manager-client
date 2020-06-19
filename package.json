@@ -39,9 +39,15 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint --fix src/**/*.js",
     "eject": "react-scripts eject"
   },
-  
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:fix",
+      "pre-push": "npm run lint"
+    }
+  },
   "eslintConfig": {
     "extends": "react-app"
   },
