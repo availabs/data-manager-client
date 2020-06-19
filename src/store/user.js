@@ -12,12 +12,10 @@ const AUTH_FAILURE = 'USER::AUTH_FAILURE';
 // ------------------------------------
 // Actions
 // ------------------------------------
-function receiveAuthResponse(user) {
-  return {
-    type: USER_LOGIN,
-    user
-  };
-}
+const receiveAuthResponse = user => ({
+  type: USER_LOGIN,
+  user
+});
 
 // function TODO_AuthServerVerifiesToken(user) {
 // return {
@@ -25,12 +23,6 @@ function receiveAuthResponse(user) {
 // res: user // temp hack till auth server takes tokens
 // };
 // }
-
-export function logout() {
-  return {
-    type: USER_LOGOUT
-  };
-}
 
 const setUserToken = user => {
   if (localStorage) {
@@ -48,6 +40,9 @@ const removeUserToken = () => {
     localStorage.removeItem('userToken');
   }
 };
+
+export const logout = () => dispatch =>
+  Promise.resolve(dispatch({ type: USER_LOGOUT }));
 
 export const login = ({ email, password }) => dispatch =>
   fetch(`${AUTH_HOST}/login`, {

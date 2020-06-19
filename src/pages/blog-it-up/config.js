@@ -16,9 +16,10 @@ export default ({
   ],
   props: {
     format: BLOG_POST,
-    title: " ",
-    buttonColors: {
-      reply: "green"
+    title: "Blog it Up",
+    className: "max-w-7xl m-auto pb-10",
+    buttonThemes: {
+      reply: "button"
     },
     authRules: {
       create: {
@@ -42,19 +43,15 @@ export default ({
   children: [
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list", // generic dms component for viewing multiple data items
+    { type: "dms-list",
       props: {
         dmsAction: "list",
         attributes: [
-          {
-            Header: 'Title',
-            accessor: 'title',
-            className: 'text-lg font-medium'
-          }, 
+          "title",
           "bloggerId",
           "updated_at",
-          "dms:view", 
-          "dms:edit", 
+          "dms:view",
+          "dms:edit",
           "dms:delete"
         ],
         title: "Posts",

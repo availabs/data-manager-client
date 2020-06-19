@@ -8,7 +8,14 @@ export default ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-provider",
+    { type: "dms-provider",
+      options: {
+        buttonThemes: {
+          delete: "buttonDanger",
+          edit: "buttonPrimary"
+        }
+      }
+    },
     "dms-router",
     "show-loading", // receives loading prop
     "dms-falcor", // generates loading prop and passes to children
@@ -16,10 +23,8 @@ export default ({
   ],
   props: {
     format: DMS_DOCS,
+    className: "max-w-6xl m-auto mb-10",
     title: "DMS Docs",
-    buttonColors: {
-      reply: "green"
-    },
     authRules: {
       create: {
         args: ["props:user.authLevel"],
@@ -62,7 +67,10 @@ export default ({
       wrappers: [
         { type: "dms-view",
           options: {
-            actions: [["dms:edit", "dms:delete"], ["dms:create"]],
+            actions: [
+              ["dms:edit", "dms:delete"],
+              [{ action: "dms:create", buttonTheme: "buttonSuccess" }]
+            ],
             mapDataToProps: {
               // $preserveKeys: true,
 // mapDataToProps is used by dms-view to map data items to wrapped component props
@@ -118,14 +126,11 @@ export default ({
           options: {
             mapDataToProps: {
               title: "item:data.title",
-              chapter: ["item:data.chapter"],
+              chapter: "item:data.chapter",
               body: "item:data.body",
-              footer: ["item:updated_at"]
+              updated_at: "item:updated_at"
             },
-            actions: [{
-              action: "api:delete",
-              showConfirm: true
-            }]
+            actions: ["api:delete"]
           }
         }
       ]

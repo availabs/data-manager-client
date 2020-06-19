@@ -22,8 +22,8 @@ class Login extends React.Component {
       disabled = !email || !password,
       from = get(this.props, ["location", "state", "from"], null);
 
-    if (this.props.authed && from) {
-      return <Redirect to={ from }/>
+    if (this.props.authed) {
+      return <Redirect to={ from || "/" }/>
     }
 
     return (

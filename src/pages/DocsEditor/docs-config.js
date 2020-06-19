@@ -50,14 +50,14 @@ export default ({
             Header: 'Title',
             accessor: 'title',
             className: 'text-lg font-medium'
-          }, 
+          },
           "userId",
-          "dms:view", 
-          "dms:edit", 
+          "dms:view",
+          "dms:edit",
           "dms:delete"
         ],
         title: "Pages",
-        
+
       },
       wrappers: ["with-theme"]
     },
@@ -79,7 +79,7 @@ export default ({
           }
         }
       ],
-      
+
     },
     { type: "dms-create",
       props: { dmsAction: "create" },

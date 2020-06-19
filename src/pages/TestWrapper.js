@@ -41,6 +41,7 @@ export default {
   path: '/test-wrapper',
   name: 'Test Wrapper',
   mainNav: true,
+  auth: true,
   layoutSettings: {
     fixed: true,
     theme: 'light'

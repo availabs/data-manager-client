@@ -1,5 +1,5 @@
 import React from "react"
-import { EditorState, DefaultDraftBlockRenderMap } from "draft-js"
+import { EditorState, DefaultDraftBlockRenderMap, getDefaultKeyBinding } from "draft-js"
 
 import Immutable from "draft-js/node_modules/immutable"
 
@@ -34,7 +34,16 @@ const myBlockRenderMap = Immutable.Map({
 })
 const blockRenderMap = DefaultDraftBlockRenderMap.merge(myBlockRenderMap);
 
+const hasListSelected = editorState =>
+  editorState
+    .getCurrentContent()
+    .getBlockForKey(editorState.getSelection().getStartKey())
+    .getType().includes("ordered-list-item");
+
 const onTab = (store, e) => {
+
+  if (!((+e.keyCode === 9) || (+e.code === 0x000f))) return getDefaultKeyBinding(e);
+  if (!hasListSelected(store.getEditorState())) return getDefaultKeyBinding(e);
   e.preventDefault();
 
   let found = false;
@@ -84,7 +93,7 @@ export default () => {
       store.getEditorState = getEditorState;
       store.setEditorState = setEditorState;
     },
-    onTab: onTab.bind(null, store),
+    keyBindingFn: onTab.bind(null, store),
     customStyleMap,
     blockStyleFn,
     blockRenderMap

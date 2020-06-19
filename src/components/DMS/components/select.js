@@ -1,10 +1,11 @@
 import React from "react"
 
 import { Input } from "./parts"
+import { hasValue } from "../utils"
 
 const SelectItem = ({ isPlaceholder, children, remove }) =>
   <div className={ `
-      ${ isPlaceholder ? "" : "bg-gray-200 mx-1 px-2" }
+      ${ isPlaceholder ? "text-gray-400" : "bg-gray-200 mx-1 px-2" }
       rounded whitespace-no-wrap my-0.5 relative flex items-center
     ` }>
     { children }
@@ -57,15 +58,8 @@ class Select extends React.Component {
       search: ""
     }
   }
-  hasValue() {
-    const { value } = this.props;
-    if (value === null || value === undefined) return false;
-    if (typeof value === "string" && !value.length) return false;
-    if (Array.isArray(value) && !value.length) return false;
-    return true;
-  }
   getValues() {
-    if (!this.hasValue()) return [this.props.placeholder];
+    if (!hasValue(this.props.value)) return [this.props.placeholder];
     if (!Array.isArray(this.props.value)) {
       return [this.props.value];
     }
@@ -83,7 +77,7 @@ class Select extends React.Component {
     this.closeDropdown();
 
     if (this.props.multi) {
-      if (!this.hasValue()) {
+      if (!hasValue(this.props.value)) {
         this.props.onChange([v]);
       }
       else if (!this.props.value.includes(v)) {
@@ -98,7 +92,8 @@ class Select extends React.Component {
     e.stopPropagation();
 
     if (this.props.multi) {
-      this.props.onChange(this.props.value.filter(d => d !== v));
+      const newValue = this.props.value.filter(d => d !== v);
+      this.props.onChange(newValue.length ? newValue : null);
     }
     else {
       this.props.onChange(null);

@@ -68,7 +68,8 @@ class MyEditor extends React.Component {
   editor = React.createRef();
   state = {
     editorState: EditorState.createEmpty(),
-    loading: false
+    loading: false,
+    hasFocus: false
   }
   componentDidMount() {
 //     if (window.localStorage) {
@@ -88,7 +89,7 @@ class MyEditor extends React.Component {
   }
   saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
 
-  focus(e) {
+  focusEditor(e) {
     e.preventDefault();
     this.editor.current.focus();
   }
@@ -115,11 +116,13 @@ class MyEditor extends React.Component {
     }
   }
   render() {
-    const { editorState, loading } = this.state;
+    const { editorState, loading, hasFocus } = this.state;
     return (
       <div id={ this.props.id }
-        className={ `pt-14 relative bg-white rounded draft-js-editor clearfix` }
-        onClick={ e => this.focus(e) }
+        className={ `pt-14 relative bg-white rounded draft-js-editor clearfix border-2
+          ${ hasFocus ? "border-black" : "border-transparent" }
+        ` }
+        onClick={ e => this.focusEditor(e) }
         onDrop={ e => this.dropIt(e) }>
 
         { !loading ? null :
@@ -138,7 +141,9 @@ class MyEditor extends React.Component {
             onChange={ editorState => this.handleChange(editorState) }
             plugins={ plugins }
             readOnly={ loading }
-            spellCheck={ true }/>
+            spellCheck={ true }
+            onFocus={ e => this.setState({ hasFocus: true }) }
+            onBlur={ e => this.setState({ hasFocus: false }) }/>
         </div>
 
         <Toolbar>

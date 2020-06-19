@@ -23,21 +23,21 @@ const DmsList = ({ ...props }) => {
     get(props, ["format", "attributes"], [])
       .reduce((a, c) => c.key === att ? (c.name || prettyKey(c.key)) : a, att);
 
-  
+
 
   let columns = [
     // add attributes
     ...attributes
       .map(a => {
         // console.log('a', a)
-        return a.accessor ? a : 
+        return a.accessor ? a :
         {
           id: a,
-          accessor: a,  
-          Header: d => getAttributeName(d.column.id) 
+          accessor: a,
+          Header: d => getAttributeName(d.column.id)
         }
       }),
-    // add actions    
+    // add actions
     ...actions
       .map(a => {
         return {
@@ -64,9 +64,9 @@ const DmsList = ({ ...props }) => {
 
   return !props.dataItems.length ? null : (
     <Content>
-      { props.title ? <Header title={ props.title } /> : null } 
-      <Table 
-        columns={columns} 
+      { props.title ? <Header title={ props.title } /> : null }
+      <Table
+        columns={columns}
         data={data}
         //onRowClick={d => props.makeInteraction('dms:view', d.original)}
       />
