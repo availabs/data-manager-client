@@ -45,16 +45,18 @@ const DmsList = ({ ...props }) => {
           Header: d => null,
           Cell: (props) =>  {
             return <DmsButton action={ props.value } item={ props.row.original } buttonTheme="buttonText" />
+
           }
         }
       })
   ]
 
+  console.log('dataItems', dataItems)
   let data = dataItems
     .map(d => {
       return {
+        id: d.id,
         ...d.data,
-        ...d,
         ...actions
           .reduce((o,a) => {
             o[get(a, "action", a)] = a

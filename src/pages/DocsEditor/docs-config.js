@@ -65,8 +65,8 @@ export default ({
         { type: "dms-view",
           options: {
             mapDataToProps: {
-// mapDataToProps is used by dms-view to map data items to wrapped component props
-// prop: [...attributes]
+              // mapDataToProps is used by dms-view to map data items to wrapped component props
+              // prop: [...attributes]
               title: "item:data.title",
               body: [
                 "item:data.userId",
@@ -79,7 +79,7 @@ export default ({
       ],
 
     },
-    { type: "dms-create",
+    { type: "dms-create-comp",
       props: { dmsAction: "create" },
       // dms-create defaults to dmsAction: "create"
       // the prop is required here due to the wrapper
