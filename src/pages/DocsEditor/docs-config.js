@@ -26,11 +26,11 @@ export default ({
         comparator: al => al !== null
       },
       edit: {
-        args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
+        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
         comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
       },
       delete: {
-        args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
+        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
         comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
       },
       reply: {
@@ -61,7 +61,6 @@ export default ({
       },
       wrappers: ["with-theme"]
     },
-
     { type: "dms-card", // generic dms component for viewing a single data item
       props: { dmsAction: "view" },
       wrappers: [
