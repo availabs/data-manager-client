@@ -15,7 +15,7 @@ export const doc = {
     { key: "userId",
       name: "User",
       type: "text",
-      default: "from:user.id", // default value will be pulled from props.user.id
+      default: "props:user.id", // default value will be pulled from props.user.id
       editable: false
     }
   ]

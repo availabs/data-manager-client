@@ -1,26 +1,9 @@
 import React, { useContext } from "react"
 
 import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
-import { checkAuth } from "../utils"
+import { checkAuth, processAction } from "../utils"
 
 import get from "lodash.get"
-
-const processAction = arg => {
-  let response = {
-    action: "unknown",
-    seedProps: () => null,
-    showConfirm: false,
-    label: null,
-    buttonTheme: null
-  };
-  if (typeof arg === "string") {
-    response.action = arg;
-  }
-  else {
-    response = { ...response, ...arg };
-  }
-  return response;
-}
 
 const getItem = (id, props) => {
   return (props.dataItems || []).reduce((a, c) => c.id === id ? c : a, null);
@@ -277,9 +260,13 @@ export default (Component, options = {}) => {
     }
 
     pushAction(dmsAction, id, props) {
-      const stack = this.props.useRouter ? this.state.stack.slice(0, 1) : [...this.state.stack];
+      const stack = this.props.useRouter ?
+        this.state.stack.slice(0, 1) : [...this.state.stack];
 
       stack.push({ dmsAction, id, props });
+      if (stack.length > 100) {
+        stack.splice(1, 1);
+      }
       this.setState({ stack });
     }
     popAction() {
@@ -313,8 +300,6 @@ export default (Component, options = {}) => {
         dataItems,
         top,
         [type]: item,
-        ...top,
-        id,
         item
       }
     }

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { DmsButton } from "../components/parts"
+import { DmsButton } from "../components/dms-button"
 
 import get from "lodash.get"
 
@@ -123,7 +123,7 @@ export default (Component, options = {}) => {
         <div>
           <Component { ...props } { ...this.props }/>
           { !actions.length ? null :
-            <div className="action-container">
+            <div className="action-container my-3">
               { this.getActionGroups(actions) }
             </div>
           }

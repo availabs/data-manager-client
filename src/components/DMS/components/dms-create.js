@@ -1,12 +1,13 @@
 import React from "react"
 
-import { DmsButton } from "./parts"
+import { DmsButton } from "./dms-button"
 import Editor from "./editor"
 
+import { Button } from "components/avl-components/components/Button"
 import { Input, TextArea, ArrayInput, Select } from "components/avl-components/components/Inputs"
 import { verifyValue, hasValue } from "components/avl-components/components/Inputs/utils"
 
-import { prettyKey, hasBeenUpdated } from "../utils"
+import { prettyKey, hasBeenUpdated, getValue } from "../utils"
 
 import { get } from "lodash"
 
@@ -126,7 +127,7 @@ class ImgInput extends React.Component {
   }
 }
 
-const InputRow = ({ att, onChange, ...props }) =>
+const InputRow = ({ att, onChange, domain, ...props }) =>
   <div className="my-2">
     <div>
       <label className="block w-full py-1" htmlFor={ `att:${ att.key }` }>
@@ -137,7 +138,7 @@ const InputRow = ({ att, onChange, ...props }) =>
       { /^(.+?)-array$/.test(att.type) && att.domain ?
         <div className="max-w-xl">
           <Select { ...props } id={ `att:${ att.key }` }
-            multi={ true } domain={ att.domain }
+            multi={ true } domain={ domain }
             onChange={ v => onChange(v) } searchable={ att.searchable }/>
         </div>
       : /^(.+?)-array$/.test(att.type) ?
@@ -162,7 +163,7 @@ const InputRow = ({ att, onChange, ...props }) =>
           </div>
         : att.domain ?
           <div className="max-w-xl">
-            <Select domain={ att.domain } { ...props }  id={ `att:${ att.key }` }
+            <Select domain={ domain } { ...props }  id={ `att:${ att.key }` }
               onChange={ v => onChange(v) } multi={ false } searchable={ att.searchable }/>
           </div>
         :
@@ -175,13 +176,66 @@ const InputRow = ({ att, onChange, ...props }) =>
     </div>
   </div>
 
+const BadAttributeRow = ({ format = {}, onDelete, onReassign, ...props }) => {
+  const [reassign, setReassign] = React.useState({});
+  return (
+    <div className="inline-block">
+      <div className="rounded border p-3 pt-1 mt-3">
+        <InputRow { ...props } disabled={ true }/>
+        <Button onClick={ onDelete } className="w-full">
+          Remove Attribute
+        </Button>
+      </div>
+      <div className="rounded border p-3 pt-1 mt-3">
+        <Select domain={ format.attributes }
+          multi={ false }
+          searchable={ false }
+          onChange={ setReassign }
+          accessor={ d => d.key }
+          value={ reassign }/>
+        <Button disabled={ !reassign.key } className="w-full"
+          onClick={ e => onReassign(reassign.key) }>
+          Reassign Attribute { reassign.key ? `to ${ reassign.key }` : "" }
+        </Button>
+      </div>
+    </div>
+  )
+}
 export default class DmsCreate extends React.Component {
   static defaultProps = {
     dmsAction: "create"
   }
+  INITIALIZED = false
   state = {}
+  componentDidMount() {
+    this.INITIALIZED = false;
+    this.initState();
+  }
+  componentDidUpdate(oldProps) {
+    !this.INITIALIZED && this.initState();
+  }
+  initState() {
+    this.INITIALIZED = this.initDefaults();
+  }
+  initDefaults() {
+    const newState = {},
+      attributes = get(this.props, ["format", "attributes"], []);
+
+    let hasDefaults = false;
+
+    attributes.forEach(att => {
+      if (att.default) {
+        hasDefaults = true;
+        const value = this.getDefaultValue(att);
+        hasValue(value) && (newState[att.key] = value);
+      }
+    })
+    const hasData = Object.keys(newState).length;
+    hasData && this.setState(state => newState);
+    return hasDefaults ? hasData : true;
+  }
   handleChange(key, value) {
-    this.setState({ [key]: value });
+    this.setState(state => ({ [key]: value }));
   }
   verify() {
     const item = get(this.props, this.props.type, null),
@@ -207,14 +261,13 @@ export default class DmsCreate extends React.Component {
         }
 
         return !c.required ? a : (a && Boolean(value));
-      }, hasBeenUpdated(data, this.state))
+      }, hasBeenUpdated(data, this.getValues()))
   }
   getDefaultValue(att) {
     const _default = att.default;
 
-    if (_default.includes("from:")) {
-      const path = _default.slice(5);
-      return get(this.props, path, null);
+    if (/^(from|item|props):/.test(_default)) {
+      return getValue(_default, { props: this.props });
     }
     return _default;
   }
@@ -223,15 +276,11 @@ export default class DmsCreate extends React.Component {
       ...this.state
     }
     let attributes = get(this.props, ["format", "attributes"], [])
-    attributes
-      .forEach(att => {
-        if (("default" in att) && !(att.key in values)) {
-          values[att.key] = this.getDefaultValue(att);
-        }
-        else if (!hasValue(values[att.key])) {
-          delete values[att.key];
-        }
-      })
+    attributes.forEach(att => {
+      if (!hasValue(values[att.key])) {
+        delete values[att.key];
+      }
+    })
     return values;
   }
   create() {
@@ -244,6 +293,15 @@ export default class DmsCreate extends React.Component {
       seedProps: () => values
     }
   }
+  getDomain(att) {
+    if (att.domain) {
+      if (typeof att.domain === "string") {
+        return getValue(att.domain, { props: this.props }) || [];
+      }
+      return att.domain;
+    }
+    return null;
+  }
   render() {
     const values = this.getValues(),
       item = get(this.props, this.props.type, null);
@@ -252,21 +310,46 @@ export default class DmsCreate extends React.Component {
       const value = get(values, key, null);
       return value || "";
     }
-    const attributes = get(this.props, ["format", "attributes"], []);
+    const attributes = get(this.props, ["format", "attributes"], []),
+      badAttributes = [];
 
+    for (const att in this.state) {
+      if (!attributes.some(d => d.key === att) && hasValue(this.state[att])) {
+        badAttributes.push(att);
+      }
+    }
     return (
       <div className="flex w-full justify-center">
         <form onSubmit={ e => e.preventDefault() } className="w-full">
-          { attributes.map((att, i) =>
-              <InputRow key={ att.key } autoFocus={ i === 0 }
-                disabled={ att.editable === false }
-                att={ att }
-                value={ getValue(att.key) }
-                onChange={ value => this.handleChange(att.key, value) }/>
-            )
+          <div>
+            { attributes.map((att, i) =>
+                <InputRow key={ att.key } autoFocus={ i === 0 }
+                  disabled={ att.editable === false }
+                  att={ att } domain={ this.getDomain(att) }
+                  value={ getValue(att.key) }
+                  onChange={ value => this.handleChange(att.key, value) }/>
+              )
+            }
+          </div>
+          { !badAttributes.length ? null :
+            <div className="my-4 py-4 border-t-2 border-b-2">
+              { badAttributes.map((att, i) =>
+                  <BadAttributeRow key={ att }
+                    att={ { key: att } }
+                    value={ this.state[att] }
+                    onDelete={ () => this.handleChange(att, null) }
+                    onReassign={ to => {
+                      this.handleChange(to, this.state[att]);
+                      this.handleChange(att, null);
+                    } }
+                    format={ this.props.format }/>
+                )
+              }
+            </div>
           }
           <div className="flex justify-end max-w-xl">
-            <DmsButton className="w-full max-w-xs" buttonTheme="buttonLargeSuccess" disabled={ !this.verify() } type="submit"
+            <DmsButton className="w-full max-w-xs" buttonTheme="buttonLargeSuccess"
+              disabled={ !this.verify() } type="submit"
               label={ this.props.dmsAction } item={ item }
               action={ this.getButtonAction(values) }/>
           </div>

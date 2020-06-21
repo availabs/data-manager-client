@@ -15,9 +15,6 @@ export default ({
   props: {
     format: doc,
     title: " ",
-    buttonColors: {
-      reply: "green"
-    },
     authRules: {
       create: {
         args: ["props:user.authLevel"],
@@ -40,15 +37,16 @@ export default ({
   children: [
     // dms-manager children are special
     // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list-custom", // generic dms component for viewing multiple data items
+    { type: "dms-table", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
-        attributes: [
-          {
-            Header: 'Title',
-            accessor: 'title',
+        buttonTheme: "buttonText",
+        columns: [
+          { Header: "title", // <-- this is no longer required
+            source: 'self:data.title',
             className: 'text-lg font-medium'
           },
+          // "title",
           "userId",
           "dms:view",
           "dms:edit",

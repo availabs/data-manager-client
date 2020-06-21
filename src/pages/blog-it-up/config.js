@@ -1,13 +1,16 @@
+import React from "react"
+
 import { BLOG_POST } from "./blog-post.type"
 
 import get from "lodash.get"
 
 export default ({
-  type: "dms-manager", // top level component for managing data items
+  type: ({ children }) => <div className="flex"><div className="mt-20 pt-8 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
   wrappers: [
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
+    "dms-manager",
     "dms-provider",
     "dms-router",
     "show-loading",
@@ -41,30 +44,44 @@ export default ({
     }
   },
   children: [
+    { type: "dms-header",
+      props: { title: "Blog it Up" }
+    },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
     { type: "dms-list",
       props: {
         dmsAction: "list",
-        attributes: [
-          "title",
-          "bloggerId",
-          "updated_at",
+        dmsActions: ["dms:fake-one", "dms:fake-two"],
+        columns: [
+          "self:data.title",
+          "self:data.bloggerId",
+          { source: "self:updated_at",
+            format: "date:MMM Do, YYYY h:mm a"
+          },
           "dms:view",
           "dms:edit",
           "dms:delete"
         ],
-        title: "Posts",
         filter: {
           args: ["self:data.replyTo"],
-          comparator: arg1 => arg1 === null
+          comparator: arg1 => !Boolean(arg1)
         }
-      },
-      wrappers: ["with-theme"]
+      }
     },
 
     { type: "dms-card", // generic dms component for viewing a single data item
-      props: { dmsAction: "view" },
+      props: {
+        dmsAction: "view",
+        dmsActions: [
+          { action: "dms:fake-three",
+            buttonTheme: "buttonPrimary"
+          },
+          { action: "dms:fake-four",
+            buttonTheme: "buttonSuccess"
+          }
+        ],
+      },
       wrappers: [
         { type: "dms-view",
           options: {
@@ -87,7 +104,7 @@ export default ({
       children: [
         { type: "dms-list",
           props: {
-            attributes: ["title", "bloggerId", "body"],
+            columns: ["title", "bloggerId", "body"],
             className: "mt-5",
             title: "Replies"
           },

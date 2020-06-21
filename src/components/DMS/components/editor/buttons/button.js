@@ -1,11 +1,17 @@
 import React from "react"
 
-export default ({ active, disabled, children, ...props }) =>
-  <button { ...props } disabled={ disabled } tabIndex={ -1 }
-    onMouseDown={ e => e.preventDefault() }
-    className={ `px-1 first:rounded-l last:rounded-r
-      ${ active ? "bg-gray-300" : "bg-gray-100" }
-      ${ disabled ? "bg-red-300 cursor-not-allowed" : "hover:bg-gray-300 cursor-pointer" }
-    ` }>
-    { children }
-  </button>
+import { useTheme } from "components/avl-components/wrappers/with-theme"
+
+export default ({ active, disabled, children, ...props }) => {
+  const theme = useTheme();
+  return (
+    <button { ...props } disabled={ disabled } tabIndex={ -1 }
+      onMouseDown={ e => e.preventDefault() }
+      className={ `px-1 first:rounded-l last:rounded-r ${ theme.text } focus:border-none
+        ${ active ? `${ theme.menuBgActive } ${ theme.menuBgActiveHover }` : theme.menuBg }
+        ${ disabled ? "bg-red-300 cursor-not-allowed" : `${ theme.menuBgHover } cursor-pointer` }
+      ` }>
+      { children }
+    </button>
+  )
+}

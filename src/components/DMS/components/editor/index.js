@@ -4,11 +4,12 @@ import { ScalableLoading } from "components/avl-components/components/Loading/Lo
 
 import { throttle, get, debounce } from "lodash"
 
+import { useTheme } from "components/avl-components/wrappers/with-theme"
+
 import {
   EditorState,
   // convertToRaw,
-  // convertFromRaw,
-  // RichUtils
+  // convertFromRaw
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 
@@ -123,10 +124,7 @@ class MyEditor extends React.Component {
   render() {
     const { editorState, loading, hasFocus } = this.state;
     return (
-      <div id={ this.props.id }
-        className={ `pt-14 relative bg-white rounded draft-js-editor clearfix border-2
-          ${ hasFocus ? "border-black" : "border-transparent" }
-        ` }
+      <EditorWrapper id={ this.props.id } hasFocus={ hasFocus }
         onClick={ e => this.focusEditor(e) }
         onDrop={ e => this.dropIt(e) }>
 
@@ -178,11 +176,22 @@ class MyEditor extends React.Component {
           <TextIndentButton />
         </Toolbar>
 
-      </div>
+      </EditorWrapper>
     );
   }
 }
 export default MyEditor;
+
+const EditorWrapper = ({ children, hasFocus, ...props }) => {
+  const theme = useTheme();
+  return (
+    <div className={ `pt-14 relative rounded draft-js-editor
+        ${ hasFocus ? theme.inputFocus : theme.inputBg }
+    ` } { ...props }>
+      { children }
+    </div>
+  )
+}
 
 const LoadingIndicator = () =>
   <div className={ `

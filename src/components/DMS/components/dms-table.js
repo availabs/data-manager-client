@@ -1,106 +1,77 @@
 import React from "react"
 
-import { Button } from "./parts"
+import { DmsButton } from "./dms-button"
 
-const getPageSpread = (page, maxPage) => {
-	let low = page - 2,
-		high = page + 2;
+import { Content, Table, Header } from 'components/avl-components/components'
 
-	if (low < 0) {
-		high += -low;
-		low = 0;
-	}
-	if (high > maxPage) {
-		low -= (high - maxPage);
-		high = maxPage;
-	}
-	return d3array.range(Math.max(0, low), Math.min(maxPage, high) + 1);
+import get from "lodash.get"
+
+import { makeFilter, prettyKey, processAction, getFormat, getValue, useDmsColumns } from "../utils"
+
+const DmsTable = ({ columns, ...props }) => {
+	const [attributes, actions] = useDmsColumns(columns);
+
+  const filter = makeFilter(props),
+    dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
+
+  const getAttributeName = att =>
+    get(props, ["format", "attributes"], [])
+      .reduce((a, c) => c.key === att ? (c.name || prettyKey(c.key)) : a, att);
+
+  const columnData = [
+    // add attributes
+    ...attributes
+      .map(a => {
+        return {
+          id: a.source,
+          accessor: d => a.format(getValue(a.source, d)),
+          Header: d => getAttributeName(d.column.id.split(/[:.]/).pop()),
+          ...a
+        }
+      }),
+    // add actions
+    ...actions
+      .map(a => {
+        return {
+          accessor: get(a, "action", a),
+          Header: d => null,
+          Cell: cellProps =>
+            <DmsButton action={ a } item={ cellProps.row.original.self }
+              buttonTheme={ props.buttonTheme }/>
+        }
+      })
+  ]
+
+  const data = dataItems
+    .map(d => {
+      return {
+        self: d,
+        ...actions.reduce((o, a) => {
+          o[a.action] = a;
+          return o
+        }, {})
+      }
+    })
+// console.log("DATA ITEMS:", dataItems)
+  return !props.dataItems.length ? null : (
+    <Content>
+      { props.title ? <Header title={ props.title } /> : null }
+      <Table data={ data }
+        columns={ columnData }
+        // onRowClick={ d => props.makeInteraction('dms:view', d.original) }
+      />
+    </Content>
+  )
 }
-
-class DmsTable extends React.Component {
-  static defaultProps = {
-    data: [],
-    keys: [],
-    rowsPerPage: 10
-  }
-  state = { page: 0 }
-  setPage(page) {
-    this.setState({ page });
-  }
-  incPage(inc) {
-    this.setPage(this.state.page + inc);
-  }
-	getKeys() {
-		let { keys, data } = this.props;
-		if (!keys.length && data.length) {
-			keys = Object.keys(data[0]);
-		}
-		return keys.map(k => typeof key === "string" ? { key } : k);
-	}
-  render() {
-		let { page } = this.state;
-		const { rowsPerPage } = this.props,
-			maxPage = Math.max(Math.ceil(data.length / rowsPerPage) - 1, 0),
-			length = data.length;
-		page = Math.min(maxPage, page);
-
-		const keys = this.getKeys(),
-      data = this.props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-    return (
-      <div>
-        <div className="btn-group-horizontal">
-
-  				<Button onClick={ () => this.setPage(0) }
-  					disabled={ page === 0 }>
-            { "<<" }
-  				</Button>
-  				<Button onClick={ () => this.incPage(-1) }
-  					disabled={ page === 0 }>
-            { "<" }
-  				</Button>
-  				{
-  					getPageSpread(page, maxPage)
-  						.map(p =>
-  							<Button key={ p }
-  								disabled={ p === page }
-  								onClick={ () => this.setPage(p) }>
-  								{ p + 1 }
-  							</Button>
-  						)
-  				}
-  				<Button onClick={ () => this.incPage(1) }
-  					disabled={ page === maxPage }>
-            { ">" }
-  				</Button>
-  				<Button onClick={ () => this.setPage(maxPage) }
-  					disabled={ page === maxPage }>
-            { ">>" }
-  				</Button>
-
-        </div>
-        <table>
-          <thead>
-            <tr>
-              { keys.map(({ key, show }) =>
-                  <th key={ key }>{ show ? key : "" }</th>
-                )
-              }
-            </tr>
-          </thead>
-          <tbody>
-            { data.map((d, i) =>
-                <tr key={ i }>
-                  { keys.map(({ key }) =>
-                      <td key={ key }>{ d[key] }</td>
-                    )
-                  }
-                </tr>
-              )
-            }
-          </tbody>
-        </table>
-      </div>
-    )
-  }
+DmsTable.defaultProps = {
+  dmsAction: "list",
+  dataItems: [],
+  columns: [],
+  format: {},
+  filter: false,
+  sortBy: "updated_at",
+  sortOrder: "desc",
+  transform: null,
+  theme: {}
 }
+export default DmsTable;

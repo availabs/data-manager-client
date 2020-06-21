@@ -1,17 +1,84 @@
 import React from "react"
 
 import get from "lodash.get"
+import * as d3format from "d3-format"
+import moment from "moment"
 
 import { hasValue } from "components/avl-components/components/Inputs/utils"
 
+export const getFormat = format => {
+  if (/^date:/.test(format)) {
+    return value => moment(value).format(format.replace(/^date:/, ""));
+  }
+  return format ? d3format.format(format) : d => d;
+}
+
+export const useDmsColumns = columns => {
+  const [Columns, setColumns] = React.useState([[], []]);
+
+  React.useEffect(() => {
+    const temp = columns.map(att => {
+      if (typeof att === "string") {
+        if (/^(dms|api):(.+)$/.test(att)) {
+          return processAction(att);
+        }
+        if (!/^self|item|props:/.test(att)) {
+          att = `self:data.${ att }`;
+        }
+        return  { source: att, format: d => d };
+      }
+      if (att.action) {
+        return processAction(att);
+      }
+      if (att.source && !/^self|item|props:/.test(att.source)) {
+        att.source = `self:data.${ att.source }`;
+      }
+      return { ...att, format: getFormat(att.format) };
+    })
+    setColumns(
+      temp.reduce((a, c) => {
+        const [atts, acts] = a;
+        if (c.source) {
+          atts.push(c);
+        }
+        else {
+          acts.push(c);
+        }
+        return a;
+      }, [[], []])
+    );
+  }, [columns]);
+
+  return Columns;
+}
+
 export const compareActions = (action1 = "", action2 = "") =>
   action1.replace(/^dms:/, "") === action2.replace(/^dms:/, "")
+
+export const processAction = arg => {
+  let response = {
+    action: "unknown",
+    seedProps: () => null,
+    showConfirm: false,
+    label: null,
+    buttonTheme: null
+  };
+  if (typeof arg === "string") {
+    response.action = arg;
+  }
+  else {
+    response = { ...response, ...arg };
+  }
+  return response;
+}
 
 export const capitalize = string =>
   string.toLowerCase().split("")
     .map((c, i) => i === 0 ? c.toUpperCase() : c).join("");
 export const prettyKey = key =>
-  key.replace(/[_-]/g, " ").split(" ").map(string => capitalize(string)).join(" ");
+  key.replace(/(?<!^)(?=[A-Z])/g, " ")
+    .replace(/[_-]/g, " ")
+    .split(" ").map(capitalize).join(" ");
 
 export const ITEM_REGEX = /^item:(.+)$/;
 export const PROPS_REGEX = /^props:(.+)$/;
@@ -229,6 +296,9 @@ export const getValue = (arg, sources, directives) => {
   }
 
   if (typeof arg !== "object") {
+    if (typeof arg === "string") {
+      arg = arg.replace(/^(from:)/, "props:");
+    }
     arg = { path: arg }
   }
   let {

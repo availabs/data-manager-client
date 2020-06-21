@@ -1,20 +1,42 @@
+import React from "react"
+
 import { DMS_DOCS } from "./dms-docs.type"
 
-//import get from "lodash.get"
+const domain = [
+  "Text 1", "Text 2", "Text 3",
+  '???????? ????????',
+  '????????? ??????????',
+  "!!!!!!!!", "###### #####",
+  "!!! !!!!! !!!", "######## #######",
+  '????????? ?????? ???',
+  '???? ?????? ????????????',
+  "!!! !!!!!!", "####### ######",
+  "!!!!!!!! !!!!!", "########## ########",
+  '????????? ???? ?????',
+  '?? ????????? ??????? ?? ??',
+  "!!!! !!!!!! !!!!", "####### #####",
+  "!!!!!!!!! !!!!", "######### #######",
+  '????????? ????? ??? ???',
+  '?????????? ???? ????????????',
+  "!!!!! !!!! !!!!", "####### #######",
+  "!!!!!!!! !!!!!!!!", "########### ########"
+]
 
 export default ({
-  type: "dms-manager", // top level component for managing data items
+  type: ({ children }) => <div className="flex"><div className="mt-20 pt-8 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
   wrappers: [
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
+    "dms-manager",
     { type: "dms-provider",
-      // options: {
-      //   buttonThemes: {
-      //     delete: "buttonDanger",
-      //     edit: "button"
-      //   }
-      // }
+      options: {
+        buttonThemes: {
+          home: "buttonInfo",
+          create: "buttonSuccess",
+          edit: "buttonPrimary"
+        }
+      }
     },
     "dms-router",
     "show-loading", // receives loading prop
@@ -23,8 +45,6 @@ export default ({
   ],
   props: {
     format: DMS_DOCS,
-    className: "max-w-6xl m-auto mb-10",
-    title: "DMS Docs",
     authRules: {
       create: {
         args: ["props:user.authLevel"],
@@ -41,6 +61,9 @@ export default ({
     }
   },
   children: [
+    { type: "dms-header",
+      props: { title: "Dms Docs" }
+    },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
     { type: "dms-list", // generic dms component for viewing multiple data items
@@ -49,27 +72,28 @@ export default ({
         sortBy: "data.chapter",
         sortOrder: "asc",
         filter: d => !d.data.chapter.includes("."),
-        attributes: [
+        columns: [
           "title", "chapter",
           "dms:edit", "dms:delete",
           { action: "api:delete",
             label: "API delete",
             color: "red",
             showConfirm: true }
-        ],
-        title: "DMS Docs"
+        ]
       },
       wrappers: ["with-theme"]
     },
 
     { type: "docs-page", // generic dms component for viewing a single data item
-      props: { dmsAction: "view" },
+      props: {
+        dmsAction: "view"
+      },
       wrappers: [
         { type: "dms-view",
           options: {
             actions: [
               ["dms:edit", "dms:delete"],
-              [{ action: "dms:create", buttonTheme: "buttonSuccess" }]
+              ["dms:create"]
             ],
             mapDataToProps: {
               // $preserveKeys: true,
@@ -88,7 +112,7 @@ export default ({
       children: [
         { type: "dms-list",
           props: {
-            attributes: ["title", "chapter", "dms:edit", "dms:delete"],
+            columns: ["title", "chapter", "dms:edit", "dms:delete"],
             className: "mt-5",
             sortBy: "data.chapter",
             sortOrder: "asc",
@@ -104,18 +128,18 @@ export default ({
                 }
               }
             }
-          }, "with-theme"]
+          }]
         }
       ]
     },
 
     { type: "dms-create",
-      props: { dmsAction: "create" },
+      props: { dmsAction: "create", domain },
       wrappers: ["with-auth"]
     },
 
     { type: "dms-edit",
-      props: { dmsAction: "edit" },
+      props: { dmsAction: "edit", domain },
       wrappers: ["with-auth"]
     },
 

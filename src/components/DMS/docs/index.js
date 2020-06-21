@@ -20,11 +20,10 @@ export default {
   // exact: true,
   auth: true,
   name: 'DMS Docs',
-  icon: 'far fa-sticky-note',
+  icon: 'fas fa-sticky-note',
   layoutSettings: {
-    fixed: true,
     nav: 'side',
-    maxWidth: '',
+    fixed: true,
     headerBar: false,
     theme: 'TEST_THEME'
   },

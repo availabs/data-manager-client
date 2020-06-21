@@ -17,7 +17,8 @@ module.exports = {
     backgroundColor: ['responsive', 'hover', 'focus', 'first', 'last', 'odd', 'even', 'disabled'],
     cursor: ['disabled', 'responsive'],
     opacity: ['responsive', 'disabled', 'hover', 'focus'],
-    textColor: ['responsive', 'hover', 'focus', 'disabled']
+    textColor: ['responsive', 'hover', 'focus', 'disabled'],
+    fontWeight: ['responsive', 'hover', 'focus', 'disabled']
   },
   plugins: [
     require('@tailwindcss/ui'),

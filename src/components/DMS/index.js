@@ -2,7 +2,7 @@ import React from "react"
 
 import DmsComponents from "./components"
 
-import { DmsButton } from "./components/parts"
+import { DmsButton } from "./components/dms-button"
 
 import { Header } from 'components/avl-components/components'
 
@@ -36,31 +36,19 @@ class DmsManager extends React.Component {
 
     if (child === null) return null;
 
-    if (/^(dms:)*list$/.test(dmsAction)) {
-      return React.cloneElement(child,
-        { ...props,
-          app: this.props.app,
-          type: this.props.type,
-          format: this.props.format,
-          dataItems: this.props.dataItems,
-          makeInteraction: this.props.makeInteraction,
-          makeOnClick: this.props.makeOnClick,
-          interact: this.props.interact,
-          [this.props.type]: null
-        }
-      );
-    }
-
     return React.cloneElement(child,
-      { ...child.props,
-        ...props,
+      { ...props,
         app: this.props.app,
         type: this.props.type,
         format: this.props.format,
         dataItems: this.props.dataItems,
+        makeInteraction: this.props.makeInteraction,
+        makeOnClick: this.props.makeOnClick,
+        interact: this.props.interact,
         [this.props.type]: item
       }
     );
+
   }
 
   render() {

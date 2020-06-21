@@ -21,9 +21,8 @@ export default {
   layoutSettings: {
     fixed: false,
     nav: 'side',
-    maxWidth: '',
     headerBar: false,
-    theme: 'flat'
+    theme: 'TEST_THEME'
   },
   component: config
 }

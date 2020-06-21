@@ -644,6 +644,7 @@ DRAFT JS
 .scrollbar::-webkit-scrollbar {
   height: 10px;
   width: 10px;
+  background-color: #bbb;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
@@ -7824,6 +7825,42 @@ DRAFT JS
 }
 
 .focus\:font-black:focus {
+  font-weight: 900;
+}
+
+.disabled\:font-hairline:disabled {
+  font-weight: 100;
+}
+
+.disabled\:font-thin:disabled {
+  font-weight: 200;
+}
+
+.disabled\:font-light:disabled {
+  font-weight: 300;
+}
+
+.disabled\:font-normal:disabled {
+  font-weight: 400;
+}
+
+.disabled\:font-medium:disabled {
+  font-weight: 500;
+}
+
+.disabled\:font-semibold:disabled {
+  font-weight: 600;
+}
+
+.disabled\:font-bold:disabled {
+  font-weight: 700;
+}
+
+.disabled\:font-extrabold:disabled {
+  font-weight: 800;
+}
+
+.disabled\:font-black:disabled {
   font-weight: 900;
 }
 
@@ -45855,6 +45892,42 @@ DRAFT JS
     font-weight: 900;
   }
 
+  .sm\:disabled\:font-hairline:disabled {
+    font-weight: 100;
+  }
+
+  .sm\:disabled\:font-thin:disabled {
+    font-weight: 200;
+  }
+
+  .sm\:disabled\:font-light:disabled {
+    font-weight: 300;
+  }
+
+  .sm\:disabled\:font-normal:disabled {
+    font-weight: 400;
+  }
+
+  .sm\:disabled\:font-medium:disabled {
+    font-weight: 500;
+  }
+
+  .sm\:disabled\:font-semibold:disabled {
+    font-weight: 600;
+  }
+
+  .sm\:disabled\:font-bold:disabled {
+    font-weight: 700;
+  }
+
+  .sm\:disabled\:font-extrabold:disabled {
+    font-weight: 800;
+  }
+
+  .sm\:disabled\:font-black:disabled {
+    font-weight: 900;
+  }
+
   .sm\:h-0 {
     height: 0;
   }
@@ -83877,6 +83950,42 @@ DRAFT JS
   }
 
   .md\:focus\:font-black:focus {
+    font-weight: 900;
+  }
+
+  .md\:disabled\:font-hairline:disabled {
+    font-weight: 100;
+  }
+
+  .md\:disabled\:font-thin:disabled {
+    font-weight: 200;
+  }
+
+  .md\:disabled\:font-light:disabled {
+    font-weight: 300;
+  }
+
+  .md\:disabled\:font-normal:disabled {
+    font-weight: 400;
+  }
+
+  .md\:disabled\:font-medium:disabled {
+    font-weight: 500;
+  }
+
+  .md\:disabled\:font-semibold:disabled {
+    font-weight: 600;
+  }
+
+  .md\:disabled\:font-bold:disabled {
+    font-weight: 700;
+  }
+
+  .md\:disabled\:font-extrabold:disabled {
+    font-weight: 800;
+  }
+
+  .md\:disabled\:font-black:disabled {
     font-weight: 900;
   }
 
@@ -121905,6 +122014,42 @@ DRAFT JS
     font-weight: 900;
   }
 
+  .lg\:disabled\:font-hairline:disabled {
+    font-weight: 100;
+  }
+
+  .lg\:disabled\:font-thin:disabled {
+    font-weight: 200;
+  }
+
+  .lg\:disabled\:font-light:disabled {
+    font-weight: 300;
+  }
+
+  .lg\:disabled\:font-normal:disabled {
+    font-weight: 400;
+  }
+
+  .lg\:disabled\:font-medium:disabled {
+    font-weight: 500;
+  }
+
+  .lg\:disabled\:font-semibold:disabled {
+    font-weight: 600;
+  }
+
+  .lg\:disabled\:font-bold:disabled {
+    font-weight: 700;
+  }
+
+  .lg\:disabled\:font-extrabold:disabled {
+    font-weight: 800;
+  }
+
+  .lg\:disabled\:font-black:disabled {
+    font-weight: 900;
+  }
+
   .lg\:h-0 {
     height: 0;
   }
@@ -159927,6 +160072,42 @@ DRAFT JS
   }
 
   .xl\:focus\:font-black:focus {
+    font-weight: 900;
+  }
+
+  .xl\:disabled\:font-hairline:disabled {
+    font-weight: 100;
+  }
+
+  .xl\:disabled\:font-thin:disabled {
+    font-weight: 200;
+  }
+
+  .xl\:disabled\:font-light:disabled {
+    font-weight: 300;
+  }
+
+  .xl\:disabled\:font-normal:disabled {
+    font-weight: 400;
+  }
+
+  .xl\:disabled\:font-medium:disabled {
+    font-weight: 500;
+  }
+
+  .xl\:disabled\:font-semibold:disabled {
+    font-weight: 600;
+  }
+
+  .xl\:disabled\:font-bold:disabled {
+    font-weight: 700;
+  }
+
+  .xl\:disabled\:font-extrabold:disabled {
+    font-weight: 800;
+  }
+
+  .xl\:disabled\:font-black:disabled {
     font-weight: 900;
   }
 

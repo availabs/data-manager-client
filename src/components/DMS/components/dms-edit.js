@@ -6,18 +6,10 @@ export default class DmsEdit extends DmsCreate {
   static defaultProps = {
     dmsAction: "edit"
   }
-  INITIALIZED = false
-  componentDidMount() {
-    this.INITIALIZED = false;
-    this.initState();
-  }
-  componentDidUpdate(oldProps) {
-    !this.INITIALIZED && this.initState();
-  }
   initState() {
     const item = get(this.props, this.props.type, null),
       data = get(item, "data", null);
-    if (!this.INITIALIZED && data) {
+    if (data) {
       this.setState({ ...data });
       this.INITIALIZED = true;
     }

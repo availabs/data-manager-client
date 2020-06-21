@@ -3,7 +3,7 @@ import React from "react"
 import {
   DmsButton
   // getButtonClassName,
-} from "./parts"
+} from "./dms-button"
 import Editor from "./editor"
 
 import { Content, Table, Header, Button, FormSection, InputContainer } from "components/avl-components/components"

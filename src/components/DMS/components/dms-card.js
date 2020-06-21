@@ -8,7 +8,7 @@ export default ({ title = "", body = null }) => {
   return (
     <div>
       { title ? <Title>{ title }</Title> : null }
-      <div className={ `${ theme.lighter } rounded-md px-3 py-1 mb-3 shadow-md` }>
+      <div className={ `${ theme.lighter } rounded-md px-8 py-4 mb-3 shadow-md` }>
         { body }
       </div>
     </div>

@@ -1,10 +1,18 @@
-import React from "react"
+import React, { useContext } from "react"
 
-export default React.createContext({
+const noop = () => {};
+
+const DmsContext = React.createContext({
   app: "unknown",
   type: "unknown",
   dataItems: [],
   item: null,
   dmsAction: "unknown",
-  interact: () => {}
+  interact: noop,
+  makeInteraction: noop,
+  makeOnClick: noop
 });
+
+export const useDms = () => useContext(DmsContext);
+
+export default DmsContext

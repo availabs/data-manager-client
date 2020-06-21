@@ -16,13 +16,13 @@ export const BLOG_POST = {
     { key: "bloggerId",
       name: "Blogger ID",
       type: "text",
-      default: "from:user.id", // default value will be pulled from props.user.id
+      default: "props:user.id", // default value will be pulled from props.user.id
       editable: false
     },
     { key: "replyTo",
       name: "Reply To",
       type: "text",
-      default: "from:blog-post.id", // default value will be pulled from props.blog-post.id
+      default: "props:blog-post.id", // default value will be pulled from props.blog-post.id
       editable: false
     }
   ]
