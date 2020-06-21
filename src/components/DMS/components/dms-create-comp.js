@@ -6,7 +6,7 @@ import {
 } from "./dms-button"
 import Editor from "./editor"
 
-import { Content, Table, Header, Button, FormSection, InputContainer } from "components/avl-components/components"
+import { Content, Button, FormSection, InputContainer } from "components/avl-components/components"
 import { Input, TextArea, Select } from "components/avl-components/components/Inputs"
 import { ValueContainer, ValueItem } from "components/avl-components/components/Inputs/parts"
 
