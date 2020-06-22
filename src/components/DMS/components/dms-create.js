@@ -2,17 +2,17 @@ import React from "react"
 
 import { DmsButton } from "./dms-button"
 import Editor from "./editor"
+import ImgInput from "./img-input"
 
 import { Button } from "components/avl-components/components/Button"
 import { Input, TextArea, ArrayInput, Select } from "components/avl-components/components/Inputs"
 import { verifyValue, hasValue } from "components/avl-components/components/Inputs/utils"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
-import ImgInput from "./img-input"
 
 import { prettyKey, hasBeenUpdated, getValue } from "../utils"
 
-import { get } from "lodash"
+import get from "lodash.get"
 
 import styled from "styled-components"
 
@@ -187,12 +187,7 @@ export default class DmsCreate extends React.Component {
     return this.doVerify(this.state.pages[this.state.page]);
   }
   getDefaultValue(att) {
-    const _default = att.default;
-
-    if (/^(from|item|props):/.test(_default)) {
-      return getValue(_default, { props: this.props });
-    }
-    return _default;
+    getValue(att.default, { props: this.props });
   }
   getValues() {
     const values = {
