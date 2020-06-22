@@ -70,18 +70,12 @@ export default {
                     filter: {
                       args: ["self:data.chapter", "item:data.chapter"],
                       comparator: (self, item) => {
-                        if (self === item) return true;
-                        if (/^\d+$/.test(self)) return true;
-
-                        const isChild = new RegExp(`^${ item }[.]\\d+$`);
-                        if (isChild.test(self)) return true;
-
-                        const split = item.split(".");
-                        while (split.pop()) {
-                          const sibling = split.join("."),
-                            isSibling = new RegExp(`^${ sibling }[.]\\d+$`);
-                          if (isSibling.test(self)) return true;
-                        }
+                        const args = item.split(".");
+                        do {
+                          const arg = [...args, "\\d+"].join("[.]"),
+                            regex = new RegExp(`^${ arg }$`);
+                          if (regex.test(self)) return true;
+                        } while (args.pop());
                         return false;
                       }
                     },

@@ -24,34 +24,43 @@ const DmsTable = ({ columns, ...props }) => {
       .map(a => {
         return {
           id: a.source,
-          accessor: d => a.format(getValue(a.source, d)),
-          Header: d => getAttributeName(d.column.id.split(/[:.]/).pop()),
-          ...a
+          accessor: d => d[a.source],
+          Header: getAttributeName(a.key)
         }
       }),
+      // .map(a => {
+      //   return {
+      //     id: a.source,
+      //     accessor: d => a.format(getValue(a.source, d)),
+      //     Header: d => getAttributeName(d.column.id.split(/[:.]/).pop()),
+      //     ...a
+      //   }
+      // }),
     // add actions
     ...actions
       .map(a => {
         return {
-          accessor: get(a, "action", a),
+          accessor: a.action,
           Header: d => null,
-          Cell: cellProps =>
-            <DmsButton action={ a } item={ cellProps.row.original.self }
+          Cell: cell =>
+            <DmsButton action={ a } item={ cell.row.original.self }
               buttonTheme={ props.buttonTheme }/>
         }
       })
   ]
 
   const data = dataItems
-    .map(d => {
-      return {
-        self: d,
-        ...actions.reduce((o, a) => {
-          o[a.action] = a;
-          return o
-        }, {})
-      }
-    })
+    .map(self => ({
+      self,
+      ...attributes.reduce((a, c) => {
+        a[c.source] = c.format(getValue(c.source, { self }));
+        return a;
+      }, {}),
+      ...actions.reduce((o, a) => {
+        o[a.action] = a;
+        return o
+      }, {})
+    }))
 // console.log("DATA ITEMS:", dataItems)
   return !props.dataItems.length ? null : (
     <Content>

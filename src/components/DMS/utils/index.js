@@ -20,12 +20,11 @@ export const useDmsColumns = columns => {
     const temp = columns.map(att => {
       if (typeof att === "string") {
         if (/^(dms|api):(.+)$/.test(att)) {
-          return processAction(att);
+          att = { action: att };
         }
-        if (!/^self|item|props:/.test(att)) {
-          att = `self:data.${ att }`;
+        else {
+          att = { source: att };
         }
-        return  { source: att, format: d => d };
       }
       if (att.action) {
         return processAction(att);
@@ -33,7 +32,10 @@ export const useDmsColumns = columns => {
       if (att.source && !/^self|item|props:/.test(att.source)) {
         att.source = `self:data.${ att.source }`;
       }
-      return { ...att, format: getFormat(att.format) };
+      return { ...att,
+        key: att.source.split(/[:.]/).pop(),
+        format: getFormat(att.format)
+      };
     })
     setColumns(
       temp.reduce((a, c) => {
