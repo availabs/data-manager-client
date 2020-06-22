@@ -43,6 +43,7 @@ const useProcessValues = (sections) => {
     [Sections, setSections] = useState([]);
 
   Processed.setValues = (key, value) => setValues(prev => ({ ...prev, [key]: value }))
+  Processed.values = { ...values };
 
   useEffect(() => {
     if (!Sections.length) {
@@ -141,10 +142,9 @@ export const dmsCreate = Component => {
       hasData && Processed.setValues(values);
       setInit(hasDefaults ? hasData : true);
     }
-
     return (
       <Component format={ format } { ...props }
-        setValues={ Processed.setValues }
+        values={ Processed.values } setValues={ Processed.setValues }
         sections={ Processed }/>
     )
   }

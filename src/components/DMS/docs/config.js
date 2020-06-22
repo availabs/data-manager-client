@@ -146,7 +146,7 @@ export default ({
               { sections.sections[sections.activeSection].attributes
                   .map(({ Input, ...att }) => (
                       <div key={ att.key}>
-                        <label>{att.key}??? {att.verified+""}{att.value}</label>
+                        <label>{att.key}: verified? {att.verified+""}</label>
                         <Input onChange={ v => setValues(att.key, v) }
                           value={ att.value || "" }/>
                       </div>
