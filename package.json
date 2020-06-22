@@ -40,6 +40,7 @@
     "extends": "react-app"
   },
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build:style": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
     "start": "npm run build:style && react-scripts start",
     "build": "react-scripts build",
@@ -70,6 +71,7 @@
     "autoprefixer": "^9.7.6",
     "husky": "^4.2.5",
     "postcss-cli": "^7.1.0",
+    "source-map-explorer": "^2.4.2",
     "tailwindcss": "^1.2.0"
   }
 }
