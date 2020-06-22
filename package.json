@@ -32,6 +32,7 @@
     "react-table": "^7.2.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "styled-components": "^5.1.1",
     "tlds": "^1.207.0",
     "uplot": "^1.0.8"
   },

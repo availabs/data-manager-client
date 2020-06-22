@@ -49,7 +49,7 @@ export default ({
     },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list",
+    { type: "dms-table",
       props: {
         dmsAction: "list",
         dmsActions: ["dms:fake-one", "dms:fake-two"],

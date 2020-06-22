@@ -14,37 +14,36 @@ const DmsTable = ({ columns, ...props }) => {
   const filter = makeFilter(props),
     dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
 
-  const getAttributeName = att =>
-    get(props, ["format", "attributes"], [])
+  const getAttributeName = att => {
+    att = att.split(/[:.]/).pop();
+    const name = get(props, ["format", "attributes"], [])
       .reduce((a, c) => c.key === att ? (c.name || prettyKey(c.key)) : a, att);
+    return name === att ? prettyKey(att) : name;
+  };
 
   const columnData = [
     // add attributes
     ...attributes
-      .map(a => {
+      .map(({ source, key, format, ...rest }) => {
         return {
-          id: a.source,
-          accessor: d => d[a.source],
-          Header: getAttributeName(a.key)
+					...rest,
+          id: source,
+          accessor: d => d[source],
+          Header: getAttributeName(key),
+					Cell: ({ value }) => format(value)
         }
       }),
-      // .map(a => {
-      //   return {
-      //     id: a.source,
-      //     accessor: d => a.format(getValue(a.source, d)),
-      //     Header: d => getAttributeName(d.column.id.split(/[:.]/).pop()),
-      //     ...a
-      //   }
-      // }),
-    // add actions
     ...actions
       .map(a => {
         return {
+					...a,
           accessor: a.action,
-          Header: d => null,
+          // Header: d => null,
           Cell: cell =>
-            <DmsButton action={ a } item={ cell.row.original.self }
-              buttonTheme={ props.buttonTheme }/>
+						<div className="flex justify-end">
+	            <DmsButton action={ a } item={ cell.row.original.self }
+	              buttonTheme={ props.buttonTheme }/>
+						</div>
         }
       })
   ]
@@ -53,7 +52,7 @@ const DmsTable = ({ columns, ...props }) => {
     .map(self => ({
       self,
       ...attributes.reduce((a, c) => {
-        a[c.source] = c.format(getValue(c.source, { self }));
+        a[c.source] = getValue(c.source, { self });
         return a;
       }, {}),
       ...actions.reduce((o, a) => {

@@ -70,7 +70,8 @@ export default {
                     filter: {
                       args: ["self:data.chapter", "item:data.chapter"],
                       comparator: (self, item) => {
-                        const args = item.split(".");
+                        const length = self.split(".").length,
+                          args = item.split(".").slice(0, length);
                         do {
                           const arg = [...args, "\\d+"].join("[.]"),
                             regex = new RegExp(`^${ arg }$`);
