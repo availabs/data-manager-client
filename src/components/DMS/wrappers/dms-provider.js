@@ -29,7 +29,7 @@ const normalizeArgs = (dmsAction, item, props, ...rest) => {
 }
 const makeInteraction = (...args) => {
   const [
-    { action, seedProps, ...rest },
+    { action, seedProps, isDisabled, ...rest },
     item, itemId,
     props,
     interact
@@ -39,7 +39,7 @@ const makeInteraction = (...args) => {
 
     hasAuth = checkAuth(authRules, action, props, item);
 
-  if (useRouter && hasAuth) {
+  if (useRouter && hasAuth && !isDisabled) {
     const { push } = history,
       { pathname } = location,
       state = get(location, "state", null) || [],
@@ -48,7 +48,7 @@ const makeInteraction = (...args) => {
     return /^(dms:)*back$/.test(action) ?
       { type: "link",
         key: action,
-        action, ...rest,
+        action: { action, isDisabled, ...rest },
         to: {
           pathname: get(state, [length - 1], basePath),
           state: state.slice(0, length - 1)
@@ -57,16 +57,16 @@ const makeInteraction = (...args) => {
       : /^(dms:)*home$/.test(action) ?
         { type: "link",
           key: action,
-          action, ...rest,
+          action: { action, isDisabled, ...rest },
           to: {
             pathname: basePath,
             state: []
           }
         }
       : /^api:/.test(action) ?
-        { tpye: "button",
+        { type: "button",
           key: action,
-          action, ...rest,
+          action: { action, isDisabled, ...rest },
           onClick: e => {
             e.stopPropagation();
             return Promise.resolve(interact(action, itemId, seedProps(props)))
@@ -78,7 +78,7 @@ const makeInteraction = (...args) => {
         }
       : { type: "link",
           key: action,
-          action, ...rest,
+          action: { action, isDisabled, ...rest },
           to: {
             pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
             state: [...state, pathname]
@@ -88,7 +88,7 @@ const makeInteraction = (...args) => {
   return {
     type: "button",
     key: action,
-    action, ...rest,
+    action: { action, isDisabled, ...rest },
     onClick: e => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();

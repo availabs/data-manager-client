@@ -10,7 +10,7 @@ export default class DmsEdit extends DmsCreate {
     const item = get(this.props, this.props.type, null),
       data = get(item, "data", null);
     if (data) {
-      this.setState({ ...data });
+      this.setState({ values: { ...data } });
       this.INITIALIZED = true;
     }
   }

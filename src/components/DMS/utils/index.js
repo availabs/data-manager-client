@@ -63,7 +63,8 @@ export const processAction = arg => {
     seedProps: () => null,
     showConfirm: false,
     label: null,
-    buttonTheme: null
+    buttonTheme: null,
+    isDisabled: false
   };
   if (typeof arg === "string") {
     response.action = arg;
