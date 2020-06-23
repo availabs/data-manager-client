@@ -1,6 +1,44 @@
 import React from "react"
 
 import { DMS_DOCS } from "./dms-docs.type"
+// import {doc} from "pages/DocsEditor/doc-page"
+import { DmsButton } from "../components/dms-button"
+
+const BrokeAss = ({ sections, setValues }) => {
+  if (!sections.activeSection) return null;
+  return (
+    <div>
+
+      <div className="flex">
+        <button disabled={ !sections.canGoPrev } onClick={ e => sections.prev() }
+          className="mr-2 px-2 py-1 bg-gray-300 disabled:bg-red-300 disabled:cursor-not-allowed">
+          PREV
+        </button>
+        <button disabled={ !sections.canGoNext } onClick={ e => sections.next() }
+          className="px-2 py-1 bg-gray-300 disabled:bg-red-300 disabled:cursor-not-allowed">
+          NEXT
+        </button>
+        <div className="flex-1 flex justify-end">
+          <DmsButton action={ sections.dmsAction }/>
+        </div>
+      </div>
+
+      <div>
+        { sections.activeSection.attributes
+            .map(({ Input, ...att }) => (
+                <div key={ att.key}>
+                  <label>{att.key}: verified? {att.verified+""}</label>
+                  <Input onChange={ v => setValues(att.key, v) }
+                    value={ att.value }/>
+                </div>
+              )
+            )
+        }
+      </div>
+
+    </div>
+  );
+}
 
 const domain = [
   "Text 1", "Text 2", "Text 3",
@@ -77,7 +115,6 @@ export default ({
           "dms:edit", "dms:delete",
           { action: "api:delete",
             label: "API delete",
-            color: "red",
             showConfirm: true }
         ]
       },
@@ -138,41 +175,19 @@ export default ({
       wrappers: ["with-auth"]
     },
 
-    { type: ({ sections, setValues }) => {
-        if (sections.activeSection === -1) return null;
-        return (
-          <div>
-            <div>
-              { sections.sections[sections.activeSection].attributes
-                  .map(({ Input, ...att }) => (
-                      <div key={ att.key}>
-                        <label>{att.key}: verified? {att.verified+""}</label>
-                        <Input onChange={ v => setValues(att.key, v) }
-                          value={ att.value || "" }/>
-                      </div>
-                    )
-                  )
-              }
-            </div>
-            <button disabled={ !sections.canGoPrev } onClick={ e => sections.prev() }
-              className="px-2 py-1 bg-gray-300 disabled:bg-red-300 disabled:cursor-not-allowed">
-              PREV
-            </button>
-            { sections.activeSection }
-            <button disabled={ !sections.canGoNext } onClick={ e => sections.next() }
-              className="px-2 py-1 bg-gray-300 disabled:bg-red-300 disabled:cursor-not-allowed">
-              NEXT
-            </button>
-          </div>
-        );
-      },
-      props: { dmsAction: "create", domain },
-      wrappers: ["with-auth", "dms-create"]
+    { type: "dms-edit",
+      props: { dmsAction: "editOld", domain },
+      wrappers: ["with-auth"]
     },
 
-    { type: "dms-edit",
+    { type: BrokeAss,
+      props: { dmsAction: "create", domain },
+      wrappers: ["dms-create", "with-auth"]
+    },
+
+    { type: BrokeAss,
       props: { dmsAction: "edit", domain },
-      wrappers: ["with-auth"]
+      wrappers: ["dms-edit", "with-auth"]
     },
 
     { type: "docs-page",

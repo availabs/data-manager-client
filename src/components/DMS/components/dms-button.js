@@ -16,7 +16,7 @@ const DEFAULT_BUTTON_THEMES = {
   // back: "button",
   // edit: "button",
   delete: "buttonDanger",
-  // cancel: "button"
+  cancel: "buttonInfo"
 }
 
 const getButtonTheme = (theme, themes, action)=> {
@@ -24,7 +24,7 @@ const getButtonTheme = (theme, themes, action)=> {
   return theme || get(themes, action, get(DEFAULT_BUTTON_THEMES, action, "button"));
 }
 
-export const ActionButton = ({ action, label, buttonTheme, ...props }) => {
+const ActionButton = ({ action, label, buttonTheme, ...props }) => {
   label = label || cleanAction(action);
   return (
     <ButtonContext.Consumer>
@@ -37,7 +37,7 @@ export const ActionButton = ({ action, label, buttonTheme, ...props }) => {
   )
 }
 
-export const ActionLink = ({ action, label, buttonTheme, ...props }) => {
+const ActionLink = ({ action, label, buttonTheme, ...props }) => {
   label = label || cleanAction(action);
   return (
     <ButtonContext.Consumer>
@@ -60,8 +60,7 @@ const OpenConfirm = ({ Button, interaction, ...props }) => {
     return (
       <div className="btn-group-horizontal">
         <Button waiting={ waiting }/>
-        <ActionButton { ...props } action="cancel"
-          buttonTheme="buttonInfo"
+        <ActionButton action="cancel"
           onClick={ e => {
             e.stopPropagation();
             setOpen(false);
@@ -75,23 +74,24 @@ const OpenConfirm = ({ Button, interaction, ...props }) => {
       onClick={ e => { e.stopPropagation(); setOpen(true); } }/>
 }
 
-export const DmsButton = ({ action, item, props = {}, disabled = false, ...others }) => {
-  const { type, showConfirm, ...interaction } = useMakeInteraction(action, item, props);
+export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...others }) => {
+  const { action, type, ...interaction } = useMakeInteraction(arg, item, props),
+    { showConfirm, isDisabled, ...dms } = action;
 
   const RenderButton = ({ waiting }) => {
     switch (type) {
       case "link":
-        return <ActionLink { ...interaction } { ...others }
-          disabled={ waiting || disabled }/>
+        return <ActionLink { ...interaction } { ...others } { ...dms }
+          disabled={ waiting || disabled || isDisabled }/>
       default:
-        return <ActionButton { ...interaction } { ...others }
-          disabled={ waiting || disabled } type={ type }/>
+        return <ActionButton { ...interaction } { ...others } { ...dms }
+          disabled={ waiting || disabled || isDisabled } type={ type }/>
     }
   }
 
   if (showConfirm) {
     return <OpenConfirm Button={ RenderButton }
-              interaction={ interaction } { ...others }/>
+              interaction={ interaction } { ...others } { ...dms }/>
   }
   return <RenderButton />;
 }

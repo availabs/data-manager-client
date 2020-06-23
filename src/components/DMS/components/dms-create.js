@@ -40,7 +40,7 @@ const InputRow = ({ att, onChange, domain, ...props }) => {
               type={  att.type.replace("-array", "") }
               onChange={ v => onChange(v) } placeholder={ `Type a value...`}/>
           </div>
-        : att.type === "rich-text" ?
+        : att.type === "richtext" ?
           <Editor { ...props } id={ `att:${ att.key }` }
             onChange={ v => onChange(v) }/>
         : att.type === "textarea" ?
@@ -131,14 +131,16 @@ export default class DmsCreate extends React.Component {
   initDefaults() {
     const values = {},
       // attributes = get(this.props, ["format", "attributes"], []);
-      attributes = this.state.pages[this.state.page];
+      attributes = get(this.props, ["format", "attributes"], []);
+
+    if (!attributes.length) return false;
 
     let hasDefaults = false;
 
     attributes.forEach(att => {
       if (att.default) {
         hasDefaults = true;
-        const value = this.getDefaultValue(att);
+        const value = getValue(att.default, { props: this.props });
         hasValue(value) && (values[att.key] = value);
       }
     })
@@ -185,9 +187,6 @@ export default class DmsCreate extends React.Component {
   }
   verify() {
     return this.doVerify(this.state.pages[this.state.page]);
-  }
-  getDefaultValue(att) {
-    getValue(att.default, { props: this.props });
   }
   getValues() {
     const values = {

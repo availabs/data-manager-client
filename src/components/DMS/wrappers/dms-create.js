@@ -25,24 +25,45 @@ const useSetSections = format => {
   return sections;
 }
 
-const INITIAL = {
+const newProcessed = () => ({
   numSections: 0,
-  activeSection: -1,
+  activeSection: null,
+  activeIndex: -1,
+  verified: false,
+  setValues: () => {},
+  values: {},
   canGoNext: false,
   next: () => {},
   canGoPrev: false,
   prev: () => {},
   sections: []
+})
+
+const getDomain = (att, props) => {
+  if (att.domain) {
+    if (typeof att.domain === "string") {
+      return getValue(att.domain, { props }) || [];
+    }
+    return att.domain;
+  }
+  return null;
 }
 
-const useProcessValues = (sections) => {
+const useProcessValues = (sections, props) => {
+  const Processed = newProcessed(),
+    [Sections, setSections] = useState([]);
+
   const [section, setSection] = useState(0);
   const [values, setValues] = useState({});
 
-  const Processed = JSON.parse(JSON.stringify(INITIAL)),
-    [Sections, setSections] = useState([]);
-
-  Processed.setValues = (key, value) => setValues(prev => ({ ...prev, [key]: value }))
+  Processed.setValues = (key, value) => {
+    if (typeof key === "object") {
+      setValues(prev => ({ ...prev, ...key }));
+    }
+    else {
+      setValues(prev => ({ ...prev, [key]: value }));
+    }
+  }
   Processed.values = { ...values };
 
   useEffect(() => {
@@ -57,25 +78,26 @@ const useProcessValues = (sections) => {
             ...att,
             value: undefined,
             Input: (() => {
-              const [type, array] = att.type.split("-");
+              const [type, array] = att.type.split("-"),
+                domain = getDomain(att, props);
               switch (type) {
                 case "textarea":
-                  return TextArea;
+                  return props => <TextArea { ...props } disabled={ att.editable === false }/>;
                 case "img":
                   return ImgInput;
-                case "rich-text":
+                case "richtext":
                   return Editor;
                 default:
-                  if (array && att.domain) {
-                    return props => <Select { ...props } multi={ true }/>;
+                  if (array && domain) {
+                    return props => <Select { ...props } multi={ true } domain={ domain } disabled={ att.editable === false }/>;
                   }
-                  if (att.domain) {
-                    return props => <Select { ...props } multi={ false }/>;
+                  if (domain) {
+                    return props => <Select { ...props } multi={ false } domain={ domain } disabled={ att.editable === false }/>;
                   }
                   if (array) {
-                    return props => <ArrayInput { ...props } type={ type }/>;
+                    return props => <ArrayInput { ...props } type={ type } disabled={ att.editable === false }/>;
                   }
-                  return props => <Input { ...props } type={ type }/>;
+                  return ({ value, ...props }) => <Input value={ value || "" } { ...props } type={ type } disabled={ att.editable === false }/>;
               }
             })()
           }))
@@ -99,8 +121,10 @@ const useProcessValues = (sections) => {
       })
       sect.verified = sect.attributes.reduce((a, c) => a && c.verified, true)
     })
+    Processed.verified = Sections.reduce((a, c) => a && c.verified, true);
 
-    Processed.activeSection = section;
+    Processed.activeSection = Sections[section];
+    Processed.activeIndex = section;
     Processed.numSections = Sections.length;
     Processed.canGoNext = ((section + 1) < Sections.length) && Sections[section].verified;
     Processed.next = () => {
@@ -114,6 +138,11 @@ const useProcessValues = (sections) => {
       setSection(section - 1);
     };
   }
+      // for (const att in this.state.values) {
+      //   if (!attributes.some(d => d.key === att) && hasValue(this.state.values[att])) {
+      //     badAttributes.push(att);
+      //   }
+      // }
 
   return Processed;
 }
@@ -122,7 +151,12 @@ export const dmsCreate = Component => {
   return ({ format, ...props }) => {
     const sections = useSetSections(format);
 
-    const Processed = useProcessValues(sections);
+    const Processed = useProcessValues(sections, props);
+    Processed.dmsAction = {
+      action: "api:create",
+      seedProps: () => Processed.values,
+      isDisabled: !Processed.verified
+    }
 
     const [init, setInit] = useState(false);
     if (!init) {
@@ -134,7 +168,7 @@ export const dmsCreate = Component => {
       attributes.forEach(att => {
         if (att.default) {
           hasDefaults = true;
-          const value = getValue(att, { props });
+          const value = getValue(att.default, { props });
           hasValue(value) && (values[att.key] = value);
         }
       })
@@ -151,24 +185,33 @@ export const dmsCreate = Component => {
 }
 
 
-// export const dmsEdit = Component => {
-//   return ({ format, ...props }) => {
-//     const sections = useSetSections(format);
-//
-//     const [section, setSection] = useState(0);
-//
-//     const [values, setValues] = useState({});
-//     const [init, setInit] = useState(false);
-//
-//     useEffect(() => {
-//       if (!init) {
-//         const item = get(props, props.type, null),
-//           data = get(item, "data", null);
-//         if (data) {
-//           setValues(data);
-//           setInit(true);
-//         }
-//       }
-//     })
-//   }
-// }
+export const dmsEdit = Component => {
+  return ({ format, ...props }) => {
+    const sections = useSetSections(format);
+
+    const data = get(props, [props.type, "data"], null);
+
+    const Processed = useProcessValues(sections, props);
+    Processed.dmsAction = {
+      action: "api:edit",
+      seedProps: () => Processed.values,
+      isDisabled: !Processed.verified || !hasBeenUpdated(data, Processed.values)
+    }
+console.log("DATA:", data, Processed.values, hasBeenUpdated(data, Processed.values))
+
+    const [init, setInit] = useState(false);
+    useEffect(() => {
+      if (!init) {
+        if (data) {
+          Processed.setValues(data);
+          setInit(true);
+        }
+      }
+    })
+    return (
+      <Component format={ format } { ...props }
+        values={ Processed.values } setValues={ Processed.setValues }
+        sections={ Processed }/>
+    )
+  }
+}

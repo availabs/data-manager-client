@@ -15,19 +15,20 @@ export const DMS_DOCS = {
     { key: "chapter",
       type: "text",
       required: true,
-      verify: "^\\d+([.]\\d+)*$"
-    },
-    { key: 'tags',
-      type: 'text-array',
+      verify: "^\\d+([.]\\d+)*$",
       wizardBreak: true
     },
+    // { key: 'tags',
+    //   type: 'text-array',
+    //   wizardBreak: true
+    // },
 
 
-    { key: "test-editor",
-      type: "rich-text",
-      wizardPage: "Editor Page",
-      wizardBreak: true
-    },
+    // { key: "test-editor",
+    //   type: "richtext",
+    //   wizardPage: "Editor Page",
+    //   wizardBreak: true
+    // },
 
     { key: "test-number",
       type: "number",
@@ -44,7 +45,7 @@ export const DMS_DOCS = {
 
     { key: "test-date-array",
       type: 'date-array',
-      required: true,
+      // required: true,
       wizardPage: "Random Page"
     },
     { key: 'test-select',
