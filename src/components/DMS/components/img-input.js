@@ -1,6 +1,6 @@
 import React from "react"
 
-import { get } from "lodash"
+import get from "lodash.get"
 
 export default class ImgInput extends React.Component {
   state = {

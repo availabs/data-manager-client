@@ -6,6 +6,8 @@ import dmsProvider from "./dms-provider"
 import dmsManager from "./dms-manager"
 import dmsConsumer from "./dms-consumer"
 
+import { dmsCreate } from "./dms-create"
+
 import dmsShare from "./dms-share"
 
 export default {
@@ -15,5 +17,6 @@ export default {
   "dms-provider": dmsProvider,
   "dms-manager": dmsManager,
   "dms-consumer": dmsConsumer,
-  "dms-share": dmsShare
+  "dms-share": dmsShare,
+  "dms-create": dmsCreate
 }

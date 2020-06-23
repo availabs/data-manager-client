@@ -134,8 +134,40 @@ export default ({
     },
 
     { type: "dms-create",
-      props: { dmsAction: "create", domain },
+      props: { dmsAction: "createOLD", domain },
       wrappers: ["with-auth"]
+    },
+
+    { type: ({ sections, setValues }) => {
+        if (sections.activeSection === -1) return null;
+        return (
+          <div>
+            <div>
+              { sections.sections[sections.activeSection].attributes
+                  .map(({ Input, ...att }) => (
+                      <div key={ att.key}>
+                        <label>{att.key}: verified? {att.verified+""}</label>
+                        <Input onChange={ v => setValues(att.key, v) }
+                          value={ att.value || "" }/>
+                      </div>
+                    )
+                  )
+              }
+            </div>
+            <button disabled={ !sections.canGoPrev } onClick={ e => sections.prev() }
+              className="px-2 py-1 bg-gray-300 disabled:bg-red-300 disabled:cursor-not-allowed">
+              PREV
+            </button>
+            { sections.activeSection }
+            <button disabled={ !sections.canGoNext } onClick={ e => sections.next() }
+              className="px-2 py-1 bg-gray-300 disabled:bg-red-300 disabled:cursor-not-allowed">
+              NEXT
+            </button>
+          </div>
+        );
+      },
+      props: { dmsAction: "create", domain },
+      wrappers: ["with-auth", "dms-create"]
     },
 
     { type: "dms-edit",
