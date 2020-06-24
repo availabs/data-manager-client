@@ -242,7 +242,6 @@ export default (Component, options = {}) => {
         dmsAction = "click";
       }
 
-console.log("INTERACT:", dmsAction, id, props);
       const hasAuth = checkAuth(this.props.authRules, dmsAction, this.props, this.getItem(id));
       if (!hasAuth) return;
 

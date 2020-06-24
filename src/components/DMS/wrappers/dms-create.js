@@ -19,9 +19,9 @@ const useSetSections = format => {
         .reduce((a, c) => {
           if (c.title !== section) {
             section = c.title;
-            a.push([])
+            a.push({ title: c.title, attributes: [] });
           }
-          a[a.length - 1].push(c);
+          a[a.length - 1].attributes.push(c);
           return a;
         }, [])
     );
@@ -86,9 +86,10 @@ const useProcessValues = (sections, props) => {
 
   useEffect(() => {
     if (!Sections.length) {
-      const Sections = sections.reduce((accum, attributes, index) => {
+      const Sections = sections.reduce((accum, { title, attributes }, index) => {
         const Section = {
           index,
+          title,
           isActive: false,
           verified: false,
           attributes: attributes.map(att => ({

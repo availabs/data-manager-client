@@ -1,6 +1,4 @@
-import { processFormat } from "../utils"
-
-const DMS_DOCS = {
+export default {
   app: "dms",
   type: "dms-docs",
 
@@ -26,19 +24,9 @@ const DMS_DOCS = {
       ]
     },
     { title: "Editor Page",
-      sections: [
-        { title: "TEST 1",
-          attributes: [
-            { key: "test 1.1",
-              type: "text"
-            },
-            { key: "test 1.2",
-              type: "text"
-            },
-            { key: "test 1.3",
-              type: "text"
-            }
-          ]
+      attributes: [
+        { key: "text-editor",
+          type: "richtext"
         }
       ]
     },
@@ -77,5 +65,3 @@ const DMS_DOCS = {
     }
   ]
 }
-
-export default processFormat(DMS_DOCS)

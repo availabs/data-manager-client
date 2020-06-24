@@ -28,7 +28,7 @@ export const processFormat = format => {
   if (!format.sections) return format;
   format.attributes = [];
   flattenAttributes(format.sections.reverse(), format.attributes);
-console.log("FORMAT:", format)
+  format["$processed"] = true;
   return format;
 }
 export const getFormat = format => {

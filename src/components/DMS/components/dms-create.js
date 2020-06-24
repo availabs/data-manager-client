@@ -67,7 +67,7 @@ export const DmsCreate = ({ createState, setValues, item, ...props }) => {
             .map(({ Input, ...att }, i) => (
                 <div key={ att.key }
                   className={ `
-                    border-l-4 pl-2 mb-2 ${ att.type === "richtext" ? "" : "max-w-xl" }
+                    border-l-4 pl-2 mb-2 ${ att.type === "richtext" ? "" : "max-w-xl" } pb-2
                     ${ att.required ? att.verified ? "border-green-400" : "border-red-400" : "border-transparent" }
                   ` }>
                   <label>{ att.name || prettyKey(att.key) }</label>
