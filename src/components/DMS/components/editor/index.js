@@ -8,8 +8,8 @@ import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import {
   EditorState,
-  // convertToRaw,
-  // convertFromRaw
+  convertToRaw,
+  convertFromRaw
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 
@@ -77,34 +77,51 @@ class MyEditor extends React.Component {
   }
   componentDidMount() {
     this.loadFromLocalStorage();
+    if (this.props.autoFocus) {
+      this.focusEditor();
+    }
+  }
+  componentDidUpdate() {
+    this.updateProps();
+    this.saveToLocalStorage();
   }
   loadFromLocalStorage() {
-//     if (window.localStorage) {
-//       const saved = window.localStorage.getItem("saved-editor-state");
-//       if (saved) {
-//         const editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(saved)));
-//         this.setState({ editorState });
-//       }
-//     }
+    if (window.localStorage) {
+      const saved = window.localStorage.getItem("saved-editor-state");
+      if (saved) {
+        const editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(saved)));
+        this.setState(state => ({ editorState }));
+        this.updateProps();
+      }
+    }
   }
   _saveToLocalStorage() {
-    // if (window.localStorage) {
-    //   const saved = convertToRaw(this.state.editorState.getCurrentContent());
-    //   window.localStorage.setItem("saved-editor-state", JSON.stringify(saved));
-    // }
+    if (window.localStorage) {
+      const saved = convertToRaw(this.state.editorState.getCurrentContent());
+      window.localStorage.setItem("saved-editor-state", JSON.stringify(saved));
+    }
   }
   saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
 
-  focusEditor(e) {
-    e.preventDefault();
+  _updateProps() {
+    const currentContent = this.state.editorState.getCurrentContent(),
+      hasText = currentContent.hasText();
+    if (hasText) {
+      this.props.onChange(convertToRaw(currentContent));
+    }
+    else {
+      this.props.onChange(null);
+    }
+  }
+  updateProps = debounce(this._updateProps, 250);
+
+  focusEditor() {
+    // e.preventDefault();
     this.editor.current.focus();
   }
   handleChange(editorState) {
     this.setState(state => ({ editorState }));
-    this.updateProps(editorState);
-    this.saveToLocalStorage()
   }
-  updateProps = debounce(this.props.onChange, 250);
   dropIt(e) {
     e.preventDefault();
 
@@ -125,7 +142,7 @@ class MyEditor extends React.Component {
     const { editorState, loading, hasFocus } = this.state;
     return (
       <EditorWrapper id={ this.props.id } hasFocus={ hasFocus }
-        onClick={ e => this.focusEditor(e) }
+        onClick={ e => this.focusEditor() }
         onDrop={ e => this.dropIt(e) }>
 
         { !loading ? null : <LoadingIndicator /> }
@@ -182,12 +199,12 @@ class MyEditor extends React.Component {
 }
 export default MyEditor;
 
-const EditorWrapper = ({ children, hasFocus, ...props }) => {
+const EditorWrapper = ({ children, hasFocus, id, ...props }) => {
   const theme = useTheme();
   return (
     <div className={ `pt-14 relative rounded draft-js-editor
         ${ hasFocus ? theme.inputFocus : theme.inputBg }
-    ` } { ...props }>
+    ` } { ...props } tabIndex="0">
       { children }
     </div>
   )

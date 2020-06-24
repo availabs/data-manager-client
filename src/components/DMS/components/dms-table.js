@@ -6,7 +6,7 @@ import { Content, Table, Header } from 'components/avl-components/components'
 
 import get from "lodash.get"
 
-import { makeFilter, prettyKey, processAction, getFormat, getValue, useDmsColumns } from "../utils"
+import { makeFilter, prettyKey, getValue, useDmsColumns } from "../utils"
 
 const DmsTable = ({ columns, ...props }) => {
 	const [attributes, actions] = useDmsColumns(columns);

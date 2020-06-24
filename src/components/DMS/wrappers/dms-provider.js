@@ -242,6 +242,7 @@ export default (Component, options = {}) => {
         dmsAction = "click";
       }
 
+console.log("INTERACT:", dmsAction, id, props);
       const hasAuth = checkAuth(this.props.authRules, dmsAction, this.props, this.getItem(id));
       if (!hasAuth) return;
 
@@ -286,7 +287,7 @@ export default (Component, options = {}) => {
     }
 
     getDmsProps() {
-      const { app, type, dataItems } = this.props,
+      const { app, type, dataItems, format } = this.props,
         { id, ...top } = this.getTop(),
         item = this.getItem(id);
 
@@ -295,6 +296,7 @@ export default (Component, options = {}) => {
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
         stack: this.state.stack,
+        format,
         app,
         type,
         dataItems,
