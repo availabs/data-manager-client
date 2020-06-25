@@ -36,7 +36,7 @@ const TestFormat1 = {
       type: "text"
     },
     { key: "test-1-3",
-      type: "text"
+      type: "number"
     },
     { key: "test-1-4",
       type: "dms-format:dms+dms-test-2"
@@ -51,11 +51,11 @@ const TestFormat2 = {
       type: "text"
     },
     { key: "test-2-2",
-      type: "text",
+      type: "date",
       required: true
     },
     { key: "test-2-3",
-      type: "text"
+      type: "text-array"
     },
     { key: "test-2-4",
       type: "text",
