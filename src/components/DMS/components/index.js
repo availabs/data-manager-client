@@ -1,7 +1,6 @@
 import DmsCard from "./dms-card"
-import DmsCreate from "./dms-create"
+import { DmsCreate, DmsEdit } from "./dms-create"
 import DmsCreateComp from "./dms-create-comp"
-import DmsEdit from "./dms-edit"
 import DmsList from "./dms-list"
 import DmsTable from "./dms-table"
 import DmsHeader from "./dms-header"

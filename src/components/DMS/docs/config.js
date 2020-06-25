@@ -24,6 +24,46 @@ const domain = [
   "!!!!!!!! !!!!!!!!", "########### ########"
 ]
 
+const TestFormat1 = {
+  app: "dms",
+  type: "dms-test-1",
+  attributes: [
+    { key: "test-1-1",
+      type: "text",
+      required: true
+    },
+    { key: "test-1-2",
+      type: "text"
+    },
+    { key: "test-1-3",
+      type: "text"
+    },
+    { key: "test-1-4",
+      type: "dms-format:dms+dms-test-2"
+    }
+  ]
+}
+const TestFormat2 = {
+  app: "dms",
+  type: "dms-test-2",
+  attributes: [
+    { key: "test-2-1",
+      type: "text"
+    },
+    { key: "test-2-2",
+      type: "text",
+      required: true
+    },
+    { key: "test-2-3",
+      type: "text"
+    },
+    { key: "test-2-4",
+      type: "text",
+      required: true
+    }
+  ]
+}
+
 export default ({
   type: ({ children }) => <div className="flex"><div className="mt-20 pt-8 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
   wrappers: [
@@ -33,10 +73,11 @@ export default ({
     "dms-manager",
     { type: "dms-provider",
       options: {
+        registerFormats: [TestFormat1, TestFormat2],
         buttonThemes: {
           home: "buttonInfo",
-          create: "buttonSuccess",
-          edit: "buttonPrimary"
+          // create: "buttonSuccess",
+          // edit: "buttonPrimary"
         }
       }
     },
@@ -71,9 +112,26 @@ export default ({
     { type: "dms-list", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
-        sortBy: "data.chapter",
-        sortOrder: "asc",
-        filter: d => !d.data.chapter.includes("."),
+
+        // sortBy: "data.chapter",
+        // sortOrder: "asc",
+
+        sort: {
+          accessor: "self:data.chapter",
+          comparator: (a, b) => {
+            const av = +a.replace(".", ""),
+              bv = +b.replace(".", "");
+            return av - bv;
+          }
+        },
+
+        // filter: d => !d.data.chapter.includes("."),
+
+        filter: {
+          args: ["self:data.chapter"],
+          comparator: arg => !arg.includes(".")
+        },
+
         columns: [
           "title", "chapter",
           "dms:edit", "dms:delete",
@@ -144,7 +202,7 @@ export default ({
       wrappers: ["with-auth"]
     },
 
-    { type: "docs-page",
+    { type: DocsPage,
       props: { dmsAction: "delete" },
       wrappers: [
         { type: "dms-view",

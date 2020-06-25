@@ -2,7 +2,9 @@ import React from "react"
 
 import { ScalableLoading } from "components/avl-components/components/Loading/LoadingPage"
 
-import { throttle, get, debounce } from "lodash"
+import throttle from "lodash.throttle"
+import get from "lodash.get"
+import debounce from "lodash.debounce"
 
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 

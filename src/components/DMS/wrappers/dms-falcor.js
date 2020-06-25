@@ -29,22 +29,16 @@ const getDataItems = (path, state, filter = false) => {
   for (let i = 0; i < length; ++i) {
     const p = get(state, ["falcorCache", ...path, "byIndex", i, "value"], null);
     if (p) {
-      const dataItem = JSON.parse(JSON.stringify(get(state, ["falcorCache", ...p], {})));
-      dataItem.data = get(dataItem, ["data", "value"], {});
-      dataItems.push(dataItem);
+      const dataItem = JSON.parse(JSON.stringify(get(state, ["falcorCache", ...p], {}))),
+        data = get(dataItem, ["data", "value"], null);
+      if (data) {
+        dataItem.data = data;
+        dataItems.push(dataItem);
+      }
     }
   }
   return filter ? dataItems.filter(filter) : dataItems;
 }
-
-// const getFormat = (app, type, state) => {
-//   const key = `${ app }+${ type }`,
-//     format = JSON.parse(JSON.stringify(get(state, ["falcorCache", "dms", "format", key], {})));
-
-//   format.attributes = get(format, ["attributes", "value"], {});
-
-//   return format;
-// }
 
 export default (WrappedComponent, options = {}) => {
   class Wrapper extends React.Component {
@@ -112,18 +106,8 @@ export default (WrappedComponent, options = {}) => {
     falcorEdit(action, id, data) {
       if (!(id && data)) return Promise.resolve();
 
-      return this.props.falcor.set({
-          paths: [["dms", "data", "byId", id, "data"]],
-          jsonGraph: {
-            dms: {
-              data: {
-                byId: {
-                  [id]: { data: JSON.stringify(data) }
-                }
-              }
-            }
-          }
-        });
+      return this.props.falcor
+        .setValue(["dms", "data", "byId", id, "data"], JSON.stringify(data));
     }
     falcorCreate(action, id, data) {
       const args = [this.props.app, this.props.type, data].filter(Boolean);

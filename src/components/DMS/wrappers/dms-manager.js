@@ -5,10 +5,15 @@ import { compareActions, processFormat } from "../utils"
 import get from "lodash.get"
 
 export default Component =>
-  ({ children, format, ...props }) => {
+  ({ children, format, registeredFormats, ...props }) => {
 
     if (!format["$processed"]) {
       format = processFormat(format);
+    }
+    for (const key in registeredFormats) {
+      if (!registeredFormats[key]["$processed"]) {
+        registeredFormats[key] = processFormat(registeredFormats[key]);
+      }
     }
     const dmsActions = [];
     children = React.Children.toArray(children)
@@ -21,6 +26,7 @@ export default Component =>
             { app: props.app,
               type: props.type,
               format,
+              registeredFormats,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,
@@ -45,6 +51,7 @@ export default Component =>
               app: props.app,
               type: props.type,
               format,
+              registeredFormats,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,

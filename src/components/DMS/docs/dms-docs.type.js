@@ -3,6 +3,14 @@ export default {
   type: "dms-docs",
 
   sections: [
+    { title: "Test Page",
+      attributes: [
+        { key: "test-format",
+          type: "dms-format:dms+dms-test-1",
+          required: true
+        }
+      ]
+    },
     { title: "Main Page",
       attributes: [
         { key: "title",

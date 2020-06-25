@@ -130,7 +130,7 @@ const makeOnClick = (...args) => {
         e.stopPropagation();
         push({
           pathname: get(state, [length - 1], basePath),
-          state: state.slice(0, length - 1)
+          state: state.slice(0, -1)
         });
       })
       : /^(dms:)*home$/.test(action) ?
@@ -147,7 +147,7 @@ const makeOnClick = (...args) => {
           return Promise.resolve(interact(action, itemId, seedProps(props)))
             .then(() => push({
               pathname: get(state, [length - 1], basePath),
-              state: state.slice(0, length - 1)
+              state: state.slice(0, -1)
             }))
         })
       : (e => {
@@ -182,7 +182,8 @@ export default (Component, options = {}) => {
     // format,
     authRules = {},
     buttonThemes = {},
-    setDefaultTo = false
+    setDefaultTo = false,
+    registerFormats = []
   } = options;
 
   class Wrapper extends React.Component {
@@ -295,6 +296,11 @@ export default (Component, options = {}) => {
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
         stack: this.state.stack,
+        registeredFormats: registerFormats.reduce((a, c) => {
+          const { app, type } = c;
+          a[`${ app }+${ type }`] = c;
+          return a;
+        }, {}),
         format,
         app,
         type,
