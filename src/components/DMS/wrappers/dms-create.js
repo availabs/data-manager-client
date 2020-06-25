@@ -160,8 +160,8 @@ const getInput = (att, props, disabled) => {
             disabled={disabled || ( att.editable === false) }/>
         );
       }
-      return ({ value, ...props }) => (
-        <Input value={ value || "" } { ...props } type={ type } id={ att.key }
+      return props => (
+        <Input { ...props } type={ type } id={ att.key }
           disabled={ disabled || (att.editable === false) }/>
         );
   }
