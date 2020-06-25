@@ -6,6 +6,31 @@ import moment from "moment"
 
 import { hasValue } from "components/avl-components/components/Inputs/utils"
 
+const flattenAttributes = (Sections, Attributes, depth = 0, index = [0]) => {
+  if (!Sections.length) return Attributes;
+  const { attributes, sections, ...rest } = Sections.pop();
+  if (sections) {
+    flattenAttributes(sections, Attributes, depth + 1, [...index, 0]);
+  }
+  if (attributes) {
+    Attributes.push(...attributes.map((att, i) => ({
+      ...rest,
+      ...att,
+      depth,
+      id: [...index, i].join(".")
+    })))
+  }
+  const last = index.pop()
+  return flattenAttributes(Sections, Attributes, depth, [...index, last + 1]);
+}
+
+export const processFormat = format => {
+  if (!format.sections) return format;
+  format.attributes = [];
+  flattenAttributes(format.sections.reverse(), format.attributes);
+  format["$processed"] = true;
+  return format;
+}
 export const getFormat = format => {
   if (/^date:/.test(format)) {
     return value => moment(value).format(format.replace(/^date:/, ""));

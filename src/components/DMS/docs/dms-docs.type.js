@@ -1,67 +1,67 @@
-export const DMS_DOCS = {
+export default {
   app: "dms",
   type: "dms-docs",
 
-  attributes: [
-    { key: "title",
-      type: "text",
-      required: true,
-      wizardPage: "Main Page"
+  sections: [
+    { title: "Main Page",
+      attributes: [
+        { key: "title",
+          type: "text",
+          required: true
+        },
+        { key: "body",
+          type: "textarea",
+          required: true
+        },
+        { key: "chapter",
+          type: "text",
+          required: true,
+          verify: "^\\d+([.]\\d+)*$"
+        },
+        { key: 'tags',
+          type: 'text-array'
+        }
+      ]
     },
-    { key: "body",
-      type: "textarea",
-      required: true
+    { title: "Editor Page",
+      attributes: [
+        { key: "text-editor",
+          type: "richtext"
+        }
+      ]
     },
-    { key: "chapter",
-      type: "text",
-      required: true,
-      verify: "^\\d+([.]\\d+)*$",
-      wizardBreak: true
+    { title: "Numbers Page",
+      attributes: [
+        { key: "test-number",
+          type: "number"
+        },
+        { key: "test-number-array",
+          type: "number-array"
+        }
+      ]
     },
-    // { key: 'tags',
-    //   type: 'text-array',
-    //   wizardBreak: true
-    // },
-
-
-    // { key: "test-editor",
-    //   type: "richtext",
-    //   wizardPage: "Editor Page",
-    //   wizardBreak: true
-    // },
-
-    { key: "test-number",
-      type: "number",
-      wizardPage: "Number Page",
-      // min: 0,
-      // max: 10
+    { title: "Random Page",
+      attributes: [
+        { key: "test-date-array",
+          type: 'date-array'
+        },
+        { key: 'test-select',
+          type: "text",
+          searchable: false,
+          domain: "props:domain"
+        },
+        { key: 'test-multi-select',
+          type: "text-array",
+          domain: "props:domain"
+        }
+      ]
     },
-    { key: "test-number-array",
-      type: "number-array",
-      // min: 0,
-      // max: 10,
-      wizardBreak: true
-    },
-
-    { key: "test-date-array",
-      type: 'date-array',
-      // required: true,
-      wizardPage: "Random Page"
-    },
-    { key: 'test-select',
-      type: "text",
-      searchable: false,
-      domain: "props:domain"
-    },
-    { key: 'test-multi-select',
-      type: "text-array",
-      domain: "props:domain",
-      wizardBreak: true
-    },
-
-    { key: "test-image",
-      type: "img",
-      wizardPage: "Image Page"
+    { title: "Image Page",
+      attributes: [
+        { key: "test-image",
+          type: "img"
+        }
+      ]
     }
   ]
 }

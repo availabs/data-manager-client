@@ -1,11 +1,15 @@
 import React from "react"
 
-import { compareActions } from "../utils"
+import { compareActions, processFormat } from "../utils"
 
 import get from "lodash.get"
 
 export default Component =>
-  ({ children, ...props }) => {
+  ({ children, format, ...props }) => {
+
+    if (!format["$processed"]) {
+      format = processFormat(format);
+    }
     const dmsActions = [];
     children = React.Children.toArray(children)
       .reduce((children, child) => {
@@ -16,10 +20,11 @@ export default Component =>
           children.push(React.cloneElement(child,
             { app: props.app,
               type: props.type,
-              format: props.format,
+              format,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,
+              ...(props.top.props || {}),
               item: props.item,
               makeInteraction: props.makeInteraction,
               makeOnClick: props.makeOnClick,
@@ -39,10 +44,11 @@ export default Component =>
             { dmsActions,
               app: props.app,
               type: props.type,
-              format: props.format,
+              format,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,
+              ...(props.top.props || {}),
               item: props.item,
               makeInteraction: props.makeInteraction,
               makeOnClick: props.makeOnClick,
@@ -54,6 +60,6 @@ export default Component =>
         return child;
       })
     return (
-      <Component { ...props }>{ children }</Component>
+      <Component format={ format } { ...props }>{ children }</Component>
     )
   }

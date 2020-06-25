@@ -1,11 +1,13 @@
 import React from "react"
 
 import { BLOG_POST } from "./blog-post.type"
+import BlogPost from "./blog-post"
 
 import get from "lodash.get"
 
 export default ({
   type: ({ children }) => <div className="flex"><div className="mt-20 pt-8 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
+  // type: "dms-manager",
   wrappers: [
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
@@ -49,7 +51,7 @@ export default ({
     },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-table",
+    { type: "dms-list",
       props: {
         dmsAction: "list",
         dmsActions: ["dms:fake-one", "dms:fake-two"],
@@ -70,9 +72,13 @@ export default ({
       }
     },
 
+    { type: BlogPost,
+      props: { dmsAction: "view" }
+    },
+
     { type: "dms-card", // generic dms component for viewing a single data item
       props: {
-        dmsAction: "view",
+        dmsAction: "viewOld",
         dmsActions: [
           { action: "dms:fake-three",
             buttonTheme: "buttonPrimary"
@@ -90,10 +96,9 @@ export default ({
 // prop: [...attributes]
               title: "item:data.title",
               body: [
-                "item:data.bloggerId",
                 "item:data.body",
+                "item:data.bloggerId",
                 "item:data.tags",
-                "item:data.image",
                 "item:updated_at"
               ]
             },

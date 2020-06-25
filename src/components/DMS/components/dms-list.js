@@ -5,7 +5,7 @@ import { DmsButton } from "./dms-button"
 
 import get from "lodash.get"
 
-import { prettyKey, makeFilter, getValue, getFormat, processAction, useDmsColumns } from "../utils"
+import { prettyKey, makeFilter, getValue, useDmsColumns } from "../utils"
 import { useMakeOnClick } from "../wrappers/dms-provider"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 

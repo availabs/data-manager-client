@@ -1,31 +1,5 @@
-import DmsCreate from "./dms-create"
+import { DmsCreate } from "./dms-create"
 
-import get from "lodash.get"
+import { dmsEdit } from "../wrappers/dms-create"
 
-export default class DmsEdit extends DmsCreate {
-  static defaultProps = {
-    dmsAction: "edit"
-  }
-  initState() {
-    const item = get(this.props, this.props.type, null),
-      data = get(item, "data", null);
-    if (data) {
-      this.setState({ values: { ...data } });
-      this.INITIALIZED = true;
-    }
-  }
-  create() {
-    const values = this.getValues(),
-      id = get(this.props, [this.props.type, "id"], null);
-    this.props.interact("api:edit", id, values);
-  }
-  getButtonAction(values) {
-    return {
-      action: "api:edit",
-      seedProps: () => values
-    }
-  }
-  render() {
-    return !this.INITIALIZED ? null : super.render();
-  }
-}
+export default dmsEdit(DmsCreate);
