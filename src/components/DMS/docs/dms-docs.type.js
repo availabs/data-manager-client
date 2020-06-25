@@ -7,7 +7,7 @@ export default {
       attributes: [
         { key: "test-format",
           type: "dms-format:dms+dms-test-1",
-          // required: true
+          required: true
         }
       ]
     },
