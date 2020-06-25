@@ -39,7 +39,8 @@ const TestFormat1 = {
       type: "number"
     },
     { key: "test-1-4",
-      type: "dms-format:dms+dms-test-2"
+      type: "dms-format:dms+dms-test-2",
+      required: true
     }
   ]
 }
