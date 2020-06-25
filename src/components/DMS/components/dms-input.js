@@ -28,7 +28,7 @@ console.log("DMS INPUT:", sections);
           <div key={ section.index } className="border-2 rounded p-3">
             <div className="text-lg font-semibold">{ section.title }</div>
             { section.attributes.map(({ Input, key, ...att }) =>
-                <div key={ key } className={`border-l-4 pl-2 pb-2 mb-2
+                <div key={ key } className={`border-l-4 pl-2 pb-2 mb-2 last:mb-0
                   ${ att.required ? att.verified ? "border-green-400" : "border-red-400" : "border-current" }
                 `}>
                   <label>{ key }</label>
