@@ -8,7 +8,7 @@ import { hasValue } from "components/avl-components/components/Inputs/utils"
 
 const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
   if (!Sections.length) return Attributes;
-  const { attributes, sections, title = `section-${ id.join("-") }`, ...rest } = Sections.pop();
+  const { attributes, sections, ...rest } = Sections.pop();
   if (sections) {
     flattenAttributes(sections, Attributes, depth + 1, [...id, 0]);
   }
@@ -16,9 +16,8 @@ const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
     Attributes.push(...attributes.map((att, i) => ({
       ...rest,
       ...att,
-      title,
       depth,
-      id: `${ id.join(".") }.${ i }`
+      id: `${ att.key }-${ id.join(".") }.${ i }`
     })))
   }
   const last = id.pop()
@@ -27,7 +26,11 @@ const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
 
 export const processFormat = format => {
   format["$processed"] = true;
-  if (!format.sections) return format;
+  if (!format.sections) {
+    const attributes = format.attributes;
+    format.attributes = [];
+    return flattenAttributes([{ attributes }], format.attributes);
+  };
 
   format.attributes = [];
   flattenAttributes(format.sections.reverse(), format.attributes);

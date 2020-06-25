@@ -8,7 +8,7 @@ import DmsInput from "../components/dms-input"
 import get from "lodash.get"
 
 import { verifyValue, hasValue } from "components/avl-components/components/Inputs/utils"
-import { hasBeenUpdated, getValue } from "../utils"
+import { hasBeenUpdated, getValue, prettyKey } from "../utils"
 
 export const useSetSections = format => {
   const [sections, setSections] = useState([]);
@@ -48,6 +48,7 @@ const newProcessed = () => ({
 class Attribute {
   constructor(att, props) {
     Object.assign(this, att);
+    this.name = this.name || prettyKey(this.key);
     this.verified = false;
     this.value = null;
     this.Input = getInput(this, props);
@@ -71,6 +72,7 @@ class Attribute {
 class DmsAttribute {
   constructor(att, formatName, props) {
     Object.assign(this, att);
+    this.name = this.name || prettyKey(this.key);
     this.format = props.registeredFormats[formatName];
     this.attributes = this.format.attributes.reduce((a, c) => {
       a[c.key] = makeNewAttribute(c, props);
@@ -82,7 +84,7 @@ class DmsAttribute {
     this.verified = false;
     this.value = null;
     this.Input = props => (
-      <DmsInput { ...props } att={ this } format={ this.format }/>
+      <DmsInput { ...props } Attribute={ this } format={ this.format }/>
     )
   }
   setValue(value) {
@@ -128,40 +130,40 @@ const getInput = (att, props, disabled) => {
   switch (type) {
     case "textarea":
       return props => (
-        <TextArea { ...props } id={ att.key }
+        <TextArea { ...props } id={ att.id }
           disabled={ disabled || att.editable === false }/>
       );
     case "img":
       return props => (
-        <ImgInput { ...props } id={ att.key }
+        <ImgInput { ...props } id={ att.id }
           disabled={ disabled || (att.editable === false) }/>
       );
     case "richtext":
       return props => (
-        <Editor { ...props } id={ att.key }
+        <Editor { ...props } id={ att.id }
           disabled={ disabled || (att.editable === false) }/>
       );
     default:
       if (array && domain) {
         return props => (
-          <Select { ...props } multi={ true } domain={ domain } id={ att.key }
+          <Select { ...props } multi={ true } domain={ domain } id={ att.id }
             disabled={ disabled || (att.editable === false) }/>
         );
       }
       if (domain) {
         return props => (
-          <Select { ...props } multi={ false } domain={ domain } id={ att.key }
+          <Select { ...props } multi={ false } domain={ domain } id={ att.id }
             disabled={ disabled || (att.editable === false) }/>
         );
       }
       if (array) {
         return props => (
-          <ArrayInput { ...props } type={ type } id={ att.key }
+          <ArrayInput { ...props } type={ type } id={ att.id }
             disabled={disabled || ( att.editable === false) }/>
         );
       }
       return props => (
-        <Input { ...props } type={ type } id={ att.key }
+        <Input { ...props } type={ type } id={ att.id }
           disabled={ disabled || (att.editable === false) }/>
         );
   }

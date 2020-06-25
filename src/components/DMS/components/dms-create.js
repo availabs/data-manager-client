@@ -5,8 +5,6 @@ import Select from "components/avl-components/components/Inputs/select"
 
 import { DmsButton } from "./dms-button"
 
-import { prettyKey } from "../utils"
-
 import { dmsCreate, dmsEdit } from "../wrappers/dms-create"
 import DmsWizard from "./dms-wizard"
 
@@ -65,15 +63,15 @@ export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
           </div>
           <div className="w-full flex flex-col justify-center">
             { createState.activeSection.attributes
-              .map(({ Input, ...att }, i) => (
-                  <div key={ att.key }
+              .map(({ Input, key, ...att }, i) => (
+                  <div key={ key }
                     className={ `
                       border-l-4 pl-2 mb-2 ${ att.type === "richtext" ? "" : "max-w-2xl" } pb-2
                       ${ att.required ? att.verified ? "border-green-400" : "border-red-400" : "border-current" }
                     ` }>
-                    <label>{ att.name || prettyKey(att.key) }</label>
+                    <label htmlFor={ att.id }>{ att.name }</label>
                     <Input autoFocus={ i === 0 } value={ att.value }
-                      onChange={ v => setValues(att.key, v) }/>
+                      onChange={ v => setValues(key, v) }/>
                   </div>
                 )
               )
