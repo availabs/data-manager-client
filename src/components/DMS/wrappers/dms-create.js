@@ -69,15 +69,16 @@ class Attribute {
   }
 }
 class DmsAttribute {
-  constructor(att, props) {
+  constructor(att, formatName, props) {
     Object.assign(this, att);
-    const match = /^dms-format:(.+)$/.exec(att.type),
-      [, name] = match;
-    this.format = props.registeredFormats[name];
+    this.format = props.registeredFormats[formatName];
     this.attributes = this.format.attributes.reduce((a, c) => {
       a[c.key] = makeNewAttribute(c, props);
       return a;
     }, {});
+    if (this.required !== false) {
+      this.required = Object.values(this.attributes).reduce((a, c) => a || c.required, false);
+    }
     this.verified = false;
     this.value = null;
     this.Input = props => (
@@ -103,8 +104,10 @@ class DmsAttribute {
   }
 }
 const makeNewAttribute = (att, props) => {
-  if (/^dms-format:(.+)$/.test(att.type)) {
-    return new DmsAttribute(att, props);
+  const match = /^dms-format:(.+)$/.exec(att.type);
+  if (match) {
+    const [, name] = match;
+    return new DmsAttribute(att, name, props);
   }
   return new Attribute(att, props);
 }

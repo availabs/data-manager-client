@@ -40,7 +40,7 @@ const TestFormat1 = {
     },
     { key: "test-1-4",
       type: "dms-format:dms+dms-test-2",
-      required: true
+      // required: false
     }
   ]
 }
