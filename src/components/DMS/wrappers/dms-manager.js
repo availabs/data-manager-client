@@ -1,15 +1,12 @@
 import React from "react"
 
-import { compareActions, processFormat } from "../utils"
+import { compareActions } from "../utils"
 
 import get from "lodash.get"
 
 export default Component =>
-  ({ children, format, ...props }) => {
+  ({ children, format, registeredFormats, ...props }) => {
 
-    if (!format["$processed"]) {
-      format = processFormat(format);
-    }
     const dmsActions = [];
     children = React.Children.toArray(children)
       .reduce((children, child) => {
@@ -21,6 +18,7 @@ export default Component =>
             { app: props.app,
               type: props.type,
               format,
+              registeredFormats,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,
@@ -45,6 +43,7 @@ export default Component =>
               app: props.app,
               type: props.type,
               format,
+              registeredFormats,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,

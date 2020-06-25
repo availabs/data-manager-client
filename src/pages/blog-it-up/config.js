@@ -13,7 +13,13 @@ export default ({
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
     "dms-manager",
-    "dms-provider",
+    { type: "dms-provider",
+      options: {
+        buttonThemes: {
+          reply: "buttonInfo"
+        }
+      }
+    },
     "dms-router",
     "show-loading",
     "dms-falcor",
@@ -23,9 +29,6 @@ export default ({
     format: BLOG_POST,
     title: "Blog it Up",
     className: "max-w-7xl m-auto pb-10",
-    buttonThemes: {
-      reply: "button"
-    },
     authRules: {
       create: {
         args: ["props:user.authLevel"],

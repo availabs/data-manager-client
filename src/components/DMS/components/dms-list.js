@@ -5,7 +5,7 @@ import { DmsButton } from "./dms-button"
 
 import get from "lodash.get"
 
-import { prettyKey, makeFilter, getValue, useDmsColumns } from "../utils"
+import { prettyKey, makeFilter, makeSort, getValue, useDmsColumns } from "../utils"
 import { useMakeOnClick } from "../wrappers/dms-provider"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
@@ -28,11 +28,14 @@ const getPageSpread = (page, maxPage) => {
   return spread;
 }
 
-const DmsList = ({ sortBy, sortOrder, transform, columns, ...props }) => {
+const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
 	const [attributes, actions] = useDmsColumns(columns);
 
-  const [{ sort }, setSort] = React.useState({});
-  React.useEffect(() => {
+	let sorter;
+	if (sort) {
+		sorter = makeSort(sort, { props });
+	}
+	if (!sorter) {
     const dir = sortOrder === "desc" ? -1 : 1;
     let _transform = transform;
     if (!_transform && (sortBy === "updated_at")) {
@@ -41,13 +44,12 @@ const DmsList = ({ sortBy, sortOrder, transform, columns, ...props }) => {
     else if (!_transform) {
       _transform = v => v;
     }
-    const sort = (a, b) => {
+    sorter = (a, b) => {
       const av = _transform(get(a, sortBy)),
         bv = _transform(get(b, sortBy));
       return (av < bv ? -1 : bv < av ? 1 : 0) * dir;
     }
-    setSort({ sort });
-  }, [sortBy, sortOrder, transform]);
+	}
 
   const filter = makeFilter(props);
   let dataItems = (filter ? props.dataItems.filter(filter) : props.dataItems)
@@ -58,7 +60,7 @@ const DmsList = ({ sortBy, sortOrder, transform, columns, ...props }) => {
 		length = dataItems.length,
 	  actualPage = Math.min(maxPage, page);
 
-  dataItems = dataItems.sort(sort).slice(actualPage * rowsPerPage, actualPage * rowsPerPage + rowsPerPage);
+  dataItems = dataItems.sort(sorter).slice(actualPage * rowsPerPage, actualPage * rowsPerPage + rowsPerPage);
 
   const getAttributeName = att => {
     att = att.split(/[:.]/).pop();
@@ -177,6 +179,7 @@ DmsList.defaultProps = {
   columns: [],
   format: {},
   filter: false,
+	sort: false,
   sortBy: "updated_at",
   sortOrder: "desc",
   transform: null,

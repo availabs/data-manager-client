@@ -54,7 +54,7 @@ const OpenConfirm = ({ Button, interaction, ...props }) => {
   const OpenedAndWating = ({ setOpen }) => {
     const [waiting, setWaiting] = useState(true);
     useEffect(() => {
-      const timeout = waiting && setTimeout(setWaiting, 2000, false);
+      const timeout = waiting && setTimeout(setWaiting, 1000, false);
       return () => clearTimeout(timeout);
     }, [waiting])
     return (
@@ -85,7 +85,7 @@ export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...
           disabled={ waiting || disabled || isDisabled }/>
       default:
         return <ActionButton { ...interaction } { ...dms } { ...others }
-          disabled={ waiting || disabled || isDisabled } type={ type }/>
+          disabled={ waiting || disabled || isDisabled }/>
     }
   }
 

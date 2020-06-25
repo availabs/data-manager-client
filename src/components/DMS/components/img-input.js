@@ -2,7 +2,12 @@ import React from "react"
 
 import get from "lodash.get"
 
+import { useTheme } from "components/avl-components/wrappers/with-theme"
+
 export default class ImgInput extends React.Component {
+  static defaultProps = {
+    disabled: false
+  }
   state = {
     value: "",
     draggingOver: false,
@@ -25,6 +30,8 @@ export default class ImgInput extends React.Component {
   async dropIt(e) {
     e.preventDefault();
     e.stopPropagation();
+
+    if (this.props.disabled) return;
 
     this.setState({ draggingOver: false });
 
@@ -78,25 +85,21 @@ export default class ImgInput extends React.Component {
           ${ this.state.draggingOver ? "border-gray-500" : "" }
           hoverable
         ` }
-        onDragOver={ e => this.dragOver(e) }
-        onDragLeave={ e => this.onDragExit(e) }
+        onDragOver={ e => !this.props.disabled && this.dragOver(e) }
+        onDragLeave={ e => !this.props.disabled && this.onDragExit(e) }
         onDrop={ e => this.dropIt(e) }>
 
         { value ?
             <img src={ value } alt={ value  }className="max-w-full max-h-full"/>
           : this.state.draggingOver ?
             <span className="far fa-image fa-9x pointer-events-none opacity-50"/>
+          : this.props.disabled ?
+            <span className="fas fa-times fa-9x pointer-events-none opacity-50"/>
           :
             <div className="flex flex-col items-center">
-              <div>
-                <label className={ null }
-                  htmlFor={ this.props.id }>Select an image file...</label>
-                <input className="py-1 px-2 w-full rounded hidden" id={ this.props.id }
-                  type="file" accept="image/*" placeholder="..."
-                  onChange={ e => this.handleChange(e) }/>
-              </div>
-              <div>...or drag and drop.</div>
-              <div>{ this.state.message }</div>
+              <LabelButton id={ this.props.id } handleChange={ e => this.handleChange(e) }/>
+              <div className="mt-1">...or drag and drop.</div>
+              <div className="mt-1">{ this.state.message }</div>
             </div>
         }
         { !value ? null :
@@ -116,4 +119,17 @@ export default class ImgInput extends React.Component {
       </div>
     )
   }
+}
+const LabelButton = props => {
+  const theme = useTheme();
+  return (
+    <div>
+      <label htmlFor={ props.id } className={ `${ theme.buttonInfo } cursor-pointer` }>
+        Select an image file...
+      </label>
+      <input className="py-1 px-2 w-full rounded hidden" id={ props.id }
+        type="file" accept="image/*" placeholder="..."
+        onChange={ props.handleChange }/>
+    </div>
+  )
 }

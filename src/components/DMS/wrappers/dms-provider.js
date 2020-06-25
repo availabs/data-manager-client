@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 
 import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
-import { checkAuth, processAction } from "../utils"
+import { checkAuth, processAction, processFormat } from "../utils"
 
 import get from "lodash.get"
 
@@ -130,7 +130,7 @@ const makeOnClick = (...args) => {
         e.stopPropagation();
         push({
           pathname: get(state, [length - 1], basePath),
-          state: state.slice(0, length - 1)
+          state: state.slice(0, -1)
         });
       })
       : /^(dms:)*home$/.test(action) ?
@@ -147,7 +147,7 @@ const makeOnClick = (...args) => {
           return Promise.resolve(interact(action, itemId, seedProps(props)))
             .then(() => push({
               pathname: get(state, [length - 1], basePath),
-              state: state.slice(0, length - 1)
+              state: state.slice(0, -1)
             }))
         })
       : (e => {
@@ -290,11 +290,20 @@ export default (Component, options = {}) => {
         { id, ...top } = this.getTop(),
         item = this.getItem(id);
 
+      if (!format["$processed"]) {
+        processFormat(format);
+      }
+
       return {
         interact: this.interact,
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
         stack: this.state.stack,
+        registeredFormats: get(format, "registerFormats", [])
+          .reduce((a, c) => {
+            a[`${ c.app }+${ c.type }`] = c;
+            return a;
+          }, {}),
         format,
         app,
         type,

@@ -2,38 +2,107 @@ import React from "react"
 
 import get from "lodash.get"
 import * as d3format from "d3-format"
-import moment from "moment"
+import * as d3timeFormat from "d3-time-format"
 
 import { hasValue } from "components/avl-components/components/Inputs/utils"
 
-const flattenAttributes = (Sections, Attributes, depth = 0, index = [0]) => {
+const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
   if (!Sections.length) return Attributes;
   const { attributes, sections, ...rest } = Sections.pop();
   if (sections) {
-    flattenAttributes(sections, Attributes, depth + 1, [...index, 0]);
+    flattenAttributes(sections, Attributes, depth + 1, [...id, 0]);
   }
   if (attributes) {
     Attributes.push(...attributes.map((att, i) => ({
       ...rest,
       ...att,
       depth,
-      id: [...index, i].join(".")
+      id: `${ att.key }-${ id.join(".") }.${ i }`
     })))
   }
-  const last = index.pop()
-  return flattenAttributes(Sections, Attributes, depth, [...index, last + 1]);
+  const last = id.pop()
+  return flattenAttributes(Sections, Attributes, depth, [...id, last + 1]);
 }
 
 export const processFormat = format => {
-  if (!format.sections) return format;
+  if (format.registerFormats) {
+    format.registerFormats.forEach(processFormat);
+  }
+  format["$processed"] = true;
+  if (!format.sections) {
+    const attributes = format.attributes;
+    format.attributes = [];
+    return flattenAttributes([{ attributes }], format.attributes);
+  };
+
   format.attributes = [];
   flattenAttributes(format.sections.reverse(), format.attributes);
-  format["$processed"] = true;
-  return format;
 }
+
+const oREGEX = /^(\d*)(?<!1)([1|2|3])$/;
+const oFunc = d => {
+  const match = oREGEX.exec(d);
+  switch (match && match[2]) {
+    case "1":
+      return d + "st";
+    case "2":
+      return d + "nd";
+    case "3":
+      return d + "rd";
+    default:
+      return d + "th";
+  }
+}
+
+const dateFormats = {
+  M: "%-m",
+  MM: "%m",
+  MMM: "%b",
+  MMMM: "%B",
+  Q: "%q",
+  Qo: ["%q", oFunc],
+  D: "%-d",
+  Do: ["%-d", oFunc],
+  DD: "%d",
+  d: "%-w",
+  do: ["%-w", oFunc],
+  dd: "%w",
+  ddd: "%a",
+  dddd: "%A",
+  YY: "%y",
+  YYYY: "%Y",
+  A: "%p",
+  a: ["%p", p => p.toLowerCase()],
+  H: "%-H",
+  HH: "%H",
+  h: "%-I",
+  hh: "%I",
+  m: "%-M",
+  mm: "%M",
+  s: "%-S",
+  ss: "%S",
+}
+const DATE_REGEX = /(M+|Q|Do|D+|do|d+|Y+|A|a|H+|h+|m+|s+)/g;
+const getDateFormat = format => {
+  const args = format.split(DATE_REGEX)
+    .map(a => (a in dateFormats) ? dateFormats[a] : a)
+    .reduce((a, c) =>
+      typeof c === "string" ? [...a.slice(0, -1), a.slice(-1) + c] : [...a, c, ""]
+    , [""])
+    .map(a => {
+      if (typeof a === "string") {
+        return d3timeFormat.timeFormat(a);
+      }
+      let [format, func] = a;
+      format = d3timeFormat.timeFormat(format);
+      return v => func(format(v));
+    });
+  return v => { const date = new Date(v); return args.reduce((a, c) => a + c(date), ""); };
+}
+
 export const getFormat = format => {
   if (/^date:/.test(format)) {
-    return value => moment(value).format(format.replace(/^date:/, ""));
+    return getDateFormat(format.slice(5));//value => moment(value).format(format.replace(/^date:/, ""));
   }
   return format ? d3format.format(format) : d => d;
 }
@@ -139,6 +208,38 @@ export const dmsIsNum = value => {
   return true
 }
 
+const processArgs = (args, sources) =>
+  args.map(arg => {
+    if (typeof arg === "string") {
+      if (SELF_REGEX.test(arg)) {
+        return { path: arg };
+      }
+      return { value: getValue(arg, sources) };
+    }
+    return { value: arg };
+  })
+export const makeSort = (sort, sources) => {
+  if (!sources) {
+    sources = { props: sort }
+    sort = get(sources, ["props", "sort"]);
+  }
+  if (!sources.item) {
+    sources.item = get(sources, ["props", "item"], null);
+  }
+
+  if (!sort) return false;
+
+  if (typeof sort === "function") return sort;
+
+  let { comparator, accessor } = sort;
+
+  return (a, b) => {
+    const av = getValue(accessor, { self: a }),
+      bv = getValue(accessor, { self: b });
+    return comparator(av, bv);
+  }
+}
+
 export const makeFilter = (filter, sources) => {
   if (!sources) {
     sources = { props: filter }
@@ -154,36 +255,11 @@ export const makeFilter = (filter, sources) => {
 
   let { args, comparator } = filter;
 
-  args = args.map(arg => {
-    if (typeof arg === "string") {
-      if (ITEM_REGEX.test(arg)) {
-        arg = arg.slice(5);
-        const path = arg.split(".");
-        return {
-          value: get(sources, ["item", ...path], arg)
-        }
-      }
-      if (SELF_REGEX.test(arg)) {
-        return {
-          path: arg.slice(5)
-        }
-      }
-      if (PROPS_REGEX.test(arg)) {
-        arg = arg.slice(6);
-        const path = arg.split(".");
-        return {
-          value: get(sources, ["props", ...path], arg)
-        }
-      }
-    }
-    return { type: "value", value: arg };
-  })
+  args = processArgs(args, sources);
 
   return d =>
     comparator(
-      ...args.map(({ path, value }) => {
-        return value || get(d, path)
-      })
+      ...args.map(({ path, value }) => value || getValue(path, { self: d }) || "" )
     );
 }
 
@@ -269,14 +345,14 @@ const reduceSplit = (split, source, func) => {
   return reduceSplit(split, get(source, path, null), func);
 }
 
-const getValueFromPath = (pathArg, sources, directives = {}, _default = null) => {
+const getValueFromPath = (pathArg, sources, directives, _default) => {
   if (typeof pathArg !== "string") return _default || pathArg;
 
   const {
     preserveKeys,
     preservePath,
     preserveSource
-  } = directives;
+  } = (directives || {});
 
   const REGEX = /^(item|props|self):(.+)$/;
 
@@ -316,7 +392,7 @@ const getValueFromPath = (pathArg, sources, directives = {}, _default = null) =>
   return value;
 }
 
-export const getValue = (arg, sources, directives) => {
+export const getValue = (arg, sources, directives = {}, _default = null) => {
   if (!arg) return null;
 
   if (!sources.item) {
@@ -340,7 +416,7 @@ export const getValue = (arg, sources, directives) => {
     interact = []
   } = arg;
 
-  let data = getValueFromPath(path, sources, directives);
+  let data = getValueFromPath(path, sources, directives, _default);
 
   if (type) {
     if (!Array.isArray(data)) {
@@ -380,7 +456,6 @@ export const mapDataToProps = (map, sources = {}, _directives = {}) => {
   if (!sources.item) {
     sources.item = get(sources, ["props", "item"], null);
   }
-
   const directiveKeys = Object.keys(map).filter(k => /^\$.+$/.test(k)),
     directives = { ..._directives };
   for (const k of directiveKeys) {

@@ -35,8 +35,8 @@ export default ({
       options: {
         buttonThemes: {
           home: "buttonInfo",
-          create: "buttonSuccess",
-          edit: "buttonPrimary"
+          // create: "buttonSuccess",
+          // edit: "buttonPrimary"
         }
       }
     },
@@ -71,9 +71,26 @@ export default ({
     { type: "dms-list", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
-        sortBy: "data.chapter",
-        sortOrder: "asc",
-        filter: d => !d.data.chapter.includes("."),
+
+        // sortBy: "data.chapter",
+        // sortOrder: "asc",
+
+        sort: {
+          accessor: "self:data.chapter",
+          comparator: (a, b) => {
+            const av = +a.replace(".", ""),
+              bv = +b.replace(".", "");
+            return av - bv;
+          }
+        },
+
+        // filter: d => !d.data.chapter.includes("."),
+
+        filter: {
+          args: ["self:data.chapter"],
+          comparator: arg => !arg.includes(".")
+        },
+
         columns: [
           "title", "chapter",
           "dms:edit", "dms:delete",
@@ -144,7 +161,7 @@ export default ({
       wrappers: ["with-auth"]
     },
 
-    { type: "docs-page",
+    { type: DocsPage,
       props: { dmsAction: "delete" },
       wrappers: [
         { type: "dms-view",
