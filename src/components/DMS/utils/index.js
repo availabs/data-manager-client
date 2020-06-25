@@ -25,6 +25,9 @@ const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
 }
 
 export const processFormat = format => {
+  if (format.registerFormats) {
+    format.registerFormats.forEach(processFormat);
+  }
   format["$processed"] = true;
   if (!format.sections) {
     const attributes = format.attributes;
@@ -34,7 +37,6 @@ export const processFormat = format => {
 
   format.attributes = [];
   flattenAttributes(format.sections.reverse(), format.attributes);
-  return format;
 }
 
 const oREGEX = /^(\d*)(?<!1)([1|2|3])$/;

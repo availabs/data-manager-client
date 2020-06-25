@@ -74,7 +74,6 @@ export default ({
     "dms-manager",
     { type: "dms-provider",
       options: {
-        registerFormats: [TestFormat1, TestFormat2],
         buttonThemes: {
           home: "buttonInfo",
           // create: "buttonSuccess",

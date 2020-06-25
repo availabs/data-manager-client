@@ -1,20 +1,12 @@
 import React from "react"
 
-import { compareActions, processFormat } from "../utils"
+import { compareActions } from "../utils"
 
 import get from "lodash.get"
 
 export default Component =>
   ({ children, format, registeredFormats, ...props }) => {
 
-    if (!format["$processed"]) {
-      format = processFormat(format);
-    }
-    for (const key in registeredFormats) {
-      if (!registeredFormats[key]["$processed"]) {
-        registeredFormats[key] = processFormat(registeredFormats[key]);
-      }
-    }
     const dmsActions = [];
     children = React.Children.toArray(children)
       .reduce((children, child) => {

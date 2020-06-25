@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 
 import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
-import { checkAuth, processAction } from "../utils"
+import { checkAuth, processAction, processFormat } from "../utils"
 
 import get from "lodash.get"
 
@@ -182,8 +182,7 @@ export default (Component, options = {}) => {
     // format,
     authRules = {},
     buttonThemes = {},
-    setDefaultTo = false,
-    registerFormats = []
+    setDefaultTo = false
   } = options;
 
   class Wrapper extends React.Component {
@@ -291,16 +290,20 @@ export default (Component, options = {}) => {
         { id, ...top } = this.getTop(),
         item = this.getItem(id);
 
+      if (!format["$processed"]) {
+        processFormat(format);
+      }
+
       return {
         interact: this.interact,
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
         stack: this.state.stack,
-        registeredFormats: registerFormats.reduce((a, c) => {
-          const { app, type } = c;
-          a[`${ app }+${ type }`] = c;
-          return a;
-        }, {}),
+        registeredFormats: get(format, "registerFormats", [])
+          .reduce((a, c) => {
+            a[`${ c.app }+${ c.type }`] = c;
+            return a;
+          }, {}),
         format,
         app,
         type,
