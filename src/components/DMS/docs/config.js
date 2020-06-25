@@ -24,47 +24,6 @@ const domain = [
   "!!!!!!!! !!!!!!!!", "########### ########"
 ]
 
-const TestFormat1 = {
-  app: "dms",
-  type: "dms-test-1",
-  attributes: [
-    { key: "test-1-1",
-      type: "text",
-      required: true
-    },
-    { key: "test-1-2",
-      type: "text"
-    },
-    { key: "test-1-3",
-      type: "number"
-    },
-    { key: "test-1-4",
-      type: "dms-format:dms+dms-test-2",
-      // required: false
-    }
-  ]
-}
-const TestFormat2 = {
-  app: "dms",
-  type: "dms-test-2",
-  attributes: [
-    { key: "test-2-1",
-      type: "text"
-    },
-    { key: "test-2-2",
-      type: "date",
-      required: true
-    },
-    { key: "test-2-3",
-      type: "text-array"
-    },
-    { key: "test-2-4",
-      type: "text",
-      required: true
-    }
-  ]
-}
-
 export default ({
   type: ({ children }) => <div className="flex"><div className="mt-20 pt-8 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
   wrappers: [

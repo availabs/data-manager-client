@@ -259,7 +259,7 @@ export const makeFilter = (filter, sources) => {
 
   return d =>
     comparator(
-      ...args.map(({ path, value }) => value || getValue(path, { self: d }))
+      ...args.map(({ path, value }) => value || getValue(path, { self: d }) || "" )
     );
 }
 
@@ -456,7 +456,6 @@ export const mapDataToProps = (map, sources = {}, _directives = {}) => {
   if (!sources.item) {
     sources.item = get(sources, ["props", "item"], null);
   }
-
   const directiveKeys = Object.keys(map).filter(k => /^\$.+$/.test(k)),
     directives = { ..._directives };
   for (const k of directiveKeys) {
