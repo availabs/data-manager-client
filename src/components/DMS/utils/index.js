@@ -218,6 +218,7 @@ const processArgs = (args, sources) =>
     }
     return { value: arg };
   })
+
 export const makeSort = (sort, sources) => {
   if (!sources) {
     sources = { props: sort }

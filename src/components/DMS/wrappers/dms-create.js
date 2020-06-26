@@ -44,6 +44,7 @@ const newProcessed = () => ({
   prev: () => {},
   sections: []
 })
+const newSections = () => []
 
 class Attribute {
   constructor(att, props) {
@@ -84,7 +85,7 @@ class DmsAttribute {
     this.verified = false;
     this.value = null;
     this.Input = props => (
-      <DmsInput { ...props } Attribute={ this } format={ this.format }/>
+      <DmsInput { ...props } Attribute={ this } id={ this.id } format={ this.format }/>
     )
   }
   setValue(value) {
@@ -117,14 +118,14 @@ const makeNewAttribute = (att, props) => {
 const getDomain = (att, props) => {
   if (att.domain) {
     if (typeof att.domain === "string") {
-      return getValue(att.domain, { props }, null, []);
+      return getValue(att.domain, { props }) || [];
     }
     return att.domain;
   }
   return null;
 }
 const getInput = (att, props, disabled) => {
-  const [type, array] = att.type.split("-"),
+  const { type, isArray } = att,
     domain = getDomain(att, props);
 
   switch (type) {
@@ -144,7 +145,7 @@ const getInput = (att, props, disabled) => {
           disabled={ disabled || (att.editable === false) }/>
       );
     default:
-      if (array && domain) {
+      if (isArray && domain) {
         return props => (
           <Select { ...props } multi={ true } domain={ domain } id={ att.id }
             disabled={ disabled || (att.editable === false) }/>
@@ -156,7 +157,7 @@ const getInput = (att, props, disabled) => {
             disabled={ disabled || (att.editable === false) }/>
         );
       }
-      if (array) {
+      if (isArray) {
         return props => (
           <ArrayInput { ...props } type={ type } id={ att.id }
             disabled={disabled || ( att.editable === false) }/>
@@ -171,7 +172,7 @@ const getInput = (att, props, disabled) => {
 
 export const useProcessValues = (sections, props) => {
   const Processed = newProcessed(),
-    [Sections, setSections] = useState([]);
+    [Sections, setSections] = useState(newSections);
 
   const [section, setSection] = useState(0);
   const [values, _setValues] = useState({});
@@ -280,6 +281,8 @@ export const dmsCreate = Component => {
         }
       }
     }, [init, props, Processed]);
+
+    if (!Processed.activeSection) return null;
     return (
       <Component { ...props } createState={ Processed }
         values={ Processed.values } setValues={ Processed.setValues }/>
@@ -309,7 +312,9 @@ export const dmsEdit = Component => {
           setInit(true);
         }
       }
-    }, [init, data, Processed])
+    }, [init, data, Processed]);
+
+    if (!Processed.activeSection) return null;
     return (
       <Component { ...props } createState={ Processed }
         values={ Processed.values } setValues={ Processed.setValues }/>

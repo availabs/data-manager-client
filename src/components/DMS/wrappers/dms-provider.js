@@ -293,17 +293,19 @@ export default (Component, options = {}) => {
       if (!format["$processed"]) {
         processFormat(format);
       }
+      const registeredFormats = get(format, "registerFormats", [])
+        .reduce((a, c) => {
+          a[`${ c.app }+${ c.type }`] = c;
+          return a;
+        }, {});
+      registeredFormats[`${ format.app }+${ format.type }`] = format;
 
       return {
         interact: this.interact,
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
         stack: this.state.stack,
-        registeredFormats: get(format, "registerFormats", [])
-          .reduce((a, c) => {
-            a[`${ c.app }+${ c.type }`] = c;
-            return a;
-          }, {}),
+        registeredFormats,
         format,
         app,
         type,

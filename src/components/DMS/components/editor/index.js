@@ -10,6 +10,7 @@ import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import {
   EditorState,
+  // ContentState,
   convertToRaw,
   convertFromRaw
 } from 'draft-js';
