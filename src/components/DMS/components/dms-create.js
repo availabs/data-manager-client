@@ -2,6 +2,8 @@ import React from "react"
 
 import { Button } from "components/avl-components/components/Button"
 import Select from "components/avl-components/components/Inputs/select"
+import { hasValue } from "components/avl-components/components/Inputs/utils"
+import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import { DmsButton } from "./dms-button"
 
@@ -52,6 +54,7 @@ const BadAttributeRow = ({ oldKey, value, formatAttributes, deleteOld, mapOldToN
   )
 }
 export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
+  const theme = useTheme();
   return (
     <div>
       <DmsWizard { ...createState }>
@@ -66,7 +69,8 @@ export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
                 <div key={ key }
                   className={ `
                     border-l-4 pl-2 mb-2 ${ att.type === "richtext" ? "" : "max-w-2xl" } pb-2
-                    ${ att.required ? att.verified ? "border-green-400" : "border-red-400" : "border-current" }
+                    ${ att.required ? (att.verified ? "border-green-400" : "border-red-400") :
+                        hasValue(att.value) ? theme.borderInfo : "border-current" }
                   ` }>
                   <label htmlFor={ att.id }>{ att.name }</label>
                   <Input autoFocus={ i === 0 } value={ att.value }

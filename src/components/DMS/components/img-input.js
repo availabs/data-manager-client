@@ -59,11 +59,16 @@ export default class ImgInput extends React.Component {
     this.setState({ message: "" });
 
     const reader = new FileReader();
+    // reader.readAsArrayBuffer(file);
     reader.readAsDataURL(file);
 
     const result = await new Promise(resolve => {
       reader.addEventListener("load", (...args) => {
         resolve(reader.result);
+        // fetch("localhost:4444/img/upload", {
+        //   method: "POST",
+        //   body: reader.result
+        // })
       })
     })
     this.props.onChange(result);

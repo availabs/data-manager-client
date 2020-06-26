@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 
-import { Input, TextArea, ArrayInput, Select } from "components/avl-components/components/Inputs"
+import { Input, TextArea, ArrayInput, Select, ObjectInput } from "components/avl-components/components/Inputs"
 import Editor from "../components/editor"
 import ImgInput from "../components/img-input"
 import DmsInput from "../components/dms-input"
@@ -144,6 +144,11 @@ const getInput = (att, props, disabled) => {
         <Editor { ...props } id={ att.id }
           disabled={ disabled || (att.editable === false) }/>
       );
+    case "object":
+      return props => (
+        <ObjectInput { ...props } id={ att.id }
+          disabled={ disabled || (att.editable === false) }/>
+      )
     default:
       if (isArray && domain) {
         return props => (
@@ -260,27 +265,20 @@ export const dmsCreate = Component => {
       isDisabled: !Processed.verified
     }
 
-    const [init, setInit] = useState(false);
     useEffect(() => {
-      if (!init) {
-        const values = {},
-          attributes = get(props.format, "attributes", []);
+      const values = {},
+        attributes = get(props.format, "attributes", []);
 
-        let hasDefaults = 0;
-
-        attributes.forEach(att => {
-          if (att.default) {
-            ++hasDefaults;
-            const value = getValue(att.default, { props });
-            hasValue(value) && (values[att.key] = value);
-          }
-        })
-        if (Object.keys(values).length === hasDefaults) {
-          Processed.setValues(values);
-          setInit(true);
+      attributes.forEach(att => {
+        if (att.default && !(att.key in Processed.values)) {
+          const value = getValue(att.default, { props });
+          hasValue(value) && (values[att.key] = value);
         }
+      })
+      if (Object.keys(values).length) {
+        Processed.setValues(values);
       }
-    }, [init, props, Processed]);
+    });
 
     if (!Processed.activeSection) return null;
     return (

@@ -47,32 +47,6 @@ export default {
   registerFormats: [TestFormat1, TestFormat2],
 
   sections: [
-    { title: "Random Page",
-      attributes: [
-        { key: "test-date-array",
-          type: 'date',
-          isArray: true
-        },
-        { key: 'test-select',
-          type: "text",
-          searchable: false,
-          domain: "props:domain"
-        },
-        { key: 'test-multi-select',
-          type: "text",
-          isArray: true,
-          domain: "props:domain"
-        }
-      ]
-    },
-    { title: "Test Page",
-      attributes: [
-        { key: "test-format",
-          type: "dms-format:dms+dms-test-1",
-          // required: true
-        }
-      ]
-    },
     { title: "Main Page",
       attributes: [
         { key: "title",
@@ -91,31 +65,6 @@ export default {
         { key: 'tags',
           type: 'text',
           isArray: true
-        }
-      ]
-    },
-    { title: "Editor Page",
-      attributes: [
-        { key: "text-editor",
-          type: "richtext"
-        }
-      ]
-    },
-    { title: "Numbers Page",
-      attributes: [
-        { key: "test-number",
-          type: "number"
-        },
-        { key: "test-number-array",
-          type: "number",
-          isArray: true
-        }
-      ]
-    },
-    { title: "Image Page",
-      attributes: [
-        { key: "test-image",
-          type: "img"
         }
       ]
     }

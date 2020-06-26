@@ -55,32 +55,30 @@ const oFunc = d => {
 }
 
 const dateFormats = {
-  M: "%-m",
-  MM: "%m",
-  MMM: "%b",
-  MMMM: "%B",
-  Q: "%q",
-  Qo: ["%q", oFunc],
-  D: "%-d",
-  Do: ["%-d", oFunc],
-  DD: "%d",
-  d: "%-w",
-  do: ["%-w", oFunc],
-  dd: "%w",
-  ddd: "%a",
-  dddd: "%A",
-  YY: "%y",
-  YYYY: "%Y",
-  A: "%p",
-  a: ["%p", p => p.toLowerCase()],
-  H: "%-H",
-  HH: "%H",
-  h: "%-I",
-  hh: "%I",
-  m: "%-M",
-  mm: "%M",
-  s: "%-S",
-  ss: "%S",
+  M: "%-m", // Month of year as integer [1, 2, ...11, 12]
+  MM: "%m", // Month of year as zero-padded interger [01, 02, ...11, 12]
+  MMM: "%b",  // Abreviated month name [Jan, Feb, ...Nov, Dec]
+  MMMM: "%B", // Full month name
+  Q: "%q",  // Quarter [1, 2, 3, 4]
+  Qo: ["%q", oFunc],  // Quarter [1st, 2nd, 2rd, 4th]
+  D: "%-d", // Day of month [1, 2, ...11, 12, ...]
+  Do: ["%-d", oFunc], // Day of month [1st, 2nd, ...11th, 12th, ...]
+  DD: "%d", // Zero-padded day of month [01, 02, ...11, 12, ...]
+  d: "%w", // Day of week [0, 1, ...5, 6] with Sunday as 0
+  ddd: "%a", // abbreviated weekday name [Sun, Mon, ...Fri, Sat]
+  dddd: "%A", // full weekday name
+  YY: "%y", // Year as 2 digits [20, 21, 22, ...]
+  YYYY: "%Y", // Full year [2020, 2021, 2022, ...]
+  A: "%p", // AM or PM
+  a: ["%p", p => p.toLowerCase()], // am or pm
+  H: "%-H", // 24-hour clock hour [0, 1, ...22, 23]
+  HH: "%H", // zero-padded 24-hour clock [00, 01, ...22, 23]
+  h: "%-I", // 12-hour close [1, 2, ..., 11, 12]
+  hh: "%I", // zero-padded 12-hour clock [01, 02, ...11, 12]
+  m: "%-M", // minute [0, 1, ...58, 59]
+  mm: "%M", // zero-padded minute [00, 01, ...58, 59]
+  s: "%-S", // seconds [0, 1, ...58, 59]
+  ss: "%S", // zero-padded seconds [00, 01, ...8, 59]
 }
 const DATE_REGEX = /(M+|Q|Do|D+|do|d+|Y+|A|a|H+|h+|m+|s+)/g;
 const getDateFormat = format => {
@@ -101,7 +99,10 @@ const getDateFormat = format => {
 }
 
 export const getFormat = format => {
-  if (/^date:/.test(format)) {
+  if (format === "date") {
+    return getDateFormat("MMM Do, YYYY h:mm a");
+  }
+  else if (/^date:/.test(format)) {
     return getDateFormat(format.slice(5));//value => moment(value).format(format.replace(/^date:/, ""));
   }
   return format ? d3format.format(format) : d => d;

@@ -77,7 +77,7 @@ export default ({
       ],
 
     },
-    { type: "dms-create-comp",
+    { type: "dms-create",
       props: { dmsAction: "create" },
       // dms-create defaults to dmsAction: "create"
       // the prop is required here due to the wrapper
