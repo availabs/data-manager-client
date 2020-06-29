@@ -2,6 +2,8 @@ import React from "react"
 
 import { Button } from "components/avl-components/components/Button"
 import Select from "components/avl-components/components/Inputs/select"
+import { hasValue } from "components/avl-components/components/Inputs/utils"
+import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import { DmsButton } from "./dms-button"
 
@@ -52,28 +54,29 @@ const BadAttributeRow = ({ oldKey, value, formatAttributes, deleteOld, mapOldToN
   )
 }
 export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
-  if (!createState.activeSection) return null;
+  const theme = useTheme();
   return (
     <div>
       <DmsWizard { ...createState }>
         <form onSubmit={ e => e.preventDefault() }>
-          <div className="mt-2 mb-4">
-            <DmsButton className="w-full max-w-xs" large  type="submit"
+          <div className="mt-2 mb-4 max-w-2xl">
+            <DmsButton className="w-1/2" large  type="submit"
               action={ createState.dmsAction } item={ item } props={ props }/>
           </div>
           <div className="w-full flex flex-col justify-center">
             { createState.activeSection.attributes
-              .map(({ Input, key, ...att }, i) => (
-                  <div key={ key }
-                    className={ `
-                      border-l-4 pl-2 mb-2 ${ att.type === "richtext" ? "" : "max-w-2xl" } pb-2
-                      ${ att.required ? att.verified ? "border-green-400" : "border-red-400" : "border-current" }
-                    ` }>
-                    <label htmlFor={ att.id }>{ att.name }</label>
-                    <Input autoFocus={ i === 0 } value={ att.value }
-                      onChange={ v => setValues(key, v) }/>
-                  </div>
-                )
+              .map(({ Input, key, ...att }, i) =>
+                <div key={ key }
+                  className={ `
+                    border-l-4 pl-2 mb-2 pb-2
+                    ${ att.type === "richtext" || att.type === "img" ? "" : "max-w-2xl" }
+                    ${ att.required ? (att.verified ? "border-green-400" : "border-red-400") :
+                        hasValue(att.value) ? theme.borderInfo : "border-current" }
+                  ` }>
+                  <label htmlFor={ att.id }>{ att.name }</label>
+                  <Input autoFocus={ i === 0 } value={ att.value }
+                    onChange={ v => setValues(key, v) }/>
+                </div>
               )
             }
           </div>

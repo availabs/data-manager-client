@@ -3,7 +3,6 @@
 import Test from 'pages/Test';
 
 import MyBlog from 'pages/blog-it-up'
-import TestWrapper from "pages/TestWrapper"
 
 import DocsEditor from 'pages/DocsEditor'
 
@@ -19,9 +18,8 @@ export default [
 	DocsEditor,
 	MyBlog,
 	DmsDocs,
-	TestWrapper,
 	// ConfigSimple,
-	Test,
+	...Test,
 	Login,
 	Logout,
 	Home,

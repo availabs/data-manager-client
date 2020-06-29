@@ -4,28 +4,8 @@ import DMS_DOCS from "./dms-docs.type"
 
 import DocsPage from "./docs-page"
 
-const domain = [
-  "Text 1", "Text 2", "Text 3",
-  '???????? ????????',
-  '????????? ??????????',
-  "!!!!!!!!", "###### #####",
-  "!!! !!!!! !!!", "######## #######",
-  '????????? ?????? ???',
-  '???? ?????? ????????????',
-  "!!! !!!!!!", "####### ######",
-  "!!!!!!!! !!!!!", "########## ########",
-  '????????? ???? ?????',
-  '?? ????????? ??????? ?? ??',
-  "!!!! !!!!!! !!!!", "####### #####",
-  "!!!!!!!!! !!!!", "######### #######",
-  '????????? ????? ??? ???',
-  '?????????? ???? ????????????',
-  "!!!!! !!!! !!!!", "####### #######",
-  "!!!!!!!! !!!!!!!!", "########### ########"
-]
-
 export default ({
-  type: ({ children }) => <div className="flex"><div className="mt-20 pt-8 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
+  type: ({ children }) => <div className="flex"><div className="mt-20 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
   wrappers: [
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
@@ -88,7 +68,7 @@ export default ({
 
         filter: {
           args: ["self:data.chapter"],
-          comparator: arg => !arg.includes(".")
+          comparator: arg => /^\d+$/.test(arg)
         },
 
         columns: [
@@ -103,9 +83,7 @@ export default ({
     },
 
     { type: DocsPage, // generic dms component for viewing a single data item
-      props: {
-        dmsAction: "view"
-      },
+      props: { dmsAction: "view" },
       wrappers: [
         { type: "dms-view",
           options: {
@@ -131,7 +109,6 @@ export default ({
         { type: "dms-list",
           props: {
             columns: ["title", "chapter", "dms:edit", "dms:delete"],
-            className: "mt-5",
             sortBy: "data.chapter",
             sortOrder: "asc",
           },
@@ -152,12 +129,12 @@ export default ({
     },
 
     { type: "dms-create",
-      props: { dmsAction: "create", domain },
+      props: { dmsAction: "create" },
       wrappers: ["with-auth"]
     },
 
     { type: "dms-edit",
-      props: { dmsAction: "edit", domain },
+      props: { dmsAction: "edit" },
       wrappers: ["with-auth"]
     },
 

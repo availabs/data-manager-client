@@ -5,6 +5,7 @@ import { connect } from "react-redux"
 import { Redirect, withRouter } from "react-router-dom"
 
 import { Button } from "components/avl-components/components/Button"
+import { Input } from "components/avl-components/components/Inputs"
 
 import { login } from "store/user"
 
@@ -38,15 +39,13 @@ class Login extends React.Component {
             <form onSubmit={ e => this.handleSubmit(e) }>
               <div className="my-2">
                 <label htmlFor="email" className="block font-bold">Email</label>
-                <input type="email" id="email" required autoFocus
-                  className="px-4 py-1 rounded" value={ email }
-                  onChange={ e => this.setState({ email: e.target.value }) }/>
+                <Input type="email" id="email" required autoFocus value={ email }
+                  onChange={ v => this.setState({ email: v }) }/>
               </div>
               <div className="my-2">
                 <label htmlFor="email" className="block font-bold">Password</label>
-                <input type="password" id="password" required
-                  className="px-4 py-1 rounded" value={ password }
-                  onChange={ e => this.setState({ password: e.target.value }) }/>
+                <Input type="password" id="password" required value={ password }
+                  onChange={ v => this.setState({ password: v }) }/>
               </div>
               <div className="my-2">
                 <Button disabled={ disabled } type="submit"

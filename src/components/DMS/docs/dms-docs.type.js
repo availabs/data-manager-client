@@ -30,7 +30,8 @@ const TestFormat2 = {
       required: true
     },
     { key: "test-2-3",
-      type: "text-array"
+      type: "text",
+      isArray: true
     },
     { key: "test-2-4",
       type: "text",
@@ -46,14 +47,6 @@ export default {
   registerFormats: [TestFormat1, TestFormat2],
 
   sections: [
-    { title: "Test Page",
-      attributes: [
-        { key: "test-format",
-          type: "dms-format:dms+dms-test-1",
-          // required: true
-        }
-      ]
-    },
     { title: "Main Page",
       attributes: [
         { key: "title",
@@ -70,47 +63,8 @@ export default {
           verify: "^\\d+([.]\\d+)*$"
         },
         { key: 'tags',
-          type: 'text-array'
-        }
-      ]
-    },
-    { title: "Editor Page",
-      attributes: [
-        { key: "text-editor",
-          type: "richtext"
-        }
-      ]
-    },
-    { title: "Numbers Page",
-      attributes: [
-        { key: "test-number",
-          type: "number"
-        },
-        { key: "test-number-array",
-          type: "number-array"
-        }
-      ]
-    },
-    { title: "Random Page",
-      attributes: [
-        { key: "test-date-array",
-          type: 'date-array'
-        },
-        { key: 'test-select',
-          type: "text",
-          searchable: false,
-          domain: "props:domain"
-        },
-        { key: 'test-multi-select',
-          type: "text-array",
-          domain: "props:domain"
-        }
-      ]
-    },
-    { title: "Image Page",
-      attributes: [
-        { key: "test-image",
-          type: "img"
+          type: 'text',
+          isArray: true
         }
       ]
     }

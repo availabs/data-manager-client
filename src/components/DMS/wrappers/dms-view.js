@@ -9,10 +9,17 @@ import { prettyKey, getValue } from "../utils"
 const SEED_PROPS = () => ({});
 
 const ViewItem = ({ value, type }) =>
-  type !== "img" ? <div>{ value }</div> :
-  <div>
-    <img src={ value } style={ { maxHeight: "16rem" } } alt=""/>
-  </div>
+  type === "img" ?
+    <div>
+      <img src={ value } style={ { maxHeight: "16rem" } } alt=""/>
+    </div>
+  : (type === "object") || /^dms-format:/.test(type) ?
+    <div className="whitespace-pre-wrap">
+      { JSON.stringify(value, null, 4) }
+    </div>
+  : type === "richtext" ?
+    null
+  : <div>{ value }</div>
 
 const ViewRow = ({ name, children }) =>
   <div className="grid grid-cols-4 my-2">
@@ -56,24 +63,25 @@ export default (Component, options = {}) => {
         value = <ViewItem type={ type } value={ value }/>
       }
 
-      return (
-        <ViewRow key={ key } name={ name }>
-          { value }
-        </ViewRow>
-      );
+      return { value, name };
     }
     renderRow(objectArg, sources) {
-      const {
+      let {
         value,
         key,
         source
       } = objectArg;
 
       if (source === "item") {
-        return this.renderItem(objectArg, sources.item);
+        const { value, name } = this.renderItem(objectArg, sources.item);
+        return (
+          <ViewRow key={ key } name={ name }>
+            { value }
+          </ViewRow>
+        );
       }
       return (
-        <ViewRow key={ key } name={ key }>
+        <ViewRow key={ key } name={ prettyKey(key) }>
           { value }
         </ViewRow>
       );
@@ -104,17 +112,19 @@ export default (Component, options = {}) => {
       if (!item) return null;
 
       const sources = { item, props: this.props },
-        props = {};
+        props = {},
+        directives = { preserveSource: true };
 
       for (const key in mapDataToProps) {
         const path = mapDataToProps[key];
 
         if (typeof mapDataToProps[key] === "string") {
-          props[key] = getValue(path, sources);
+          const { source, ...result } = getValue(path, sources, directives);
+          props[key] = source === "item" ?
+            this.renderItem(result, sources.item).value : result.value;
         }
         else {
-          const directives = { preserveSource: true },
-            mapped = path.map(p => getValue(p, sources, directives));
+          const mapped = path.map(p => getValue(p, sources, directives));
           props[key] = mapped.map(v => this.renderRow(v, sources));
         }
       }

@@ -16,8 +16,8 @@ export default (options = {}) => {
   const Toolbar = ({ children }) => {
     const theme = useTheme();
     return (
-      <div className={ `absolute ${ position }-0 left-0 w-full p-2 z-10` }>
-        <div className={ `flex flex-${ direction } p-1 shadow-md rounded ${ theme.menuBg } w-full` }>
+      <div className={ `absolute ${ position }-0 left-0 w-full p-2 z-10 h-14` }>
+        <div className={ `flex flex-${ direction } shadow-md h-10 p-1 rounded ${ theme.menuBg } w-full` }>
           { children }
         </div>
       </div>

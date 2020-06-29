@@ -38,13 +38,12 @@ const Content = ({ title, content, children }) =>
   </div>
 
 export default {
-  path: '/test-wrapper',
-  name: 'Test Wrapper',
-  mainNav: true,
+  path: '/test/wrapper',
+  exact: true,
   auth: true,
   layoutSettings: {
     fixed: true,
-    theme: 'light'
+    theme: 'TEST_THEME'
   },
   component: {
     type: Component,

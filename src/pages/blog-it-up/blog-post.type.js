@@ -11,7 +11,8 @@ export const BLOG_POST = {
       required: true
     },
     { key: 'tags',
-      type: 'text-array'
+      type: 'text',
+      isArray: true
     },
     { key: "bloggerId",
       name: "Blogger ID",

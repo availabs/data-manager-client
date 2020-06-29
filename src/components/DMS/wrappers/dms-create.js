@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 
-import { Input, TextArea, ArrayInput, Select } from "components/avl-components/components/Inputs"
+import { Input, TextArea, ArrayInput, Select, ObjectInput } from "components/avl-components/components/Inputs"
 import Editor from "../components/editor"
 import ImgInput from "../components/img-input"
 import DmsInput from "../components/dms-input"
@@ -44,6 +44,57 @@ const newProcessed = () => ({
   prev: () => {},
   sections: []
 })
+const newSections = () => []
+const getInput = (att, props, disabled) => {
+  const { type, isArray } = att,
+    domain = getDomain(att, props);
+
+  switch (type) {
+    case "textarea":
+      return props => (
+        <TextArea { ...props } id={ att.id }
+          disabled={ disabled || att.editable === false }/>
+      );
+    case "img":
+      return props => (
+        <ImgInput { ...props } id={ att.id }
+          disabled={ disabled || (att.editable === false) }/>
+      );
+    case "richtext":
+      return props => (
+        <Editor { ...props } id={ att.id }
+          disabled={ disabled || (att.editable === false) }/>
+      );
+    case "object":
+      return props => (
+        <ObjectInput { ...props } id={ att.id }
+          disabled={ disabled || (att.editable === false) }/>
+      )
+    default:
+      if (isArray && domain) {
+        return props => (
+          <Select { ...props } multi={ true } domain={ domain } id={ att.id }
+            disabled={ disabled || (att.editable === false) }/>
+        );
+      }
+      if (domain) {
+        return props => (
+          <Select { ...props } multi={ false } domain={ domain } id={ att.id }
+            disabled={ disabled || (att.editable === false) }/>
+        );
+      }
+      if (isArray) {
+        return props => (
+          <ArrayInput { ...props } type={ type } id={ att.id }
+            disabled={disabled || ( att.editable === false) }/>
+        );
+      }
+      return props => (
+        <Input { ...props } type={ type } id={ att.id }
+          disabled={ disabled || (att.editable === false) }/>
+        );
+  }
+}
 
 class Attribute {
   constructor(att, props) {
@@ -52,6 +103,9 @@ class Attribute {
     this.verified = false;
     this.value = null;
     this.Input = getInput(this, props);
+  }
+  cleanup() {
+    console.log("CLEAING", this.key)
   }
   setValue(v) {
     this.value = v;
@@ -84,8 +138,11 @@ class DmsAttribute {
     this.verified = false;
     this.value = null;
     this.Input = props => (
-      <DmsInput { ...props } Attribute={ this } format={ this.format }/>
+      <DmsInput { ...props } Attribute={ this } id={ this.id } format={ this.format }/>
     )
+  }
+  cleanup = () => {
+    Object.values(this.attributes).forEach(att => att.cleanup());
   }
   setValue(value) {
     this.value = value;
@@ -117,61 +174,16 @@ const makeNewAttribute = (att, props) => {
 const getDomain = (att, props) => {
   if (att.domain) {
     if (typeof att.domain === "string") {
-      return getValue(att.domain, { props }, null, []);
+      return getValue(att.domain, { props }) || [];
     }
     return att.domain;
   }
   return null;
 }
-const getInput = (att, props, disabled) => {
-  const [type, array] = att.type.split("-"),
-    domain = getDomain(att, props);
-
-  switch (type) {
-    case "textarea":
-      return props => (
-        <TextArea { ...props } id={ att.id }
-          disabled={ disabled || att.editable === false }/>
-      );
-    case "img":
-      return props => (
-        <ImgInput { ...props } id={ att.id }
-          disabled={ disabled || (att.editable === false) }/>
-      );
-    case "richtext":
-      return props => (
-        <Editor { ...props } id={ att.id }
-          disabled={ disabled || (att.editable === false) }/>
-      );
-    default:
-      if (array && domain) {
-        return props => (
-          <Select { ...props } multi={ true } domain={ domain } id={ att.id }
-            disabled={ disabled || (att.editable === false) }/>
-        );
-      }
-      if (domain) {
-        return props => (
-          <Select { ...props } multi={ false } domain={ domain } id={ att.id }
-            disabled={ disabled || (att.editable === false) }/>
-        );
-      }
-      if (array) {
-        return props => (
-          <ArrayInput { ...props } type={ type } id={ att.id }
-            disabled={disabled || ( att.editable === false) }/>
-        );
-      }
-      return props => (
-        <Input { ...props } type={ type } id={ att.id }
-          disabled={ disabled || (att.editable === false) }/>
-        );
-  }
-}
 
 export const useProcessValues = (sections, props) => {
   const Processed = newProcessed(),
-    [Sections, setSections] = useState([]);
+    [Sections, setSections] = useState(newSections);
 
   const [section, setSection] = useState(0);
   const [values, _setValues] = useState({});
@@ -189,7 +201,7 @@ export const useProcessValues = (sections, props) => {
     }
   }, [Sections.length, sections, values, props]);
 
-  const setValues = (key, value, callback) => {
+  const setValues = (key, value) => {
     if (typeof key === "object") {
       _setValues(prev => ({ ...prev, ...key }));
     }
@@ -198,7 +210,12 @@ export const useProcessValues = (sections, props) => {
     }
   }
   Processed.setValues = setValues;
-  Processed.values = values;
+  Processed.values = {};
+  for (const key in values) {
+    if (hasValue(values[key])) {
+      Processed.values[key] = values[key];
+    }
+  }
   Processed.sections = Sections;
 
   if (Sections.length) {
@@ -256,30 +273,30 @@ export const dmsCreate = Component => {
     Processed.dmsAction = {
       action: "api:create",
       seedProps: () => Processed.values,
-      isDisabled: !Processed.verified
+      isDisabled: !Processed.verified,
+      then: () => {
+        Processed.sections.forEach(section => {
+          section.attributes.forEach(att => att.cleanup());
+        })
+      }
     }
 
-    const [init, setInit] = useState(false);
     useEffect(() => {
-      if (!init) {
-        const values = {},
-          attributes = get(props.format, "attributes", []);
+      const values = {},
+        attributes = get(props.format, "attributes", []);
 
-        let hasDefaults = 0;
-
-        attributes.forEach(att => {
-          if (att.default) {
-            ++hasDefaults;
-            const value = getValue(att.default, { props });
-            hasValue(value) && (values[att.key] = value);
-          }
-        })
-        if (Object.keys(values).length === hasDefaults) {
-          Processed.setValues(values);
-          setInit(true);
+      attributes.forEach(att => {
+        if (att.default && !(att.key in Processed.values)) {
+          const value = getValue(att.default, { props });
+          hasValue(value) && (values[att.key] = value);
         }
+      })
+      if (Object.keys(values).length) {
+        Processed.setValues(values);
       }
-    }, [init, props, Processed]);
+    });
+
+    if (!Processed.activeSection) return null;
     return (
       <Component { ...props } createState={ Processed }
         values={ Processed.values } setValues={ Processed.setValues }/>
@@ -298,7 +315,12 @@ export const dmsEdit = Component => {
     Processed.dmsAction = {
       action: "api:edit",
       seedProps: () => Processed.values,
-      isDisabled: !Processed.verified || !hasBeenUpdated(data, Processed.values)
+      isDisabled: !Processed.verified || !hasBeenUpdated(data, Processed.values),
+      then: () => {
+        Processed.sections.forEach(section => {
+          section.attributes.forEach(att => att.cleanup());
+        })
+      }
     }
 
     const [init, setInit] = useState(false);
@@ -309,7 +331,9 @@ export const dmsEdit = Component => {
           setInit(true);
         }
       }
-    }, [init, data, Processed])
+    }, [init, data, Processed]);
+
+    if (!Processed.activeSection) return null;
     return (
       <Component { ...props } createState={ Processed }
         values={ Processed.values } setValues={ Processed.setValues }/>

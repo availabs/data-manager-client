@@ -6,6 +6,7 @@ import HttpDataSource from 'falcor-http-datasource'
 import throttle from "lodash.throttle"
 
 let host = "http://localhost:4444/graph/"
+export const API_HOST = "http://localhost:4444/";
 
 class CustomSource extends HttpDataSource {
  onBeforeRequest (config) {

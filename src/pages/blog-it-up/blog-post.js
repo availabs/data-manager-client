@@ -8,7 +8,10 @@ const BlogPost = ({ item, dataItems, startOpened = true, ...props }) => {
   const replies = dataItems.filter(i => +i.data.replyTo === +item.id);
 
   return (
-    <div className={ `px-3 pt-3 mb-3 border rounded-md ${ opened && replies.length ? "pb-0" : "pb-3" }` }>
+    <div className={ `
+      px-3 pt-3 mb-3 border border-gray-200 bg-gray-50 rounded-md shadow-md
+      ${ opened && replies.length ? "pb-0" : "pb-3" }
+    ` }>
       <div className="text-xl font-bold">{ item.data.title }</div>
       <div className="flex">
         <div className="flex-0">
@@ -18,7 +21,7 @@ const BlogPost = ({ item, dataItems, startOpened = true, ...props }) => {
           { item.updated_at }
         </div>
       </div>
-      <div className="p-4 rounded border">
+      <div className="p-4 rounded border bg-white">
         { item.data.body }
       </div>
       <div className="relative flex items-center pt-2">
