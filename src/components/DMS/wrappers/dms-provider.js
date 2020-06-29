@@ -29,7 +29,7 @@ const normalizeArgs = (dmsAction, item, props, ...rest) => {
 }
 const makeInteraction = (...args) => {
   const [
-    { action, seedProps, isDisabled, ...rest },
+    { action, seedProps, isDisabled, doThen, ...rest },
     item, itemId,
     props,
     interact
@@ -70,6 +70,7 @@ const makeInteraction = (...args) => {
           onClick: e => {
             e.stopPropagation();
             return Promise.resolve(interact(action, itemId, seedProps(props)))
+              .then(() => doThen())
               .then(() => push({
                 pathname: get(state, [length - 1], basePath),
                 state: state.slice(0, length - 1)
@@ -93,6 +94,7 @@ const makeInteraction = (...args) => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();
       return Promise.resolve(interact(action, itemId, seedProps(props)))
+        .then(() => /^api:/.test(action) && doThen())
         .then(() => /^api:/.test(action) && interact("dms:back"));
     }
   }
@@ -109,7 +111,7 @@ export const useMakeInteraction = (dmsAction, item, props) => {
 
 const makeOnClick = (...args) => {
   const [
-    { action, seedProps },
+    { action, seedProps, doThen },
     item, itemId,
     props,
     interact
@@ -145,6 +147,7 @@ const makeOnClick = (...args) => {
         (e => {
           e.stopPropagation();
           return Promise.resolve(interact(action, itemId, seedProps(props)))
+            .then(() => doThen())
             .then(() => push({
               pathname: get(state, [length - 1], basePath),
               state: state.slice(0, -1)
@@ -163,6 +166,7 @@ const makeOnClick = (...args) => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();
       return Promise.resolve(interact(action, itemId, seedProps(props)))
+        .then(() => /^api:/.test(action) && doThen())
         .then(() => /^api:/.test(action) && interact("dms:back"));
     }
   )

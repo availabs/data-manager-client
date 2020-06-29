@@ -47,6 +47,20 @@ export default {
   registerFormats: [TestFormat1, TestFormat2],
 
   sections: [
+    { title: "Editor Page",
+      attributes: [
+        { key: "text-editor",
+          type: "richtext"
+        }
+      ]
+    },
+    { title: "Image Page",
+      attributes: [
+        { key: "test-image",
+          type: "img"
+        }
+      ]
+    },
     { title: "Info Page",
       attributes: [
         { key: "title",
@@ -62,12 +76,12 @@ export default {
     },
     { title: "Random Page",
       attributes: [
-        { key: "test-object-input",
-          type: "object"
-        },
         { key: "test-date-array",
           type: 'date',
           isArray: true
+        },
+        { key: "test-object-input",
+          type: "object"
         },
         { key: 'test-multi-select',
           type: "text",
@@ -89,13 +103,6 @@ export default {
         }
       ]
     },
-    { title: "Editor Page",
-      attributes: [
-        { key: "text-editor",
-          type: "richtext"
-        }
-      ]
-    },
     { title: "Numbers Page",
       attributes: [
         { key: "test-number",
@@ -104,13 +111,6 @@ export default {
         { key: "test-number-array",
           type: "number",
           isArray: true
-        }
-      ]
-    },
-    { title: "Image Page",
-      attributes: [
-        { key: "test-image",
-          type: "img"
         }
       ]
     },

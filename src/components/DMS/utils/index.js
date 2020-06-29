@@ -1,5 +1,6 @@
 import React from "react"
 
+import deepequal from "deep-equal"
 import get from "lodash.get"
 import * as d3format from "d3-format"
 import * as d3timeFormat from "d3-time-format"
@@ -159,7 +160,8 @@ export const processAction = arg => {
     showConfirm: false,
     label: null,
     buttonTheme: null,
-    isDisabled: false
+    isDisabled: false,
+    then: null
   };
   if (typeof arg === "string") {
     response.action = arg;
@@ -167,7 +169,14 @@ export const processAction = arg => {
   else {
     response = { ...response, ...arg };
   }
-  return response;
+  const { then, ...processed } = response;
+  processed.doThen = () => {
+    if (typeof then === "function") {
+      return then();
+    }
+    return null;
+  }
+  return processed;
 }
 
 export const capitalize = string =>
@@ -189,7 +198,7 @@ export const hasBeenUpdated = (base, data) => {
     const baseHasValue = hasValue(base[key]),
       dataHasValue = hasValue(data[key]);
     if (baseHasValue && dataHasValue) {
-      if (base[key] !== data[key]) return true;
+      if (!deepequal(base[key], data[key])) return true;
     }
     if (baseHasValue ^ dataHasValue) return true;
   }

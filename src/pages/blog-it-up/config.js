@@ -6,7 +6,7 @@ import BlogPost from "./blog-post"
 import get from "lodash.get"
 
 export default ({
-  type: ({ children }) => <div className="flex"><div className="mt-20 pt-8 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
+  type: ({ children }) => <div className="flex"><div className="mt-20 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
   // type: "dms-manager",
   wrappers: [
 // wrapper order is important

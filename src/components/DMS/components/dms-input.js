@@ -58,6 +58,17 @@ export default ({ format, Attribute, onChange, id, autoFocus = false, onFocus, o
 
   const theme = useTheme();
 
+  const setValue = (key, v) => {
+    const newValue = { ...value };
+    if (!hasValue(v)) {
+      delete newValue[key];
+    }
+    else {
+      newValue[key] = v;
+    }
+    onChange(newValue);
+  }
+
   return (
     <div id={ id }>
       { Sections.map(section =>
@@ -71,12 +82,12 @@ export default ({ format, Attribute, onChange, id, autoFocus = false, onFocus, o
             <div className="text-lg font-semibold">{ section.title }</div>
             { section.attributes.map(({ Input, key, ...att }, i) =>
                 <div key={ key } className={ `border-l-4 pl-2 pb-2 mb-2 last:mb-0
-                ${ att.required ? (att.verified ? "border-green-400" : "border-red-400") :
+                ${ !att.verified ? "border-red-400" : att.required && att.verified ? "border-green-400" :
                     hasValue(att.value) ? theme.borderInfo : "border-current" }
                 ` }>
                   <label htmlFor={ att.id }>{ att.name }</label>
                   <Input autoFocus={ autoFocus && i === 0 } value={ value[key] } { ...props }
-                    onChange={ v => onChange({ ...value, [key]: v }) }
+                    onChange={ v => setValue(key, v) }
                     onFocus={ e => dispatch({ type: "onFocus" }) }
                     onBlur={ e => dispatch({ type: "onBlur" }) }/>
                 </div>

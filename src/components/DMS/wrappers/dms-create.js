@@ -45,85 +45,6 @@ const newProcessed = () => ({
   sections: []
 })
 const newSections = () => []
-
-class Attribute {
-  constructor(att, props) {
-    Object.assign(this, att);
-    this.name = this.name || prettyKey(this.key);
-    this.verified = false;
-    this.value = null;
-    this.Input = getInput(this, props);
-  }
-  setValue(v) {
-    this.value = v;
-    this.verifyValue();
-  }
-  verifyValue() {
-    if (hasValue(this.value)) {
-      this.verified = verifyValue(this.value, this.type, this.verify);
-    }
-    else if (this.required) {
-      this.verified = false;
-    }
-    else {
-      this.verified = true;
-    }
-  }
-}
-class DmsAttribute {
-  constructor(att, formatName, props) {
-    Object.assign(this, att);
-    this.name = this.name || prettyKey(this.key);
-    this.format = props.registeredFormats[formatName];
-    this.attributes = this.format.attributes.reduce((a, c) => {
-      a[c.key] = makeNewAttribute(c, props);
-      return a;
-    }, {});
-    if (this.required !== false) {
-      this.required = Object.values(this.attributes).reduce((a, c) => a || c.required, false);
-    }
-    this.verified = false;
-    this.value = null;
-    this.Input = props => (
-      <DmsInput { ...props } Attribute={ this } id={ this.id } format={ this.format }/>
-    )
-  }
-  setValue(value) {
-    this.value = value;
-    Object.values(this.attributes).forEach(att => att.setValue(get(value, att.key, null)));
-    this.verifyValue();
-  }
-  verifyValue() {
-    if (hasValue(this.value)) {
-      this.verified = Object.values(this.attributes)
-        .reduce((a, c) => a && c.verified, true);
-    }
-    else if (this.required) {
-      this.verified = false;
-    }
-    else {
-      this.verified = true;
-    }
-  }
-}
-const makeNewAttribute = (att, props) => {
-  const match = /^dms-format:(.+)$/.exec(att.type);
-  if (match) {
-    const [, name] = match;
-    return new DmsAttribute(att, name, props);
-  }
-  return new Attribute(att, props);
-}
-
-const getDomain = (att, props) => {
-  if (att.domain) {
-    if (typeof att.domain === "string") {
-      return getValue(att.domain, { props }) || [];
-    }
-    return att.domain;
-  }
-  return null;
-}
 const getInput = (att, props, disabled) => {
   const { type, isArray } = att,
     domain = getDomain(att, props);
@@ -175,6 +96,91 @@ const getInput = (att, props, disabled) => {
   }
 }
 
+class Attribute {
+  constructor(att, props) {
+    Object.assign(this, att);
+    this.name = this.name || prettyKey(this.key);
+    this.verified = false;
+    this.value = null;
+    this.Input = getInput(this, props);
+  }
+  cleanup() {
+    console.log("CLEAING", this.key)
+  }
+  setValue(v) {
+    this.value = v;
+    this.verifyValue();
+  }
+  verifyValue() {
+    if (hasValue(this.value)) {
+      this.verified = verifyValue(this.value, this.type, this.verify);
+    }
+    else if (this.required) {
+      this.verified = false;
+    }
+    else {
+      this.verified = true;
+    }
+  }
+}
+class DmsAttribute {
+  constructor(att, formatName, props) {
+    Object.assign(this, att);
+    this.name = this.name || prettyKey(this.key);
+    this.format = props.registeredFormats[formatName];
+    this.attributes = this.format.attributes.reduce((a, c) => {
+      a[c.key] = makeNewAttribute(c, props);
+      return a;
+    }, {});
+    if (this.required !== false) {
+      this.required = Object.values(this.attributes).reduce((a, c) => a || c.required, false);
+    }
+    this.verified = false;
+    this.value = null;
+    this.Input = props => (
+      <DmsInput { ...props } Attribute={ this } id={ this.id } format={ this.format }/>
+    )
+  }
+  cleanup = () => {
+    Object.values(this.attributes).forEach(att => att.cleanup());
+  }
+  setValue(value) {
+    this.value = value;
+    Object.values(this.attributes).forEach(att => att.setValue(get(value, att.key, null)));
+    this.verifyValue();
+  }
+  verifyValue() {
+    if (hasValue(this.value)) {
+      this.verified = Object.values(this.attributes)
+        .reduce((a, c) => a && c.verified, true);
+    }
+    else if (this.required) {
+      this.verified = false;
+    }
+    else {
+      this.verified = true;
+    }
+  }
+}
+const makeNewAttribute = (att, props) => {
+  const match = /^dms-format:(.+)$/.exec(att.type);
+  if (match) {
+    const [, name] = match;
+    return new DmsAttribute(att, name, props);
+  }
+  return new Attribute(att, props);
+}
+
+const getDomain = (att, props) => {
+  if (att.domain) {
+    if (typeof att.domain === "string") {
+      return getValue(att.domain, { props }) || [];
+    }
+    return att.domain;
+  }
+  return null;
+}
+
 export const useProcessValues = (sections, props) => {
   const Processed = newProcessed(),
     [Sections, setSections] = useState(newSections);
@@ -195,7 +201,7 @@ export const useProcessValues = (sections, props) => {
     }
   }, [Sections.length, sections, values, props]);
 
-  const setValues = (key, value, callback) => {
+  const setValues = (key, value) => {
     if (typeof key === "object") {
       _setValues(prev => ({ ...prev, ...key }));
     }
@@ -204,7 +210,12 @@ export const useProcessValues = (sections, props) => {
     }
   }
   Processed.setValues = setValues;
-  Processed.values = values;
+  Processed.values = {};
+  for (const key in values) {
+    if (hasValue(values[key])) {
+      Processed.values[key] = values[key];
+    }
+  }
   Processed.sections = Sections;
 
   if (Sections.length) {
@@ -262,7 +273,12 @@ export const dmsCreate = Component => {
     Processed.dmsAction = {
       action: "api:create",
       seedProps: () => Processed.values,
-      isDisabled: !Processed.verified
+      isDisabled: !Processed.verified,
+      then: () => {
+        Processed.sections.forEach(section => {
+          section.attributes.forEach(att => att.cleanup());
+        })
+      }
     }
 
     useEffect(() => {
@@ -299,7 +315,12 @@ export const dmsEdit = Component => {
     Processed.dmsAction = {
       action: "api:edit",
       seedProps: () => Processed.values,
-      isDisabled: !Processed.verified || !hasBeenUpdated(data, Processed.values)
+      isDisabled: !Processed.verified || !hasBeenUpdated(data, Processed.values),
+      then: () => {
+        Processed.sections.forEach(section => {
+          section.attributes.forEach(att => att.cleanup());
+        })
+      }
     }
 
     const [init, setInit] = useState(false);

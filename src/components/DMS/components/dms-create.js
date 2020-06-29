@@ -68,7 +68,8 @@ export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
               .map(({ Input, key, ...att }, i) =>
                 <div key={ key }
                   className={ `
-                    border-l-4 pl-2 mb-2 ${ att.type === "richtext" ? "" : "max-w-2xl" } pb-2
+                    border-l-4 pl-2 mb-2 pb-2
+                    ${ att.type === "richtext" || att.type === "img" ? "" : "max-w-2xl" }
                     ${ att.required ? (att.verified ? "border-green-400" : "border-red-400") :
                         hasValue(att.value) ? theme.borderInfo : "border-current" }
                   ` }>
