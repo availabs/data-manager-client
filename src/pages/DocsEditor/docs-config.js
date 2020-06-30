@@ -32,7 +32,6 @@ export const CreateCustom = ({ createState, setValues, item, ...props }) => {
   let Title = createState.sections[0].attributes[0]
   let Content = createState.sections[0].attributes[1]
   let UserID = createState.sections[0].attributes[2]
-console.log("CREATE STATE:", createState)
 
   return (
     <div className='max-w-6xl mx-auto border'>

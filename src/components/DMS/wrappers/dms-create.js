@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 
 import { Input, TextArea, ArrayInput, Select, ObjectInput } from "components/avl-components/components/Inputs"
-import Editor from "../components/editor"
+import Editor from "../components/editor/editor.read-only"
 import ImgInput from "../components/img-input"
 import DmsInput from "../components/dms-input"
 
@@ -244,7 +244,7 @@ export const useProcessValues = (sections, props) => {
       setSections(Sections);
       DmsCreateState.sections = Sections;
     }
-  }, [Sections.length, sections, values, props]);
+  }, [DmsCreateState, Sections.length, sections, values, props]);
 
   DmsCreateState.values = {};
   for (const key in values) {
