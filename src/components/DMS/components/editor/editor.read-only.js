@@ -1,18 +1,7 @@
 import React from "react"
 
-import { ScalableLoading } from "components/avl-components/components/Loading/LoadingPage"
-
-import deepequal from "deep-equal"
-import get from "lodash.get"
-import debounce from "lodash.debounce"
-import throttle from "lodash.throttle"
-
-import { useTheme } from "components/avl-components/wrappers/with-theme"
-
 import {
   EditorState,
-  // ContentState,
-  // convertToRaw,
   convertFromRaw
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
@@ -29,8 +18,7 @@ import makeStuffPlugin from "./stuff"
 const positionablePlugin = makePositionablePlugin(),
   { positionable } = positionablePlugin;
 
-const imagePlugin = makeImagePlugin({ wrapper: positionable }),
-  { addImage } = imagePlugin;
+const imagePlugin = makeImagePlugin({ wrapper: positionable });
 
 const plugins = [
   imagePlugin,
@@ -40,7 +28,7 @@ const plugins = [
   makeStuffPlugin()
 ];
 
-class MyEditor extends React.Component {
+class ReadOnlyEditor extends React.Component {
   static defaultProps = {
     spellCheck: true
   }
@@ -79,4 +67,4 @@ class MyEditor extends React.Component {
     );
   }
 }
-export default MyEditor;
+export default ReadOnlyEditor;
