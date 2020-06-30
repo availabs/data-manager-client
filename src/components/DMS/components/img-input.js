@@ -76,11 +76,11 @@ const useBrush = (node, type = "brush") => {
   return {
     Brush,
     selection,
-    clear: () => brush.clear(d3.select(group))
+    clearBrush: () => brush.clear(d3.select(group))
   }
 }
 
-const ImgInput = ({ height = 500, autoFocus = false, ...props }) => {
+const ImgInput = ({ height = 500, autoFocus = false, Attribute, ...props }) => {
   const [draggingOver, setDragging] = React.useState(false);
 
   const dragOver = e => {
@@ -97,11 +97,34 @@ const ImgInput = ({ height = 500, autoFocus = false, ...props }) => {
     e.preventDefault();
     e.stopPropagation();
   }
-  const uploadImage = file => {
-    const url = `http://localhost:4444/img/new/upload/${ file.name }`;
 
-    props.uploadImage(file, url)
-      .then(props.onChange);
+  const [stack, setStack] = React.useState([]),
+    [index, setIndex] = React.useState(-1),
+    [history, setHistory] = React.useState([]);
+
+  React.useEffect(() => {
+    if (props.value) {
+      setStack([props.value]);
+      setIndex(0)
+    }
+  }, [props.value]);
+
+  const pushStack = v => {
+      setStack([...stack.slice(0, index + 1), v]);
+      setIndex(index + 1);
+    },
+    clearStack = () => {
+      setStack([]);
+      setIndex(-1);
+    };
+
+  const [img, setImg] = React.useState(null),
+    [, setLoaded] = React.useState(false),
+    imgSrc = get(stack, [index, "url"]);
+
+  const uploadImage = file => {
+    props.uploadImage(file)
+      .then(({ filename, url }) => props.onChange({ filename, url }));
   }
   const dropIt = e => {
     e.preventDefault();
@@ -123,47 +146,47 @@ const ImgInput = ({ height = 500, autoFocus = false, ...props }) => {
     const file = get(e, ["target", "files", 0], null);
     file && uploadImage(file);
   }
+  const applyCrop = e => {
+    const { naturalHeight, naturalWidth } = img,
+      { height, width } = svg.getBoundingClientRect(),
+      scale = naturalHeight / height;
 
-  const [img, setImg] = React.useState(null),
-    [, setLoaded] = React.useState(false);
+    const [[x1, y1], [x2, y2]] = selection.map(d => d.map(dd => dd * scale)),
+      filename = stack[index].filename;
+
+console.log("CROP???", naturalHeight, height, scale, [x2 - x1, y2 - y1, x1, y1])
+console.log("CROP???", naturalWidth, width, naturalWidth / width)
+
+    props.editImage(imgSrc, filename, "crop", [x2 - x1, y2 - y1, x1, y1])
+      .then(url => pushStack({ filename, url }))
+      .then(() => setHistory([...history, imgSrc]))
+      // .then(() => Attribute.setWarning("Unsaved Image!!!"))
+      .then(clearBrush);
+  }
+  const undo = e => {
+    clearBrush();
+    setIndex(Math.max(0, index - 1));
+  }
+  const redo = e => {
+    clearBrush();
+    setIndex(Math.min(stack.length - 1, index + 1));
+  }
+  const saveImage = () => {
+    const { url, filename } = stack[index];
+    props.saveImage(url, filename, history)
+      .then(url => {
+        clearStack();
+        // Attribute.setWarning(null);
+        props.onChange({ url, filename });
+      });
+  }
 
   const [svg, setSvg] = React.useState(null)
   const {
     Brush,
     selection,
-    clear
+    clearBrush
   } = useBrush(svg);
-
-  const [savedSrc, saveSrc] = React.useState(props.value);
-  const hasSource = Boolean(props.value);
-  React.useEffect(() => {
-    !savedSrc && saveSrc(props.value);
-  }, [savedSrc, hasSource, props.value]);
-
-  const applyCrop = e => {
-
-    const { naturalHeight } = img,
-      { height } = svg.getBoundingClientRect(),
-      scale = naturalHeight / height;
-
-    const [[x1, y1], [x2, y2]] = selection.map(d => d.map(dd => dd * scale)),
-      regex = /^https?.+[/](.+[.].+)$/,
-      match = regex.exec(props.value);
-
-    if (match) {
-      const [, filename] = match;
-
-      const url = `http://localhost:4444/img/new/process/cropped_${filename}/crop/${x2-x1},${y2-y1},${x1},${y1}`;
-
-      props.processImage(props.value, url)
-        .then(props.onChange)
-        .then(clear);
-    }
-  }
-  const undoCrop = e => {
-    props.onChange(savedSrc);
-    saveSrc(null);
-  }
 
   const [hasFocus, setFocus] = React.useState(autoFocus),
     [ref, setRef] = React.useState(null);
@@ -189,12 +212,12 @@ const ImgInput = ({ height = 500, autoFocus = false, ...props }) => {
 
         <div className="relative flex items-center justify-center w-full" style={ { height: `${ height }px` } }>
 
-          { props.value ?
+          { imgSrc ?
               <div className="flex-1 absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center hoverable">
                 <div className="relative" style={ { maxHeight: `${ height }px` } }>
                   <div className="z-0 h-full" style={ { maxHeight: `${ height }px` } }>
-                    <img src={ props.value } alt={ props.value  } ref={ setImg }
-                      className="inline h-full" style={ { maxHeight: `${ height }px` } }
+                    <img src={ imgSrc } alt={ props.value  } ref={ setImg }
+                      className="block" style={ { maxHeight: `${ height }px` } }
                       onLoad={ e => setLoaded(true) }/>
                   </div>
                   <div className="absolute top-0 left-0 w-full h-full z-10"
@@ -204,11 +227,11 @@ const ImgInput = ({ height = 500, autoFocus = false, ...props }) => {
                     </svg>
                   </div>
                 </div>
-                <div className={ `
+                <div onClick={ e => { clearStack(); props.onChange(null); } }
+                  className={ `
                     absolute right-0 top-0 z-10 show-on-hover
                     rounded bg-red-500 p-1 cursor-pointer
-                  ` }
-                  onClick={ e => { saveSrc(null); props.onChange(null); } }>
+                  ` }>
                   <svg width="20" height="20">
                     <line x2="20" y2="20" style={ { stroke: "#fff", strokeWidth: 4 } }/>
                     <line y1="20" x2="20" style={ { stroke: "#fff", strokeWidth: 4 } }/>
@@ -235,13 +258,17 @@ const ImgInput = ({ height = 500, autoFocus = false, ...props }) => {
           <Button disabled={ !Boolean(selection) } onClick={ e => applyCrop(e) } tabIndex="-1">
             Apply Crop
           </Button>
-          <Button disabled={ savedSrc === props.value } onClick={ e => undoCrop(e) } tabIndex="-1">
-            Undo Crop
+          <Button disabled={ index < 1 } onClick={ e => undo(e) } tabIndex="-1">
+            Undo
+          </Button>
+          <Button disabled={ (index + 1) === stack.length } onClick={ e => redo(e) } tabIndex="-1">
+            Redo
           </Button>
         </div>
         <div className="flex-0 flex justify-end">
-          <Button disabled={ true } buttonTheme="buttonSuccess">
-            Save Image
+          <Button disabled={ get(stack, [index, "url"]) === get(props, ["value", "url"]) }
+            onClick={ e => saveImage() } buttonTheme="buttonSuccess">
+            Finish Editing
           </Button>
         </div>
       </div>
@@ -254,6 +281,7 @@ const LoadingOptions = {
   className: "rounded"
 }
 export default imgLoader(showLoading(ImgInput, LoadingOptions));
+
 const LabelButton = props => {
   const theme = useTheme();
   return (

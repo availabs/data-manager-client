@@ -2,9 +2,10 @@ import React from "react"
 
 import { ScalableLoading } from "components/avl-components/components/Loading/LoadingPage"
 
-import throttle from "lodash.throttle"
+import deepequal from "deep-equal"
 import get from "lodash.get"
 import debounce from "lodash.debounce"
+import throttle from "lodash.throttle"
 
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
@@ -76,7 +77,8 @@ class MyEditor extends React.Component {
   state = {
     editorState: EditorState.createEmpty(),
     loading: false,
-    hasFocus: false
+    hasFocus: false,
+    loadedFromSavedState: false
   }
   componentDidMount() {
     this.loadFromLocalStorage();
@@ -86,36 +88,43 @@ class MyEditor extends React.Component {
   }
   componentWillUnmount() {
     this.editor = null;
+    this.updateProps.cancel();
   }
   componentDidUpdate() {
+    if (!this.state.loadedFromSavedState && this.props.value) {
+      this.loadFromSavedState(this.props.value);
+    }
     this.saveToLocalStorage(this.state.editorState);
   }
   loadFromLocalStorage() {
     if (window.localStorage) {
-      const saved = window.localStorage.getItem("saved-editor-state");
+      const saved = window.localStorage.getItem("saved-editor-state-" + this.props.id);
       if (saved) {
-        const editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(saved)));
-        this.handleChange(editorState);
+        this.loadFromSavedState(JSON.parse(saved));
       }
     }
+  }
+  loadFromSavedState(content) {
+    const editorState = EditorState.createWithContent(convertFromRaw(content));
+    // this.handleChange(editorState);
+    this.setState({ loadedFromSavedState: true, editorState });
   }
   _saveToLocalStorage(editorState) {
     if (window.localStorage) {
       const currentContent = editorState.getCurrentContent(),
         hasText = currentContent.hasText();
       if (hasText) {
-        const saved = convertToRaw(editorState.getCurrentContent());
-        window.localStorage.setItem("saved-editor-state", JSON.stringify(saved));
+        const saved = convertToRaw(currentContent);
+        if (!deepequal(saved, this.props.value)) {
+          window.localStorage.setItem("saved-editor-state-" + this.props.id, JSON.stringify(saved));
+        }
       }
       else {
-        const saved = window.localStorage.getItem("saved-editor-state");
-        if (saved) {
-          window.localStorage.removeItem("saved-editor-state");
-        }
+        window.localStorage.removeItem("saved-editor-state-" + this.props.id);
       }
     }
   }
-  saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
+  saveToLocalStorage = throttle(this._saveToLocalStorage, 1000);
 
   _updateProps(editorState) {
     const currentContent = editorState.getCurrentContent(),

@@ -36,6 +36,8 @@ const newProcessed = () => ({
   activeSection: null,
   activeIndex: -1,
   verified: false,
+  hasWarning: false,
+  warnings: [],
   setValues: () => {},
   values: {},
   canGoNext: false,
@@ -45,6 +47,17 @@ const newProcessed = () => ({
   sections: []
 })
 const newSections = () => []
+
+const getDomain = (att, props) => {
+  if (att.domain) {
+    if (typeof att.domain === "string") {
+      return getValue(att.domain, { props }) || [];
+    }
+    return att.domain;
+  }
+  return null;
+}
+
 const getInput = (att, props, disabled) => {
   const { type, isArray } = att,
     domain = getDomain(att, props);
@@ -57,7 +70,7 @@ const getInput = (att, props, disabled) => {
       );
     case "img":
       return props => (
-        <ImgInput { ...props } id={ att.id }
+        <ImgInput { ...props } id={ att.id } Attribute={ att }
           disabled={ disabled || (att.editable === false) }/>
       );
     case "richtext":
@@ -103,9 +116,18 @@ class Attribute {
     this.verified = false;
     this.value = null;
     this.Input = getInput(this, props);
+    this.warning = null
   }
-  cleanup() {
-    console.log("CLEAING", this.key)
+  cleanup = () => {
+    if (this.type === "richtext" && window.localStorage) {
+      window.localStorage.removeItem("saved-editor-state-" + this.id);
+    }
+  }
+  setWarning(warning) {
+    this.warning = warning;
+  }
+  getWarning() {
+    return this.warning;
   }
   setValue(v) {
     this.value = v;
@@ -113,13 +135,13 @@ class Attribute {
   }
   verifyValue() {
     if (hasValue(this.value)) {
-      this.verified = verifyValue(this.value, this.type, this.verify);
+      this.verified = !this.warning && verifyValue(this.value, this.type, this.verify);
     }
     else if (this.required) {
       this.verified = false;
     }
     else {
-      this.verified = true;
+      this.verified = !this.warning;
     }
   }
 }
@@ -143,6 +165,12 @@ class DmsAttribute {
   }
   cleanup = () => {
     Object.values(this.attributes).forEach(att => att.cleanup());
+  }
+  getWarning() {
+    return Object.values(this.attributes).reduce((a, c) => {
+      const warning = c.getWarning();
+      return Boolean(warning) ? a.concat(warning) : a;
+    }, []);
   }
   setValue(value) {
     this.value = value;
@@ -171,16 +199,6 @@ const makeNewAttribute = (att, props) => {
   return new Attribute(att, props);
 }
 
-const getDomain = (att, props) => {
-  if (att.domain) {
-    if (typeof att.domain === "string") {
-      return getValue(att.domain, { props }) || [];
-    }
-    return att.domain;
-  }
-  return null;
-}
-
 export const useProcessValues = (sections, props) => {
   const Processed = newProcessed(),
     [Sections, setSections] = useState(newSections);
@@ -195,11 +213,14 @@ export const useProcessValues = (sections, props) => {
         title,
         isActive: false,
         verified: false,
+        hasWarning: false,
+        wanrings: [],
         attributes: attributes.map(att => makeNewAttribute(att, props))
       }))
       setSections(Sections);
     }
   }, [Sections.length, sections, values, props]);
+  Processed.sections = Sections;
 
   const setValues = (key, value) => {
     if (typeof key === "object") {
@@ -216,7 +237,6 @@ export const useProcessValues = (sections, props) => {
       Processed.values[key] = values[key];
     }
   }
-  Processed.sections = Sections;
 
   if (Sections.length) {
     Sections.forEach((sect, index) => {
@@ -225,20 +245,27 @@ export const useProcessValues = (sections, props) => {
       sect.attributes.forEach(att => {
         att.setValue(values[att.key]);
       })
-      sect.verified = sect.attributes.reduce((a, c) => a && c.verified, true)
+      sect.verified = sect.attributes.reduce((a, c) => a && c.verified, true);
+      sect.warnings = sect.attributes.reduce((a, c) => {
+        const warning = c.getWarning();
+        return Boolean(warning) ? a.concat(warning) : a;
+      }, [])
+      sect.hasWarning = Boolean(sect.warnings.length);
     })
     Processed.verified = Sections.reduce((a, c) => a && c.verified, true);
+    Processed.warnings = Sections.reduce((a, c) => [...a, ...c.warnings], []);
+    Processed.hasWarning = Boolean(Processed.warnings.length);
 
     Processed.activeSection = Sections[section];
     Processed.activeIndex = section;
     Processed.numSections = Sections.length;
-    Processed.canGoNext = ((section + 1) < Sections.length) && Sections[section].verified;
+    Processed.canGoNext = !Processed.hasWarning && ((section + 1) < Sections.length) && Sections[section].verified;
     Processed.next = () => {
       if (!Sections[section].verified) return;
       if ((section + 1) === Sections.length) return;
       setSection(section + 1);
     };
-    Processed.canGoPrev = section > 0;
+    Processed.canGoPrev = !Processed.hasWarning && section > 0;
     Processed.prev = () => {
       if (section === 0) return;
       setSection(section - 1);
