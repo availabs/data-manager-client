@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 
 import { Input, TextArea, ArrayInput, Select, ObjectInput } from "components/avl-components/components/Inputs"
-import Editor from "../components/editor/editor.read-only"
+import Editor from "../components/editor"
 import ImgInput from "../components/img-input"
 import DmsInput from "../components/dms-input"
 
