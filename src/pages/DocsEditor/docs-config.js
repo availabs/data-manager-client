@@ -164,11 +164,11 @@ export default ({
       },
       // dms-create defaults to dmsAction: "create"
       // the prop is required here due to the wrapper
-      wrappers: ["with-auth", "dms-create"]
+      wrappers: [ "dms-create", "with-auth",]
     },
-    { type: CreateCustom,
+    { type: 'dms-create',
       props: { dmsAction: "edit" },
-      wrappers: ["with-auth", "dms-create"]
+      wrappers: [ "dms-edit", "with-auth"]
     },
 
     { type: "dms-card",
@@ -185,7 +185,15 @@ export default ({
                 "props:user.id"
               ]
             },
-            actions: []
+            actions: [{
+              action: "api:delete",
+              showConfirm: true,
+//               seedProps: props =>
+// // these ids are sent to the api:delete function
+//                 get(props, "dataItems", []).reduce((a, c) =>
+//                   get(c, ["data", "replyTo"]) === get(props, ["docs", "id"]) ? [...a, c.id] : a
+//                 , [])
+            }]
           }
         },
         "with-auth"
