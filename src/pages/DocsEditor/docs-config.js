@@ -1,4 +1,79 @@
-import { doc } from "./doc-page"
+import React from "react"
+import { useTheme } from "components/avl-components/wrappers/with-theme"
+import { DmsButton } from "components/DMS/components/dms-button"
+import { hasValue } from "components/avl-components/components/Inputs/utils"
+
+
+const doc = {
+  app: "docs",
+  type: "page",
+  attributes: [
+    { key: "title",
+      type: "text",
+      required: true
+    },
+    { key: "body",
+      type: "richtext",
+      required: true
+    },
+    { key: "userId",
+      name: "User",
+      type: "text",
+      default: "props:user.id", // default value will be pulled from props.user.id
+      editable: false
+    }
+  ]
+}
+
+
+
+export const CreateCustom = ({ createState, setValues, item, ...props }) => {
+  const theme = useTheme();
+  let Title = createState.sections[0].attributes[0]
+  let Content = createState.sections[0].attributes[1]
+  let UserID = createState.sections[0].attributes[2]
+  
+  return (
+    <div className='max-w-6xl mx-auto border'>
+      <form onSubmit={ e => e.preventDefault() }>
+        <div className="w-full flex flex-col justify-center h-min-screen">
+          <div 
+            className={`text-3xl`}>
+            <Title.Input 
+              className={`p-4 border-none active:border-none focus:outline-none custom-bg ${theme.text}`}
+              autoFocus={ true } 
+              value={ Title.value }
+              placeholder={'Untilted'}
+              onChange={ v => setValues(Title.key, v) }
+            />
+          </div>
+          <div 
+            className={`p-2`}>
+            <Content.Input 
+              className={`p-4 border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
+              value={ Content.value }
+              onChange={ v => setValues(Content.key, v) }
+            />
+          </div>
+          <div 
+            className={``}>
+            {UserID.name}
+            <UserID.Input 
+              className={`p-4 border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
+              value={ UserID.value }
+              onChange={ v => setValues(UserID.key, v) }
+            />
+          </div>
+        </div>
+        <div className="mt-2 mb-4 max-w-2xl">
+          <DmsButton className="w-1/2" large  type="submit"
+            action={ createState.dmsAction } item={ item } props={ props }/>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 
 export default ({
   type: "dms-manager", // top level component for managing data items
@@ -15,6 +90,8 @@ export default ({
   props: {
     format: doc,
     title: " ",
+    className: 'h-full',
+    // noHeader: true,
     authRules: {
       create: {
         args: ["props:user.authLevel"],
@@ -42,7 +119,7 @@ export default ({
         dmsAction: "list",
         buttonTheme: "buttonText",
         columns: [
-          { Header: "title", // <-- this is no longer required
+          { 
             source: 'self:data.title',
             className: 'text-lg font-medium'
           },
@@ -77,15 +154,19 @@ export default ({
       ],
 
     },
-    { type: "dms-create",
-      props: { dmsAction: "create" },
+    { type: CreateCustom,
+      props: { 
+        dmsAction: "create",
+        dmsActions: ["dms:create","dms:fake"],
+        className: "h-full"
+      },
       // dms-create defaults to dmsAction: "create"
       // the prop is required here due to the wrapper
-      wrappers: ["with-auth"]
+      wrappers: ["with-auth", "dms-create"]
     },
-    { type: "dms-edit",
+    { type: CreateCustom,
       props: { dmsAction: "edit" },
-      wrappers: ["with-auth"]
+      wrappers: ["with-auth", "dms-create"]
     },
 
     { type: "dms-card",
