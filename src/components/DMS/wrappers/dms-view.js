@@ -51,7 +51,7 @@ export default (Component, options = {}) => {
         name = attribute.name || prettyKey(key),
         type = attribute.type;
 
-      if (!value) return null;
+      if (!value) return { value:null, name };
 
       if (key === "updated_at") {
         value = (new Date(value)).toLocaleString();

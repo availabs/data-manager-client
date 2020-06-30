@@ -1,5 +1,8 @@
 
 
+
+
+
 export const doc = {
   app: "docs",
   type: "page",
@@ -9,7 +12,7 @@ export const doc = {
       required: true
     },
     { key: "body",
-      type: "textarea",
+      type: "richtext",
       required: true
     },
     { key: "userId",

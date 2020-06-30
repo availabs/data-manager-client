@@ -36,10 +36,11 @@ const DmsManager = ({ showHome = true, stack, top = {}, ...props }) => {
     })
   }
 
+  //console.log('<DmsManager 39>', props)
   return (
     <div className={ props.className }>
-      <Header title={ props.title || `${ props.app } Manager` } actions={ actions }/>
-      <main>{ props.children }</main>
+      { props.noHeader ? '' : <Header title={ props.title || `${ props.app } Manager` } actions={ actions }/>  }
+      { props.children }
     </div>
   )
 }
