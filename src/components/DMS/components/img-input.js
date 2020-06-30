@@ -80,7 +80,7 @@ const useBrush = (node, type = "brush") => {
   }
 }
 
-const ImgInput = ({ height = 500, autoFocus = false, Attribute, ...props }) => {
+const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValue, onChange, ...props }) => {
   const [draggingOver, setDragging] = React.useState(false);
 
   const dragOver = e => {
@@ -102,13 +102,6 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, ...props }) => {
     [index, setIndex] = React.useState(-1),
     [history, setHistory] = React.useState([]);
 
-  React.useEffect(() => {
-    if (props.value) {
-      setStack([props.value]);
-      setIndex(0)
-    }
-  }, [props.value]);
-
   const pushStack = v => {
       setStack([...stack.slice(0, index + 1), v]);
       setIndex(index + 1);
@@ -118,13 +111,20 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, ...props }) => {
       setIndex(-1);
     };
 
+    React.useEffect(() => {
+      if (propsValue) {
+        setStack([propsValue]);
+        setIndex(0)
+      }
+    }, [propsValue]);
+
   const [img, setImg] = React.useState(null),
     [, setLoaded] = React.useState(false),
     imgSrc = get(stack, [index, "url"]);
 
   const uploadImage = file => {
     props.uploadImage(file)
-      .then(({ filename, url }) => props.onChange({ filename, url }));
+      .then(({ filename, url }) => onChange({ filename, url }));
   }
   const dropIt = e => {
     e.preventDefault();
@@ -147,20 +147,18 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, ...props }) => {
     file && uploadImage(file);
   }
   const applyCrop = e => {
-    const { naturalHeight, naturalWidth } = img,
-      { height, width } = svg.getBoundingClientRect(),
+    const { naturalHeight } = img,
+      { height } = svg.getBoundingClientRect(),
       scale = naturalHeight / height;
 
     const [[x1, y1], [x2, y2]] = selection.map(d => d.map(dd => dd * scale)),
       filename = stack[index].filename;
 
-console.log("CROP???", naturalHeight, height, scale, [x2 - x1, y2 - y1, x1, y1])
-console.log("CROP???", naturalWidth, width, naturalWidth / width)
-
     props.editImage(imgSrc, filename, "crop", [x2 - x1, y2 - y1, x1, y1])
       .then(url => pushStack({ filename, url }))
       .then(() => setHistory([...history, imgSrc]))
       // .then(() => Attribute.setWarning("Unsaved Image!!!"))
+      .then(() => onChange(propsValue))
       .then(clearBrush);
   }
   const undo = e => {
@@ -177,9 +175,25 @@ console.log("CROP???", naturalWidth, width, naturalWidth / width)
       .then(url => {
         clearStack();
         // Attribute.setWarning(null);
-        props.onChange({ url, filename });
+        onChange({ url, filename });
       });
   }
+  const removeImage = () => {
+    clearStack();
+    // Attribute.setWarning(null);
+    onChange(null);
+  }
+
+  React.useEffect(() => {
+console.log("USING:", index)
+    if (index < 1) {
+      Attribute.setWarning(null);
+    }
+    else {
+      Attribute.setWarning("You have unsaved edits to your image!!!");
+    }
+    onChange(propsValue);
+  }, [index, Attribute, propsValue, onChange])
 
   const [svg, setSvg] = React.useState(null)
   const {
@@ -216,7 +230,7 @@ console.log("CROP???", naturalWidth, width, naturalWidth / width)
               <div className="flex-1 absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center hoverable">
                 <div className="relative" style={ { maxHeight: `${ height }px` } }>
                   <div className="z-0 h-full" style={ { maxHeight: `${ height }px` } }>
-                    <img src={ imgSrc } alt={ props.value  } ref={ setImg }
+                    <img src={ imgSrc } alt={ propsValue  } ref={ setImg }
                       className="block" style={ { maxHeight: `${ height }px` } }
                       onLoad={ e => setLoaded(true) }/>
                   </div>
@@ -227,7 +241,7 @@ console.log("CROP???", naturalWidth, width, naturalWidth / width)
                     </svg>
                   </div>
                 </div>
-                <div onClick={ e => { clearStack(); props.onChange(null); } }
+                <div onClick={ e => removeImage() }
                   className={ `
                     absolute right-0 top-0 z-10 show-on-hover
                     rounded bg-red-500 p-1 cursor-pointer
@@ -266,7 +280,7 @@ console.log("CROP???", naturalWidth, width, naturalWidth / width)
           </Button>
         </div>
         <div className="flex-0 flex justify-end">
-          <Button disabled={ get(stack, [index, "url"]) === get(props, ["value", "url"]) }
+          <Button disabled={ get(stack, [index, "url"]) === get(propsValue, "url") }
             onClick={ e => saveImage() } buttonTheme="buttonSuccess">
             Finish Editing
           </Button>

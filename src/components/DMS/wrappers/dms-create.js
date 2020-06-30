@@ -31,22 +31,41 @@ export const useSetSections = format => {
   return sections;
 }
 
-const newProcessed = () => ({
-  numSections: 0,
-  activeSection: null,
-  activeIndex: -1,
-  verified: false,
-  hasWarning: false,
-  warnings: [],
-  setValues: () => {},
-  values: {},
-  canGoNext: false,
-  next: () => {},
-  canGoPrev: false,
-  prev: () => {},
-  sections: []
-})
-const newSections = () => []
+class DmsCreateStateClass {
+  constructor(_setValues) {
+    this.numSections = 0;
+    this.activeSection = null;
+    this.activeIndex = -1;
+
+    this.verified = false;
+    this.hasWarning = false;
+    this.warnings = [];
+
+    this.values = {};
+
+    this.canGoNext = false;
+    this.next = () => {};
+
+    this.canGoPrev = false;
+    this.prev = () => {};
+
+    this.sections = [];
+
+    this.setValues = (key, value) => {
+      if (typeof key === "object") {
+        _setValues(prev => ({ ...prev, ...key }));
+      }
+      else {
+        _setValues(prev => ({ ...prev, [key]: value }));
+      }
+    }
+  }
+  mapOldToNew = (oldKey, newKey) => {
+    this.setValues(newKey, this.values[oldKey]);
+    this.setValues(oldKey, null);
+  };
+  deleteOld = oldKey => this.setValues(oldKey, null);
+}
 
 const getDomain = (att, props) => {
   if (att.domain) {
@@ -110,13 +129,15 @@ const getInput = (att, props, disabled) => {
 }
 
 class Attribute {
-  constructor(att, props) {
+  constructor(att, DmsCreateState, props) {
     Object.assign(this, att);
     this.name = this.name || prettyKey(this.key);
     this.verified = false;
     this.value = null;
     this.Input = getInput(this, props);
-    this.warning = null
+    this.warning = null;
+
+    this.onChange = value => DmsCreateState.setValues(this.key, value);
   }
   cleanup = () => {
     if (this.type === "richtext" && window.localStorage) {
@@ -146,7 +167,7 @@ class Attribute {
   }
 }
 class DmsAttribute {
-  constructor(att, formatName, props) {
+  constructor(att, DmsCreateState, formatName, props) {
     Object.assign(this, att);
     this.name = this.name || prettyKey(this.key);
     this.format = props.registeredFormats[formatName];
@@ -162,6 +183,8 @@ class DmsAttribute {
     this.Input = props => (
       <DmsInput { ...props } Attribute={ this } id={ this.id } format={ this.format }/>
     )
+
+    this.onChange = value => DmsCreateState.setValues(this.key, value);
   }
   cleanup = () => {
     Object.values(this.attributes).forEach(att => att.cleanup());
@@ -190,21 +213,22 @@ class DmsAttribute {
     }
   }
 }
-const makeNewAttribute = (att, props) => {
+const makeNewAttribute = (att, props, DmsCreateState) => {
   const match = /^dms-format:(.+)$/.exec(att.type);
   if (match) {
     const [, name] = match;
-    return new DmsAttribute(att, name, props);
+    return new DmsAttribute(att, DmsCreateState, name, props);
   }
-  return new Attribute(att, props);
+  return new Attribute(att, DmsCreateState, props);
 }
 
 export const useProcessValues = (sections, props) => {
-  const Processed = newProcessed(),
-    [Sections, setSections] = useState(newSections);
 
   const [section, setSection] = useState(0);
   const [values, _setValues] = useState({});
+
+  const [DmsCreateState] = useState(new DmsCreateStateClass(_setValues)),
+    [Sections, setSections] = useState([]);
 
   useEffect(() => {
     if (!Sections.length) {
@@ -215,26 +239,17 @@ export const useProcessValues = (sections, props) => {
         verified: false,
         hasWarning: false,
         wanrings: [],
-        attributes: attributes.map(att => makeNewAttribute(att, props))
+        attributes: attributes.map(att => makeNewAttribute(att, props, DmsCreateState))
       }))
       setSections(Sections);
+      DmsCreateState.sections = Sections;
     }
   }, [Sections.length, sections, values, props]);
-  Processed.sections = Sections;
 
-  const setValues = (key, value) => {
-    if (typeof key === "object") {
-      _setValues(prev => ({ ...prev, ...key }));
-    }
-    else {
-      _setValues(prev => ({ ...prev, [key]: value }));
-    }
-  }
-  Processed.setValues = setValues;
-  Processed.values = {};
+  DmsCreateState.values = {};
   for (const key in values) {
     if (hasValue(values[key])) {
-      Processed.values[key] = values[key];
+      DmsCreateState.values[key] = values[key];
     }
   }
 
@@ -252,57 +267,52 @@ export const useProcessValues = (sections, props) => {
       }, [])
       sect.hasWarning = Boolean(sect.warnings.length);
     })
-    Processed.verified = Sections.reduce((a, c) => a && c.verified, true);
-    Processed.warnings = Sections.reduce((a, c) => [...a, ...c.warnings], []);
-    Processed.hasWarning = Boolean(Processed.warnings.length);
+    DmsCreateState.verified = Sections.reduce((a, c) => a && c.verified, true);
+    DmsCreateState.warnings = Sections.reduce((a, c) => [...a, ...c.warnings], []);
+    DmsCreateState.hasWarning = Boolean(DmsCreateState.warnings.length);
 
-    Processed.activeSection = Sections[section];
-    Processed.activeIndex = section;
-    Processed.numSections = Sections.length;
-    Processed.canGoNext = !Processed.hasWarning && ((section + 1) < Sections.length) && Sections[section].verified;
-    Processed.next = () => {
+    DmsCreateState.activeSection = Sections[section];
+    DmsCreateState.activeIndex = section;
+    DmsCreateState.numSections = Sections.length;
+    DmsCreateState.canGoNext = !DmsCreateState.hasWarning && ((section + 1) < Sections.length) && Sections[section].verified;
+    DmsCreateState.next = () => {
       if (!Sections[section].verified) return;
       if ((section + 1) === Sections.length) return;
       setSection(section + 1);
     };
-    Processed.canGoPrev = !Processed.hasWarning && section > 0;
-    Processed.prev = () => {
+    DmsCreateState.canGoPrev = !DmsCreateState.hasWarning && section > 0;
+    DmsCreateState.prev = () => {
       if (section === 0) return;
       setSection(section - 1);
     };
   }
   const attributes = get(props, ["format", "attributes"], [])
     .reduce((a, c) => { a[c.key] = c; return a; }, {});
-  Processed.badAttributes = [];
+  DmsCreateState.badAttributes = [];
   for (const att in values) {
     if (!(att in attributes) && hasValue(values[att])) {
-      Processed.badAttributes.push({
+      DmsCreateState.badAttributes.push({
         key: att,
         value: JSON.stringify(values[att])
       });
     }
   }
-  Processed.formatAttributes = get(props, ["format", "attributes"], []);
-  Processed.mapOldToNew = (oldKey, newKey) => {
-    setValues(newKey, values[oldKey]);
-    setValues(oldKey, null);
-  };
-  Processed.deleteOld = oldKey => setValues(oldKey, null);
+  DmsCreateState.formatAttributes = get(props, ["format", "attributes"], []);
 
-  return Processed;
+  return DmsCreateState;
 }
 
 export const dmsCreate = Component => {
   return ({ ...props }) => {
     const sections = useSetSections(props.format);
 
-    const Processed = useProcessValues(sections, props);
-    Processed.dmsAction = {
+    const DmsCreateState = useProcessValues(sections, props);
+    DmsCreateState.dmsAction = {
       action: "api:create",
-      seedProps: () => Processed.values,
-      isDisabled: !Processed.verified,
+      seedProps: () => DmsCreateState.values,
+      isDisabled: !DmsCreateState.verified,
       then: () => {
-        Processed.sections.forEach(section => {
+        DmsCreateState.sections.forEach(section => {
           section.attributes.forEach(att => att.cleanup());
         })
       }
@@ -313,20 +323,20 @@ export const dmsCreate = Component => {
         attributes = get(props.format, "attributes", []);
 
       attributes.forEach(att => {
-        if (att.default && !(att.key in Processed.values)) {
+        if (att.default && !(att.key in DmsCreateState.values)) {
           const value = getValue(att.default, { props });
           hasValue(value) && (values[att.key] = value);
         }
       })
       if (Object.keys(values).length) {
-        Processed.setValues(values);
+        DmsCreateState.setValues(values);
       }
     });
 
-    if (!Processed.activeSection) return null;
+    if (!DmsCreateState.activeSection) return null;
     return (
-      <Component { ...props } createState={ Processed }
-        values={ Processed.values } setValues={ Processed.setValues }/>
+      <Component { ...props } createState={ DmsCreateState }
+        values={ DmsCreateState.values } setValues={ DmsCreateState.setValues }/>
     )
   }
 }
@@ -338,13 +348,13 @@ export const dmsEdit = Component => {
 
     const data = get(props, [props.type, "data"], null);
 
-    const Processed = useProcessValues(sections, props);
-    Processed.dmsAction = {
+    const DmsCreateState = useProcessValues(sections, props);
+    DmsCreateState.dmsAction = {
       action: "api:edit",
-      seedProps: () => Processed.values,
-      isDisabled: !Processed.verified || !hasBeenUpdated(data, Processed.values),
+      seedProps: () => DmsCreateState.values,
+      isDisabled: !DmsCreateState.verified || !hasBeenUpdated(data, DmsCreateState.values),
       then: () => {
-        Processed.sections.forEach(section => {
+        DmsCreateState.sections.forEach(section => {
           section.attributes.forEach(att => att.cleanup());
         })
       }
@@ -354,16 +364,16 @@ export const dmsEdit = Component => {
     useEffect(() => {
       if (!init) {
         if (data) {
-          Processed.setValues(data);
+          DmsCreateState.setValues(data);
           setInit(true);
         }
       }
-    }, [init, data, Processed]);
+    }, [init, data, DmsCreateState]);
 
-    if (!Processed.activeSection) return null;
+    if (!DmsCreateState.activeSection) return null;
     return (
-      <Component { ...props } createState={ Processed }
-        values={ Processed.values } setValues={ Processed.setValues }/>
+      <Component { ...props } createState={ DmsCreateState }
+        values={ DmsCreateState.values } setValues={ DmsCreateState.setValues }/>
     )
   }
 }

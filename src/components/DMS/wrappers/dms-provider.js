@@ -14,9 +14,13 @@ const normalizeArgs = (dmsAction, item, props, ...rest) => {
   if (typeof item === "object") {
     itemId = get(item, "id", null);
   }
-  else {
+  else if (typeof item === "string") {
     itemId = item;
     item = getItem(itemId, props);
+  }
+  else if (!item) {
+    item = get(props, "item", null);
+    itemId = get(item, "id", null);
   }
   return [
     processAction(dmsAction),

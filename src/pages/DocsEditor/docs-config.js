@@ -32,40 +32,41 @@ export const CreateCustom = ({ createState, setValues, item, ...props }) => {
   let Title = createState.sections[0].attributes[0]
   let Content = createState.sections[0].attributes[1]
   let UserID = createState.sections[0].attributes[2]
-  
+console.log("CREATE STATE:", createState)
+
   return (
     <div className='max-w-6xl mx-auto border'>
       <form onSubmit={ e => e.preventDefault() }>
         <div className="w-full flex flex-col justify-centerhasValue h-min-screen">
-           
-          <div 
+
+          <div
             className={`text-3xl`}>
-            <Title.Input 
+            <Title.Input
               className={`p-4 border-none active:border-none focus:outline-none custom-bg ${theme.text}`}
-              autoFocus={ true } 
+              autoFocus={ true }
               value={ Title.value }
               placeholder={'Untilted'}
               onChange={ v => setValues(Title.key, v) }
             />
           </div>
-          <div 
+          <div
             className={``}>
             <div>{UserID.name} | {UserID.key} | {UserID.value}</div>
-            <UserID.Input 
+            <UserID.Input
               className={`border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
               value={ UserID.value }
               onChange={ v => setValues(UserID.key, v) }
             />
           </div>
-          <div 
+          <div
             className={`p-2`}>
-            <Content.Input 
+            <Content.Input
               className={`p-4 border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
               value={ Content.value }
               onChange={ v => setValues(Content.key, v) }
             />
           </div>
-         
+
         </div>
         <div className="mt-2 mb-4 max-w-2xl">
           <DmsButton className="w-1/2" large  type="submit"
@@ -121,7 +122,7 @@ export default ({
         dmsAction: "list",
         buttonTheme: "buttonText",
         columns: [
-          { 
+          {
             source: 'self:data.title',
             className: 'text-lg font-medium'
           },
@@ -157,7 +158,7 @@ export default ({
 
     },
     { type: CreateCustom,
-      props: { 
+      props: {
         dmsAction: "create",
         dmsActions: ["dms:create","dms:fake"],
         className: "h-full"
