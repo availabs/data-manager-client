@@ -1,7 +1,7 @@
 import React from "react"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 import { DmsButton } from "components/DMS/components/dms-button"
-import { hasValue } from "components/avl-components/components/Inputs/utils"
+// import { hasValue } from "components/avl-components/components/Inputs/utils"
 
 
 const doc = {
@@ -36,7 +36,8 @@ export const CreateCustom = ({ createState, setValues, item, ...props }) => {
   return (
     <div className='max-w-6xl mx-auto border'>
       <form onSubmit={ e => e.preventDefault() }>
-        <div className="w-full flex flex-col justify-center h-min-screen">
+        <div className="w-full flex flex-col justify-centerhasValue h-min-screen">
+           
           <div 
             className={`text-3xl`}>
             <Title.Input 
@@ -48,6 +49,15 @@ export const CreateCustom = ({ createState, setValues, item, ...props }) => {
             />
           </div>
           <div 
+            className={``}>
+            <div>{UserID.name} | {UserID.key} | {UserID.value}</div>
+            <UserID.Input 
+              className={`border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
+              value={ UserID.value }
+              onChange={ v => setValues(UserID.key, v) }
+            />
+          </div>
+          <div 
             className={`p-2`}>
             <Content.Input 
               className={`p-4 border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
@@ -55,15 +65,7 @@ export const CreateCustom = ({ createState, setValues, item, ...props }) => {
               onChange={ v => setValues(Content.key, v) }
             />
           </div>
-          <div 
-            className={``}>
-            {UserID.name}
-            <UserID.Input 
-              className={`p-4 border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
-              value={ UserID.value }
-              onChange={ v => setValues(UserID.key, v) }
-            />
-          </div>
+         
         </div>
         <div className="mt-2 mb-4 max-w-2xl">
           <DmsButton className="w-1/2" large  type="submit"
