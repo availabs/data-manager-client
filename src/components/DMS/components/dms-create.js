@@ -53,7 +53,7 @@ const BadAttributeRow = ({ oldKey, value, formatAttributes, deleteOld, mapOldToN
     </div>
   )
 }
-export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
+export const DmsCreateBase = ({ createState, setValues, ...props }) => {
   const theme = useTheme();
   return (
     <div>
@@ -61,7 +61,7 @@ export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
         <form onSubmit={ e => e.preventDefault() }>
           <div className="mt-2 mb-4 max-w-2xl">
             <DmsButton className="w-1/2" large  type="submit"
-              action={ createState.dmsAction } item={ item } props={ props }/>
+              action={ createState.dmsAction } props={ props }/>
           </div>
           <div className="w-full flex flex-col justify-center">
             { createState.activeSection.attributes
@@ -74,8 +74,8 @@ export const DmsCreateBase = ({ createState, setValues, item, ...props }) => {
                         hasValue(att.value) ? theme.borderInfo : "border-current" }
                   ` }>
                   <label htmlFor={ att.id }>{ att.name }</label>
-                  <Input autoFocus={ i === 0 } value={ att.value }
-                    onChange={ v => setValues(key, v) }/>
+                  <Input value={ att.value } onChange={ att.onChange }
+                    autoFocus={ i === 0 }/>
                 </div>
               )
             }
