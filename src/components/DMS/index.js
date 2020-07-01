@@ -8,7 +8,7 @@ import { Header } from 'components/avl-components/components'
 
 import dmsManager from "./wrappers/dms-manager"
 
-import "./styles.css"
+// import "./styles.css"
 
 const DmsManager = ({ showHome = true, stack, top = {}, ...props }) => {
   if (!props.format) {

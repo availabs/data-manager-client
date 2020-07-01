@@ -1,9 +1,4 @@
-
-
-
-
-
-export const doc = {
+export default {
   app: "docs",
   type: "page",
   attributes: [
@@ -19,8 +14,7 @@ export const doc = {
       name: "User",
       type: "text",
       default: "props:user.id", // default value will be pulled from props.user.id
-      editable: false,
-      required: true
+      editable: false
     }
   ]
 }
