@@ -32,7 +32,7 @@ export const CreateCustom = ({ createState, setValues, item, ...props }) => {
   let Title = createState.sections[0].attributes[0]
   let Content = createState.sections[0].attributes[1]
   let UserID = createState.sections[0].attributes[2]
-console.log("CREATE STATE:", createState)
+  // console.log("CREATE STATE:", createState)
 
   return (
     <div className='max-w-6xl mx-auto border'>
@@ -46,16 +46,16 @@ console.log("CREATE STATE:", createState)
               autoFocus={ true }
               value={ Title.value }
               placeholder={'Untilted'}
-              onChange={ v => setValues(Title.key, v) }
+              onChange={ Title.onChange }
             />
           </div>
           <div
-            className={``}>
+            className={`hidden`}>
             <div>{UserID.name} | {UserID.key} | {UserID.value}</div>
             <UserID.Input
               className={`border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
               value={ UserID.value }
-              onChange={ v => setValues(UserID.key, v) }
+             
             />
           </div>
           <div
@@ -63,7 +63,7 @@ console.log("CREATE STATE:", createState)
             <Content.Input
               className={`p-4 border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
               value={ Content.value }
-              onChange={ v => setValues(Content.key, v) }
+              onChange={ Content.onChange }
             />
           </div>
 
@@ -167,7 +167,7 @@ export default ({
       // the prop is required here due to the wrapper
       wrappers: [ "dms-create", "with-auth",]
     },
-    { type: 'dms-create',
+    { type: CreateCustom,
       props: { dmsAction: "edit" },
       wrappers: [ "dms-edit", "with-auth"]
     },
@@ -181,7 +181,7 @@ export default ({
               title: "item:data.title",
               body: [
                 "item:data.userId",
-                "item:data.body",
+                "item:data.content",
                 "item:updated_at",
                 "props:user.id"
               ]
