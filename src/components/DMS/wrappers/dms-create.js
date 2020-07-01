@@ -244,7 +244,7 @@ export const useProcessValues = (sections, props) => {
       setSections(Sections);
       DmsCreateState.sections = Sections;
     }
-  }, [Sections.length, sections, values, props]);
+  }, [DmsCreateState, Sections.length, sections, values, props]);
 
   DmsCreateState.values = {};
   for (const key in values) {
