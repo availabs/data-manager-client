@@ -3,6 +3,7 @@ import React from "react"
 import { DmsButton } from "../components/dms-button"
 
 import get from "lodash.get"
+import styled from "styled-components"
 
 import { prettyKey, getValue } from "../utils"
 
@@ -95,9 +96,9 @@ export default (Component, options = {}) => {
         )
       }
       return (
-        <div className="btn-group-horizontal" key={ key }>
+        <BtnGroup key={ key }>
           { actions.map((a, i) => this.getActionGroups(a, i)) }
-        </div>
+        </BtnGroup>
       )
     }
     render() {
@@ -133,9 +134,9 @@ export default (Component, options = {}) => {
         <div>
           <Component { ...props } { ...this.props }/>
           { !actions.length ? null :
-            <div className="action-container my-3">
+            <ActionContainer>
               { this.getActionGroups(actions) }
-            </div>
+            </ActionContainer>
           }
           <div>{ this.renderChildren() }</div>
         </div>
@@ -144,3 +145,27 @@ export default (Component, options = {}) => {
     }
   }
 }
+const BtnGroup = styled.div`
+  display: block;
+  > * {
+    margin-right: 0.25rem;
+  }
+  > *:last-child {
+    margin-right: 0rem;
+  }
+`
+const ActionContainer = styled.div`
+  margin: 0.75rem 0;
+  ${ BtnGroup } {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  ${ BtnGroup }:last-child {
+    display: block;
+    margin-bottom: 0rem;
+  }
+  ${ BtnGroup }:only-child {
+    display: block;
+    margin-bottom: 0rem;
+  }
+`

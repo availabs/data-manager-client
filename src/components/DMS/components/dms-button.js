@@ -58,9 +58,10 @@ const OpenConfirm = ({ Button, interaction, ...props }) => {
       return () => clearTimeout(timeout);
     }, [waiting])
     return (
-      <div className="btn-group-horizontal">
+      <div>
         <Button waiting={ waiting }/>
         <ActionButton action="cancel"
+          className="ml-1"
           onClick={ e => {
             e.stopPropagation();
             setOpen(false);

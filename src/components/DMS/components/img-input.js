@@ -3,6 +3,7 @@ import React from "react"
 import { Button } from "components/avl-components/components/Button"
 
 import get from "lodash.get"
+import styled from "styled-components"
 
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 import imgLoader from "components/avl-components/wrappers/img-loader"
@@ -187,7 +188,7 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
       Attribute.setWarning("unsaved", null);
     }
     else {
-      Attribute.setWarning("unsaved", "You have unsaved edits to your image!!!\nEither Finish Editing or Undo edits.");
+      Attribute.setWarning("unsaved", "You have unsaved edits to your image!!!\nEither Save or Undo your edits.");
     }
   }, [index, Attribute, propsValue, onChange])
 
@@ -255,7 +256,7 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
             :
               <div className="flex-0 flex flex-col items-center">
                 <LabelButton id={ props.id } onChange={ e => handleChange(e) }/>
-                <div className="mt-1">...or drag and drop.</div>
+                <div className="mt-1">...or drag and drop</div>
                 <div className="mt-1">{ props.message }</div>
               </div>
           }
@@ -264,7 +265,7 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
 
       </div>
       <div className={ `mt-2 p-2 border-2 rounded ${ theme.accent1 } flex` }>
-        <div className="flex-1 btn-group-horizontal">
+        <BtnGroup className="flex flex-1">
           <Button disabled={ !Boolean(selection) } onClick={ e => applyCrop(e) } tabIndex="-1">
             Apply Crop
           </Button>
@@ -274,11 +275,11 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
           <Button disabled={ (index + 1) === stack.length } onClick={ e => redo(e) } tabIndex="-1">
             Redo
           </Button>
-        </div>
+        </BtnGroup>
         <div className="flex-0 flex justify-end">
           <Button disabled={ get(stack, [index, "url"]) === get(propsValue, "url") }
             onClick={ e => saveImage() } buttonTheme="buttonSuccess">
-            Finish Editing
+            Save
           </Button>
         </div>
       </div>
@@ -291,6 +292,15 @@ const LoadingOptions = {
   className: "rounded"
 }
 export default imgLoader(showLoading(ImgInput, LoadingOptions));
+
+const BtnGroup = styled.div`
+  > button {
+    margin-right: 0.25rem;
+  }
+  > button:last-child {
+    margin-right: 0rem;
+  }
+`
 
 const LabelButton = props => {
   const theme = useTheme();
