@@ -1,108 +1,18 @@
 import React, { useContext } from "react"
 
-import { AuthContext, ButtonContext, DmsContext, RouterContext } from "../contexts"
-import { checkAuth, processAction, processFormat } from "../utils"
+import {
+  AuthContext,
+  ButtonContext,
+  DmsContext,
+  MessengerContext,
+  RouterContext
+} from "../contexts"
+import { checkAuth } from "../utils"
+
+import { getItem, makeInteraction, makeOnClick, processFormat } from "./utils/dms-provider-utils"
 
 import get from "lodash.get"
 
-const getItem = (id, props) => {
-  return (props.dataItems || []).reduce((a, c) => c.id === id ? c : a, null);
-}
-
-const normalizeArgs = (dmsAction, item, props, ...rest) => {
-  let itemId = null;
-  if (typeof item === "object") {
-    itemId = get(item, "id", null);
-  }
-  else if (typeof item === "string") {
-    itemId = item;
-    item = getItem(itemId, props);
-  }
-  else if (!item) {
-    item = get(props, "item", null);
-    itemId = get(item, "id", null);
-  }
-  return [
-    processAction(dmsAction),
-    item,
-    itemId,
-    props,
-    props.interact,
-    ...rest
-  ]
-}
-const makeInteraction = (...args) => {
-  const [
-    { action, seedProps, isDisabled, doThen, ...rest },
-    item, itemId,
-    props,
-    interact
-  ] = normalizeArgs(...args);
-
-  const { authRules, useRouter, basePath, location, history } = props,
-
-    hasAuth = checkAuth(authRules, action, props, item);
-
-  if (useRouter && hasAuth && !isDisabled) {
-    const { push } = history,
-      { pathname } = location,
-      state = get(location, "state", null) || [],
-      length = state.length;
-
-    return /^(dms:)*back$/.test(action) ?
-      { type: "link",
-        key: action,
-        action: { action, isDisabled, ...rest },
-        to: {
-          pathname: get(state, [length - 1], basePath),
-          state: state.slice(0, length - 1)
-        }
-      }
-      : /^(dms:)*home$/.test(action) ?
-        { type: "link",
-          key: action,
-          action: { action, isDisabled, ...rest },
-          to: {
-            pathname: basePath,
-            state: []
-          }
-        }
-      : /^api:/.test(action) ?
-        { type: "button",
-          key: action,
-          action: { action, isDisabled, ...rest },
-          onClick: e => {
-            e.stopPropagation();
-            return Promise.resolve(interact(action, itemId, seedProps(props)))
-              .then(() => doThen())
-              .then(() => push({
-                pathname: get(state, [length - 1], basePath),
-                state: state.slice(0, length - 1)
-              }))
-          }
-        }
-      : { type: "link",
-          key: action,
-          action: { action, isDisabled, ...rest },
-          to: {
-            pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-            state: [...state, pathname]
-          }
-        }
-  }
-  return {
-    type: "button",
-    key: action,
-    action: { action, isDisabled, ...rest },
-    onClick: e => {
-      e.stopPropagation();
-      if (!hasAuth) return Promise.resolve();
-      return Promise.resolve(interact(action, itemId, seedProps(props)))
-        .then(() => /^api:/.test(action) && doThen())
-        .then(() => /^api:/.test(action) && interact("dms:back"));
-    }
-  }
-}
 export const useMakeInteraction = (dmsAction, item, props) => {
   props = {
     ...props,
@@ -111,69 +21,6 @@ export const useMakeInteraction = (dmsAction, item, props) => {
     ...useContext(RouterContext)
   }
   return makeInteraction(dmsAction, item, props)
-}
-
-const makeOnClick = (...args) => {
-  const [
-    { action, seedProps, doThen },
-    item, itemId,
-    props,
-    interact
-  ] = normalizeArgs(...args);
-
-  const { authRules, useRouter, basePath, location, history } = props,
-
-    hasAuth = checkAuth(authRules, action, props, item);
-
-  if (useRouter && hasAuth) {
-    const { push } = history,
-      { pathname } = location,
-      state = get(location, "state", null) || [],
-      length = state.length;
-
-    return /^(dms:)*back$/.test(action) ?
-      (e => {
-        e.stopPropagation();
-        push({
-          pathname: get(state, [length - 1], basePath),
-          state: state.slice(0, -1)
-        });
-      })
-      : /^(dms:)*home$/.test(action) ?
-        (e => {
-          e.stopPropagation();
-          push({
-            pathname: basePath,
-            state: []
-          });
-        })
-      : /^api:/.test(action) ?
-        (e => {
-          e.stopPropagation();
-          return Promise.resolve(interact(action, itemId, seedProps(props)))
-            .then(() => doThen())
-            .then(() => push({
-              pathname: get(state, [length - 1], basePath),
-              state: state.slice(0, -1)
-            }))
-        })
-      : (e => {
-          e.stopPropagation();
-          push({
-            pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-            state: [...state, pathname]
-          })
-        })
-  }
-  return (
-    e => {
-      e.stopPropagation();
-      if (!hasAuth) return Promise.resolve();
-      return Promise.resolve(interact(action, itemId, seedProps(props)))
-        .then(() => /^api:/.test(action) && doThen())
-        .then(() => /^api:/.test(action) && interact("dms:back"));
-    }
-  )
 }
 export const useMakeOnClick = (dmsAction, item, props) => {
   props = {
@@ -185,12 +32,13 @@ export const useMakeOnClick = (dmsAction, item, props) => {
   return makeOnClick(dmsAction, item, props)
 }
 
+let UNIQUE_ID = 0;
+const newMsgId = () => `dms-msg-${ ++UNIQUE_ID }`;
+
 export default (Component, options = {}) => {
   const {
-    // format,
     authRules = {},
-    buttonThemes = {},
-    setDefaultTo = false
+    buttonThemes = {}
   } = options;
 
   class Wrapper extends React.Component {
@@ -214,7 +62,9 @@ export default (Component, options = {}) => {
           id: null,
           props: null
         }],
-        initialized: false
+        initialized: false,
+        pageMessages: [],
+        attributeMessages: []
       }
       this.interact = this.interact.bind(this);
       this.makeInteraction = this.makeInteraction.bind(this);
@@ -225,11 +75,6 @@ export default (Component, options = {}) => {
       const { action, id } = get(this.props, "params", {});
       if (action) {
         this.interact(action, id, null);
-      }
-    }
-    componentDidUpdate() {
-      if ((setDefaultTo !== false) && !this.state.item && this.props.dataItems.length) {
-        this.interact("click", this.props.dataItems[setDefaultTo].id)
       }
     }
 
@@ -293,6 +138,48 @@ export default (Component, options = {}) => {
       return stack[stack.length - 1];
     }
 
+    sendPageMessage = msg => {
+      this.setState(state => {
+        const { pageMessages } = state;
+        return {
+          pageMessages: [...pageMessages, msg]
+        }
+      })
+    }
+    removePageMessage = ids => {
+      this.setState(state => {
+        const { pageMessages } = state;
+        return {
+          pageMessages: pageMessages.filter(msg => !ids.includes(msg.id))
+        };
+      })
+    }
+    sendAttributeMessage = msg => {
+      this.setState(state => {
+        const { attributeMessages } = state;
+        return {
+          attributeMessages: [...attributeMessages, msg]
+        };
+      })
+    }
+    removeAttributeMessage = ids => {
+      this.setState(state => {
+        const { attributeMessages } = state;
+        return {
+          attributeMessages: attributeMessages.filter(msg => !ids.includes(msg.id))
+        };
+      })
+    }
+    getMessengerProps = () => ({
+      pageMessages: this.state.pageMessages,
+      attributeMessages: this.state.attributeMessages,
+      sendPageMessage: this.sendPageMessage,
+      removePageMessage: this.removePageMessage,
+      sendAttributeMessage: this.sendAttributeMessage,
+      removeAttributeMessage: this.removeAttributeMessage,
+      newMsgId
+    })
+
     getDmsProps() {
       const { app, type, dataItems, format } = this.props,
         { id, ...top } = this.getTop(),
@@ -309,28 +196,31 @@ export default (Component, options = {}) => {
       registeredFormats[`${ format.app }+${ format.type }`] = format;
 
       return {
-        interact: this.interact,
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
+        interact: this.interact,
         stack: this.state.stack,
         registeredFormats,
-        format,
-        app,
-        type,
-        dataItems,
-        top,
         [type]: item,
-        item
+        dataItems,
+        format,
+        item,
+        type,
+        app,
+        top
       }
     }
     render() {
       const { authRules, user } = this.props,
-        dmsProps = this.getDmsProps();
+        dmsProps = this.getDmsProps(),
+        msgProps = this.getMessengerProps();
       return (
         <DmsContext.Provider value={ dmsProps }>
           <AuthContext.Provider value={ { authRules, user } }>
-            <ButtonContext.Provider value={ {buttonThemes} }>
-              <Component { ...dmsProps } { ...this.props }/>
+            <ButtonContext.Provider value={ { buttonThemes } }>
+              <MessengerContext.Provider value={ msgProps }>
+                <Component { ...dmsProps } { ...msgProps } { ...this.props }/>
+              </MessengerContext.Provider>
             </ButtonContext.Provider>
           </AuthContext.Provider>
         </DmsContext.Provider>

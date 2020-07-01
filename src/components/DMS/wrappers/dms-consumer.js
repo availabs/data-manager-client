@@ -1,6 +1,6 @@
-import React, { useEffect, useContext } from "react"
+import React, { useState, useEffect } from "react"
 
-import { DmsContext } from "../contexts"
+import { useDms } from "../contexts/dms-context"
 import { mapDataToProps as doMapDataToProps, getValue } from "../utils"
 
 // import get from "lodash.get"
@@ -18,26 +18,30 @@ const createElements = ({ data, ...rest }, interact) =>
 export default (Component, options = {}) => {
   const {
     mapDataToProps = {},
-    interactOnMount
+    interactOnMount = []
   } = options;
 
   return ({ ...props }) => {
-    const dmsProps = useContext(DmsContext),
-      { interact } = dmsProps,
-      newProps = { ...props, ...dmsProps };
+    const newProps = { ...props, ...useDms() },
+      { interact } = newProps;
 
-    let defaultAction = getValue(interactOnMount, { props: newProps });
+    const [acted, setActed] = useState(false);
+
+    let defaultInteract = [];
+    if (!acted) {
+      defaultInteract = getValue(interactOnMount, { props: newProps });
+    }
+    const [action, id, seededProps] = defaultInteract,
+      numOnMount = interactOnMount.filter(Boolean).length,
+      numInteract = defaultInteract.filter(Boolean).length,
+      ready = Boolean(action) && (numOnMount === numInteract);
 
     useEffect(() => {
-      if (defaultAction) {
-        if (Array.isArray(defaultAction)) {
-          interact(...defaultAction);
-        }
-        else {
-          interact(defaultAction);
-        }
+      if (!acted && ready) {
+        interact(action, id, seededProps);
+        setActed(true);
       }
-    }, [interact, defaultAction]);
+    }, [acted, ready, interact, action, id, seededProps]);
 
     const handleData = data => {
       if (Array.isArray(data)) {

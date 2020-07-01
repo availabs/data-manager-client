@@ -174,25 +174,21 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
     props.saveImage(url, filename, history)
       .then(url => {
         clearStack();
-        // Attribute.setWarning(null);
         onChange({ url, filename });
       });
   }
   const removeImage = () => {
     clearStack();
-    // Attribute.setWarning(null);
     onChange(null);
   }
 
   React.useEffect(() => {
-console.log("USING:", index)
     if (index < 1) {
-      Attribute.setWarning(null);
+      Attribute.setWarning("unsaved", null);
     }
     else {
-      Attribute.setWarning("You have unsaved edits to your image!!!");
+      Attribute.setWarning("unsaved", "You have unsaved edits to your image!!!\nEither Finish Editing or Undo edits.");
     }
-    onChange(propsValue);
   }, [index, Attribute, propsValue, onChange])
 
   const [svg, setSvg] = React.useState(null)

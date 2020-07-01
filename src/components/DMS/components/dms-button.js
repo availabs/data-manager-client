@@ -75,13 +75,17 @@ const OpenConfirm = ({ Button, interaction, ...props }) => {
 }
 
 export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...others }) => {
-  const { action, type, ...interaction } = useMakeInteraction(arg, item, props),
+  const { action, type, to, ...interaction } = useMakeInteraction(arg, item, props),
     { showConfirm, isDisabled, ...dms } = action;
 
   const RenderButton = ({ waiting }) => {
+    if (waiting) {
+      return <ActionButton { ...interaction } { ...dms } { ...others }
+        disabled={ true }/>
+    }
     switch (type) {
       case "link":
-        return <ActionLink { ...interaction } { ...dms } { ...others }
+        return <ActionLink { ...interaction } { ...dms } { ...others } to={ to }
           disabled={ waiting || disabled || isDisabled }/>
       default:
         return <ActionButton { ...interaction } { ...dms } { ...others }

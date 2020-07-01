@@ -7,37 +7,30 @@ import * as d3timeFormat from "d3-time-format"
 
 import { hasValue } from "components/avl-components/components/Inputs/utils"
 
-const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
-  if (!Sections.length) return Attributes;
-  const { attributes, sections, ...rest } = Sections.pop();
-  if (sections) {
-    flattenAttributes(sections, Attributes, depth + 1, [...id, 0]);
-  }
-  if (attributes) {
-    Attributes.push(...attributes.map((att, i) => ({
-      ...rest,
-      ...att,
-      depth,
-      id: `${ att.key }-${ id.join(".") }.${ i }`
-    })))
-  }
-  const last = id.pop()
-  return flattenAttributes(Sections, Attributes, depth, [...id, last + 1]);
-}
-
-export const processFormat = format => {
-  if (format.registerFormats) {
-    format.registerFormats.forEach(processFormat);
-  }
-  format["$processed"] = true;
-  if (!format.sections) {
-    const attributes = format.attributes;
-    format.attributes = [];
-    return flattenAttributes([{ attributes }], format.attributes);
+export const processAction = arg => {
+  let response = {
+    action: "unknown",
+    seedProps: () => null,
+    showConfirm: false,
+    label: null,
+    buttonTheme: null,
+    isDisabled: false,
+    then: null
   };
-
-  format.attributes = [];
-  flattenAttributes(format.sections.reverse(), format.attributes);
+  if (typeof arg === "string") {
+    response.action = arg;
+  }
+  else {
+    response = { ...response, ...arg };
+  }
+  const { then, ...processed } = response;
+  processed.doThen = () => {
+    if (typeof then === "function") {
+      return then();
+    }
+    return null;
+  }
+  return processed;
 }
 
 const oREGEX = /^(\d*)(?<!1)([1|2|3])$/;
@@ -152,32 +145,6 @@ export const useDmsColumns = columns => {
 
 export const compareActions = (action1 = "", action2 = "") =>
   action1.replace(/^dms:/, "") === action2.replace(/^dms:/, "")
-
-export const processAction = arg => {
-  let response = {
-    action: "unknown",
-    seedProps: () => null,
-    showConfirm: false,
-    label: null,
-    buttonTheme: null,
-    isDisabled: false,
-    then: null
-  };
-  if (typeof arg === "string") {
-    response.action = arg;
-  }
-  else {
-    response = { ...response, ...arg };
-  }
-  const { then, ...processed } = response;
-  processed.doThen = () => {
-    if (typeof then === "function") {
-      return then();
-    }
-    return null;
-  }
-  return processed;
-}
 
 export const capitalize = string =>
   string.toLowerCase().split("")
@@ -408,6 +375,10 @@ export const getValue = (arg, sources, directives = {}, _default = null) => {
 
   if (!sources.item) {
     sources.item = get(sources, ["props", "item"], null);
+  }
+
+  if (Array.isArray(arg)) {
+    return arg.map(a => getValue(a, sources, directives, _default));
   }
 
   if (typeof arg !== "object") {

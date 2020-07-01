@@ -82,7 +82,7 @@ export default ({ format, Attribute, onChange, id, autoFocus = false, onFocus, o
             <div className="text-lg font-semibold">{ section.title }</div>
             { section.attributes.map(({ Input, key, ...att }, i) =>
                 <div key={ key } className={ `border-l-4 pl-2 pb-2 mb-2 last:mb-0
-                ${ !att.verified ? "border-red-400" : att.required && att.verified ? "border-green-400" :
+                ${ !att.verified ? theme.borderDanger : att.required && att.verified ? theme.borderSuccess :
                     hasValue(att.value) ? theme.borderInfo : "border-current" }
                 ` }>
                   <label htmlFor={ att.id }>{ att.name }</label>

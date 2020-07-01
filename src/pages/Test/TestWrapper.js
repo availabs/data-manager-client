@@ -38,7 +38,7 @@ const Content = ({ title, content, children }) =>
   </div>
 
 export default {
-  path: '/test/wrapper',
+  path: '/test/consumer',
   exact: true,
   auth: true,
   layoutSettings: {
@@ -61,7 +61,7 @@ export default {
         wrappers: [
           { type: "dms-consumer",
             options: {
-              interactOnMount: "props:dataItems-->data.chapter==0->id", // --> ararray reduce
+              interactOnMount: ["click", "props:dataItems-->data.chapter==0->id"], // --> ararray reduce
               mapDataToProps: {
                 children: [ // children will be merged with config children
                   { path: "props:dataItems", // since dataItems is an Array

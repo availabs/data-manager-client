@@ -5,9 +5,10 @@ import { compareActions } from "../utils"
 import get from "lodash.get"
 
 export default Component =>
-  ({ children, format, registeredFormats, ...props }) => {
+  ({ children, ...props }) => {
 
     const dmsActions = [];
+
     children = React.Children.toArray(children)
       .reduce((children, child) => {
         if (compareActions(child.props.dmsAction, props.top.dmsAction)) {
@@ -17,12 +18,12 @@ export default Component =>
           children.push(React.cloneElement(child,
             { app: props.app,
               type: props.type,
-              format,
-              registeredFormats,
+              format: props.format,
+              registeredFormats: props.registeredFormats,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,
-              ...(props.top.props || {}),
+              ...get(props, ["top", "props"], {}), // <-- result of DmsAction seedProps
               item: props.item,
               makeInteraction: props.makeInteraction,
               makeOnClick: props.makeOnClick,
@@ -42,12 +43,12 @@ export default Component =>
             { dmsActions,
               app: props.app,
               type: props.type,
-              format,
-              registeredFormats,
+              format: props.format,
+              registeredFormats: props.registeredFormats,
               dataItems: props.dataItems,
               stack: props.stack,
               top: props.top,
-              ...(props.top.props || {}),
+              ...get(props, ["top", "props"], {}), // <-- result of DmsAction seed props
               item: props.item,
               makeInteraction: props.makeInteraction,
               makeOnClick: props.makeOnClick,
@@ -59,6 +60,6 @@ export default Component =>
         return child;
       })
     return (
-      <Component format={ format } { ...props }>{ children }</Component>
+      <Component { ...props }>{ children }</Component>
     )
   }

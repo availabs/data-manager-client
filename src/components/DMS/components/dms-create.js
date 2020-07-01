@@ -70,7 +70,7 @@ export const DmsCreateBase = ({ createState, setValues, ...props }) => {
                   className={ `
                     border-l-4 pl-2 mb-2 pb-2
                     ${ att.type === "richtext" || att.type === "img" ? "" : "max-w-2xl" }
-                    ${ !att.verified ? "border-red-400" : att.required && att.verified ? "border-green-400" :
+                    ${ !att.verified ? theme.borderDanger : att.required && att.verified ? theme.borderSuccess :
                         hasValue(att.value) ? theme.borderInfo : "border-current" }
                   ` }>
                   <label htmlFor={ att.id }>{ att.name }</label>
