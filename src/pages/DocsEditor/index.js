@@ -58,7 +58,7 @@ const View = ({ item, dataItems, ...props }) => {
   if (!item || !item.data) return null; 
   const { data } = item 
   return (
-    <div className={ `max-w-2xl`}>
+    <div className={ `max-w-2xl mx-auto`}>
       <div className="w-full flex flex-col justify-center hasValue h-min-screen">
         <div className={`px-2 pt-2 pb-6 text-3xl font-bold leading-7 ${theme.text}`}>
             {data.title}
@@ -189,7 +189,7 @@ export default {
   layoutSettings: {
     fixed: true,
     nav: 'side',
-    maxWidth: 'max-w-6xl',
+    maxWidth: '',
     headerBar: false,
     theme: 'flat'
   },
