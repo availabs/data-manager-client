@@ -111,6 +111,13 @@ const useProcessValues = (sections, props) => {
     }
   }
 
+  DmsCreateState.dmsAction = {
+    action: "api:create",
+    seedProps: () => DmsCreateState.values,
+    isDisabled: DmsCreateState.hasWarning || !DmsCreateState.verified,
+    then: DmsCreateState.onSave
+  }
+
   return DmsCreateState;
 }
 
@@ -127,13 +134,6 @@ export const dmsCreate = Component => {
         DmsCreateState.setWarning("unsaved", null);
       }
     }, [DmsCreateState.verified, DmsCreateState]);
-
-    DmsCreateState.dmsAction = {
-      action: "api:create",
-      seedProps: () => DmsCreateState.values,
-      isDisabled: DmsCreateState.hasWarning || !DmsCreateState.verified,
-      then: DmsCreateState.onSave
-    }
 
     useEffect(() => {
       const values = {};
@@ -168,6 +168,7 @@ export const dmsEdit = Component => {
     const sections = useSetSections(props.format),
       DmsCreateState = useProcessValues(sections, props),
       updated = hasBeenUpdated(data, DmsCreateState.values);
+console.log("?????", data, DmsCreateState.values);
 
     useEffect(() => {
       if (updated && DmsCreateState.verified) {
@@ -178,11 +179,9 @@ export const dmsEdit = Component => {
       }
     }, [DmsCreateState, updated]);
 
-    DmsCreateState.dmsAction = {
-      action: "api:edit",
-      seedProps: () => DmsCreateState.values,
-      isDisabled:  DmsCreateState.hasWarning || !DmsCreateState.verified || !updated,
-      then: DmsCreateState.onSave
+    DmsCreateState.dmsAction.action = "api:edit";
+    if (!updated) {
+      DmsCreateState.dmsAction.isDisabled = true;
     }
 
     useEffect(() => {

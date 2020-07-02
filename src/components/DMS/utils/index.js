@@ -167,6 +167,7 @@ export const hasBeenUpdated = (base, data) => {
     if (baseHasValue && dataHasValue) {
       if (!deepequal(base[key], data[key])) return true;
     }
+console.log("UPDATED?", key, baseHasValue, dataHasValue);
     if (baseHasValue ^ dataHasValue) return true;
   }
   for (const key in data) {

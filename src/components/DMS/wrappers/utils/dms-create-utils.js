@@ -33,7 +33,13 @@ export class DmsCreateStateClass {
     this.formatAttributes = []
 
     this.setValues = (key, value) => {
-      setValues(prev => ({ ...prev, [key]: value }));
+      setValues(prev => {
+        const newValues = { ...prev, [key]: value };
+        if (!hasValue(value)) {
+          delete newValues[key];
+        }
+        return newValues;
+      });
     }
     this.ininitialized = false;
     this.initValues = values => {
@@ -209,6 +215,9 @@ class DmsAttribute {
 
     this.onChange = (key, value) => {
       this.value = { ...this.value, [key]: value };
+      if (!hasValue(value)) {
+        delete this.value[key];
+      }
       this.verifyValue();
       setValues(this.key, this.value);
     }
