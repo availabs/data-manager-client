@@ -53,6 +53,7 @@ const useProcessValues = (sections, props) => {
         verified: false,
         attributes: attributes.map(att => makeNewAttribute(att, DmsCreateState.setValues, dmsMsg, props))
       }))
+      Sections.forEach(section => section.attributes.forEach(att => att.setValue(null)));
       setSections(Sections);
       DmsCreateState.sections = Sections;
       DmsCreateState.numSections = Sections.length;

@@ -165,7 +165,7 @@ class Attribute {
         this.msgIds[type] = msgId;
         dmsMsg.sendAttributeMessage({ msg: warning, id: msgId });
       }
-      else if (type in this.msgIds) {
+      else if (!warning && (type in this.msgIds)) {
         const msgId = this.msgIds[type];
         dmsMsg.removeAttributeMessage([msgId]);
         delete this.msgIds[type];
