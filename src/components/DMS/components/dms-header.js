@@ -38,7 +38,7 @@ export default ({ title, showHome = true, dmsActions = [], ...props }) => {
           <Warning warnings={ pageMessages }/>
         }
         { !attributeMessages.length ? null :
-          <Warning warnings={ attributeMessages }/>
+          <Warning warnings={ attributeMessages } type="att"/>
         }
         { dmsActions.map(a =>
             <DmsButton className="ml-1" key={ a.action || a } action={ a } item={ item }/>
@@ -49,11 +49,11 @@ export default ({ title, showHome = true, dmsActions = [], ...props }) => {
   )
 }
 
-const Warning = ({ warnings }) => {
+const Warning = ({ warnings, type = "page" }) => {
   const theme = useTheme();
   return (
     <div className={ `
-      ${ theme.textDanger } ${ theme.transition }
+      ${ type === "att" ? theme.textDanger : theme.textInfo } ${ theme.transition }
       flex items-center rounded cursor-pointer
       relative hoverable ml-1
     ` }>

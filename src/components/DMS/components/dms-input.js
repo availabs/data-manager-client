@@ -25,49 +25,23 @@ const useCreateSections = (sections, Attributes) => {
   return Sections;
 }
 
-const makeInitialState = autoFocus => ({
-  hasFocus: autoFocus,
-  prev: autoFocus
-})
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "onBlur":
-      return ({ hasFocus: false, prev: state.hasFocus });
-    case "onFocus":
-      return ({ hasFocus: true, prev: state.hasFocus });
-    case "updatePrev":
-      return ({ hasFocus: state.hasFocus, prev: state.hasFocus });
-    default:
-      return state;
-  }
-}
-
-export default ({ format, Attribute, onChange, id, autoFocus = false, onFocus, onBlur, value = {}, ...props }) => {
+export default ({ format, Attribute, id, autoFocus = false, onFocus, onBlur, value = {}, ...props }) => {
   const sections = useSetSections(format),
     Sections = useCreateSections(sections, Attribute.attributes);
 
-  const [{ hasFocus, prev }, dispatch] = React.useReducer(reducer, makeInitialState(autoFocus));
-
+  const [[hasFocus, prev], setFocus] = React.useState([autoFocus, autoFocus]),
+    [[_onFocus, _onBlur]] = React.useState([
+                            () => setFocus([true, hasFocus]),
+                            () => setFocus([false, hasFocus])
+                          ])
   React.useEffect(() => {
     if (hasFocus !== prev) {
       onBlur && !hasFocus && onBlur();
       onFocus && hasFocus && onFocus();
-      dispatch({ type: "updatePrev" });
     }
-  }, [hasFocus, prev, onFocus, onBlur])
+  }, [hasFocus, prev, onFocus, onBlur]);
 
   const theme = useTheme();
-
-  const setValue = (key, v) => {
-    const newValue = { ...value };
-    if (!hasValue(v)) {
-      delete newValue[key];
-    }
-    else {
-      newValue[key] = v;
-    }
-    onChange(newValue);
-  }
 
   return (
     <div id={ id }>
@@ -86,10 +60,10 @@ export default ({ format, Attribute, onChange, id, autoFocus = false, onFocus, o
                     hasValue(att.value) ? theme.borderInfo : "border-current" }
                 ` }>
                   <label htmlFor={ att.id }>{ att.name }</label>
-                  <Input autoFocus={ autoFocus && i === 0 } value={ value[key] } { ...props }
-                    onChange={ v => setValue(key, v) }
-                    onFocus={ e => dispatch({ type: "onFocus" }) }
-                    onBlur={ e => dispatch({ type: "onBlur" }) }/>
+                  <Input autoFocus={ autoFocus && i === 0 } { ...props }
+                    onChange={ att.onChange } value={ att.value }
+                    onFocus={ _onFocus }
+                    onBlur={ _onBlur }/>
                 </div>
               )
             }

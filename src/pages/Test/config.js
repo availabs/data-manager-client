@@ -58,7 +58,7 @@ export default {
           },
           "dms:view",
           "dms:edit",
-          "dms:delete"
+          { action: "api:delete", showConfirm: true }
         ]
       }
     },

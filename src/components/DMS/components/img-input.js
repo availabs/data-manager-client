@@ -188,7 +188,7 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
       Attribute.setWarning("unsaved", null);
     }
     else {
-      Attribute.setWarning("unsaved", "You have unsaved edits to your image!!!\nEither Save or Undo your edits.");
+      Attribute.setWarning("unsaved", "You have unsaved edits to your image!!! Either Save or Undo your edits.");
     }
   }, [index, Attribute, propsValue, onChange])
 

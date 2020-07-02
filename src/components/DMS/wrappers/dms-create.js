@@ -31,30 +31,34 @@ export const useSetSections = format => {
 
 const useProcessValues = (sections, props) => {
 
-  const dmsMsg = useMessenger();
+  const dmsMsg = useMessenger(),
+    { attributeMessages } = dmsMsg;
 
   const [section, setSection] = useState(0);
-  const [values, _setValues] = useState({});
+  const [values, setValues] = useState({});
 
-  const [DmsCreateState] = useState(new DmsCreateStateClass(_setValues, dmsMsg)),
+  const [DmsCreateState] = useState(new DmsCreateStateClass(setValues, dmsMsg)),
     [Sections, setSections] = useState([]);
 
-  const { attributeMessages } = dmsMsg;
+  useEffect(() => {
+    return DmsCreateState.cleanup;
+  }, [DmsCreateState])
 
   useEffect(() => {
-    if (!Sections.length) {
+    if (!Sections.length && sections.length) {
       const Sections = sections.map(({ title, attributes }, index) => ({
         index,
         title,
         isActive: false,
         verified: false,
-        attributes: attributes.map(att => makeNewAttribute(att, props, DmsCreateState, dmsMsg))
+        attributes: attributes.map(att => makeNewAttribute(att, DmsCreateState.setValues, dmsMsg, props))
       }))
       setSections(Sections);
       DmsCreateState.sections = Sections;
       DmsCreateState.numSections = Sections.length;
+      DmsCreateState.formatAttributes = Sections.reduce((a, c) => a.concat(c.attributes), []);
     }
-  }, [DmsCreateState, Sections.length, sections, values, props, dmsMsg]);
+  }, [DmsCreateState, Sections.length, sections, props, dmsMsg]);
 
   DmsCreateState.values = {};
   for (const key in values) {
@@ -66,10 +70,6 @@ const useProcessValues = (sections, props) => {
   if (Sections.length) {
     Sections.forEach((sect, index) => {
       sect.isActive = section === index;
-      sect.verified = false;
-      sect.attributes.forEach(att => {
-        att.setValue(values[att.key]);
-      })
       sect.verified = sect.attributes.reduce((a, c) => a && c.verified, true);
       const msgIds = sect.attributes.reduce((a, c) => a.concat(c.getWarnings()), []);
       sect.warnings = attributeMessages.filter(({ id }) => msgIds.includes(id));
@@ -77,10 +77,11 @@ const useProcessValues = (sections, props) => {
     })
     DmsCreateState.verified = Sections.reduce((a, c) => a && c.verified, true);
     DmsCreateState.warnings = Sections.reduce((a, c) => a.concat(c.warnings), []);
-    DmsCreateState.hasWarning = Boolean(DmsCreateState.warnings.length);
 
     DmsCreateState.activeSection = Sections[section];
     DmsCreateState.activeIndex = section;
+
+    DmsCreateState.hasWarning = Sections[section].hasWarning;
 
     DmsCreateState.canGoNext = !DmsCreateState.hasWarning &&
       Sections[section].verified && ((section + 1) < Sections.length);
@@ -98,7 +99,6 @@ const useProcessValues = (sections, props) => {
     };
   }
 
-  DmsCreateState.formatAttributes = get(props, ["format", "attributes"], []);
   const attributeMap = DmsCreateState.formatAttributes
     .reduce((a, c) => { a[c.key] = c; return a; }, {});
   DmsCreateState.badAttributes = [];
@@ -116,18 +116,23 @@ const useProcessValues = (sections, props) => {
 
 export const dmsCreate = Component => {
   return ({ ...props }) => {
-    const sections = useSetSections(props.format);
+    const sections = useSetSections(props.format),
+      DmsCreateState = useProcessValues(sections, props);
 
-    const DmsCreateState = useProcessValues(sections, props);
+    useEffect(() => {
+      if (DmsCreateState.verified && Object.values(DmsCreateState.values).length) {
+        DmsCreateState.setWarning("unsaved", "You have unsaved data!!!");
+      }
+      else {
+        DmsCreateState.setWarning("unsaved", null);
+      }
+    }, [DmsCreateState.verified, DmsCreateState]);
+
     DmsCreateState.dmsAction = {
       action: "api:create",
       seedProps: () => DmsCreateState.values,
       isDisabled: DmsCreateState.hasWarning || !DmsCreateState.verified,
-      then: () => {
-        DmsCreateState.sections.forEach(section => {
-          section.attributes.forEach(att => att.cleanup());
-        })
-      }
+      then: DmsCreateState.onSave
     }
 
     useEffect(() => {
@@ -140,30 +145,32 @@ export const dmsCreate = Component => {
         }
       })
       if (Object.keys(values).length) {
-        DmsCreateState.setValues(values);
+        DmsCreateState.initValues(values);
       }
     });
 
     if (!DmsCreateState.activeSection) return null;
     return (
-      <Component { ...props } createState={ DmsCreateState }
-        values={ DmsCreateState.values } setValues={ DmsCreateState.setValues }/>
+      <Component { ...props } createState={ DmsCreateState } values={ DmsCreateState.values }/>
     )
   }
 }
 
 
 export const dmsEdit = Component => {
-  return props => {
-    const sections = useSetSections(props.format);
+  return ({ item, ...props }) => {
 
-    const data = get(props, [props.type, "data"], null);
+    const [data, setData] = useState(null);
+    useEffect(() => {
+      setData(get(item, "data", null));
+    }, [item]);
 
-    const DmsCreateState = useProcessValues(sections, props),
+    const sections = useSetSections(props.format),
+      DmsCreateState = useProcessValues(sections, props),
       updated = hasBeenUpdated(data, DmsCreateState.values);
 
     useEffect(() => {
-      if (updated) {
+      if (updated && DmsCreateState.verified) {
         DmsCreateState.setWarning("unsaved", "You have unsaved edits!!!");
       }
       else {
@@ -175,27 +182,20 @@ export const dmsEdit = Component => {
       action: "api:edit",
       seedProps: () => DmsCreateState.values,
       isDisabled:  DmsCreateState.hasWarning || !DmsCreateState.verified || !updated,
-      then: () => {
-        DmsCreateState.sections.forEach(section => {
-          section.attributes.forEach(att => att.cleanup());
-        })
-      }
+      then: DmsCreateState.onSave
     }
 
-    const [init, setInit] = useState(false);
     useEffect(() => {
-      if (!init) {
-        if (data) {
-          DmsCreateState.setValues(data);
-          setInit(true);
-        }
+      if (!DmsCreateState.initialized && Boolean(data)) {
+        DmsCreateState.initValues(data);
+        DmsCreateState.initialized = true;
       }
-    }, [init, data, DmsCreateState]);
+    }, [data, DmsCreateState]);
 
     if (!DmsCreateState.activeSection) return null;
     return (
-      <Component { ...props } createState={ DmsCreateState }
-        values={ DmsCreateState.values } setValues={ DmsCreateState.setValues }/>
+      <Component { ...props } item={ item }
+        createState={ DmsCreateState } values={ DmsCreateState.values }/>
     )
   }
 }
