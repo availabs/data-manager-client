@@ -168,7 +168,6 @@ export const dmsEdit = Component => {
     const sections = useSetSections(props.format),
       DmsCreateState = useProcessValues(sections, props),
       updated = hasBeenUpdated(data, DmsCreateState.values);
-console.log("?????", data, DmsCreateState.values);
 
     useEffect(() => {
       if (updated && DmsCreateState.verified) {
