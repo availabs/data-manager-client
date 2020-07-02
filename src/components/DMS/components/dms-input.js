@@ -3,41 +3,43 @@ import React from "react"
 import { hasValue } from "components/avl-components/components/Inputs/utils"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
-import {
-  useSetSections
-} from "../wrappers/dms-create"
-
-const useCreateSections = (sections, Attributes) => {
+const useSetSections = (format, Attributes) => {
   const [Sections, setSections] = React.useState([]);
+
   React.useEffect(() => {
-    if (!Sections.length) {
-      setSections(
-        sections.map(({ title, attributes }, index) => ({
-          index,
-          title,
-          isActive: false,
-          verified: false,
-          attributes: attributes.map(att => Attributes[att.key])
-        }))
-      )
-    }
-  }, [sections, Attributes, Sections.length])
+    let section = null;
+    const sections = format.attributes
+      .reduce((a, c) => {
+        if (c.title !== section) {
+          section = c.title;
+          a.push({ title: c.title, attributes: [] });
+        }
+        a[a.length - 1].attributes.push(c);
+        return a;
+      }, []);
+    setSections(
+      sections.map(({ title, attributes }, index) => ({
+        index,
+        title,
+        attributes: attributes.map(att => Attributes[att.key])
+      }))
+    )
+  }, [format, Attributes])
+
   return Sections;
 }
 
 export default ({ format, Attribute, id, autoFocus = false, onFocus, onBlur, value = {}, ...props }) => {
-  const sections = useSetSections(format),
-    Sections = useCreateSections(sections, Attribute.attributes);
+  const Sections = useSetSections(format, Attribute.attributes);
 
-  const [[hasFocus, prev], setFocus] = React.useState([autoFocus, autoFocus]),
-    [[_onFocus, _onBlur]] = React.useState([
-                            () => setFocus([true, hasFocus]),
-                            () => setFocus([false, hasFocus])
-                          ])
+  const [hasFocus, setFocus] = React.useState(autoFocus),
+    [prev, setPrev] = React.useState(hasFocus),
+    [[_onFocus, _onBlur]] = React.useState([() => setFocus(true), () => setFocus(false)]);
   React.useEffect(() => {
     if (hasFocus !== prev) {
-      onBlur && !hasFocus && onBlur();
-      onFocus && hasFocus && onFocus();
+      (typeof onBlur === "function") && !hasFocus && onBlur();
+      (typeof onFocus === "function") && hasFocus && onFocus();
+      setPrev(hasFocus);
     }
   }, [hasFocus, prev, onFocus, onBlur]);
 
@@ -48,10 +50,7 @@ export default ({ format, Attribute, id, autoFocus = false, onFocus, onBlur, val
       { Sections.map(section =>
           <div key={ section.index } className={ `
               border-2 border-transparent rounded p-3 ${ theme.transition }
-              ${ hasFocus ?
-                theme.inputBorderFocus:
-                theme.inputBorder
-              }
+              ${ hasFocus ? theme.inputBorderFocus: theme.inputBorder }
             `}>
             <div className="text-lg font-semibold">{ section.title }</div>
             { section.attributes.map(({ Input, key, ...att }, i) =>
