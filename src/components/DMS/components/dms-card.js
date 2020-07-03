@@ -17,7 +17,9 @@ export default ({ title, body, footer, children }) => {
         </div>
       }
       { children }
-      <div className={ `rounded py-2 px-4 ${ theme.contentBg } shadow` }>{ footer }</div>
+      { !footer ? null :
+        <div className={ `rounded py-2 px-4 ${ theme.contentBg } shadow` }>{ footer }</div>
+      }
     </div>
   )
 }

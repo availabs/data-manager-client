@@ -57,14 +57,12 @@ export default ({
     { type: "dms-list",
       props: {
         dmsAction: "list",
-        dmsActions: ["dms:fake-one", "dms:fake-two"],
         columns: [
           "self:data.title",
           "self:data.bloggerId",
           { path: "self:updated_at",
             format: "date:MMM Do, YYYY h:mm a"
           },
-          "dms:view",
           "dms:edit",
           "dms:delete"
         ],
@@ -77,59 +75,6 @@ export default ({
 
     { type: BlogPost,
       props: { dmsAction: "view" }
-    },
-
-    { type: "dms-card", // generic dms component for viewing a single data item
-      props: {
-        dmsAction: "viewOld",
-        dmsActions: [
-          { action: "dms:fake-three",
-            buttonTheme: "buttonPrimary"
-          },
-          { action: "dms:fake-four",
-            buttonTheme: "buttonSuccess"
-          }
-        ],
-      },
-      wrappers: [
-        { type: "dms-view",
-          options: {
-            mapDataToProps: {
-// mapDataToProps is used by dms-view to map data items to wrapped component props
-// prop: [...attributes]
-              title: "item:data.title",
-              body: [
-                "item:data.body",
-                "item:data.bloggerId",
-                "item:data.tags",
-                "item:updated_at"
-              ]
-            },
-            actions: ["dms:reply"]
-          }
-        }
-      ],
-      children: [
-        { type: "dms-list",
-          props: {
-            columns: ["title", "bloggerId", "body"],
-            className: "mt-5",
-            title: "Replies"
-          },
-          wrappers: [
-            "with-theme",
-            {
-              type: "dms-falcor",
-              options: {
-                filter: {
-                  args: ["self:data.replyTo", "props:blog-post.id"],
-                  comparator: (arg1, arg2) => +arg1 === +arg2
-                }
-              }
-            }
-          ]
-        }
-      ]
     },
 
     { type: "dms-create",
@@ -160,9 +105,9 @@ export default ({
                 "item:data.bloggerId",
                 "item:data.body",
                 "item:data.tags",
-                "item:data.image",
-                "item:updated_at",
-                "props:user.id"
+              ],
+              footer: [
+                "item:updated_at"
               ]
             },
             actions: [{
