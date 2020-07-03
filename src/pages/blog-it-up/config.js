@@ -113,11 +113,23 @@ export default ({
             actions: [{
               action: "api:delete",
               showConfirm: true,
-              seedProps: props =>
+              seedProps: props => {
 // these ids are sent to the api:delete function
-                get(props, "dataItems", []).reduce((a, c) =>
-                  get(c, ["data", "replyTo"]) === get(props, ["blog-post", "id"]) ? [...a, c.id] : a
-                , [])
+                const postId = +get(props, ["blog-post", "id"], null),
+                  posts = get(props, "dataItems", []).map(d => ({ id: +d.id, replyTo: +d.data.replyTo }));
+
+                const getReplies = (posts, id, final) => {
+                  const replies = posts.filter(d => d.replyTo === id);
+                  if (!replies.length) return final;
+
+                  for (const reply of replies) {
+                    final.push(...getReplies(posts, reply.id, [reply.id]));
+                  }
+
+                  return final;
+                }
+                return getReplies(posts, postId, [postId]);
+              }
             }]
           }
         },

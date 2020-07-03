@@ -28,7 +28,8 @@ export default Component =>
               makeInteraction: props.makeInteraction,
               makeOnClick: props.makeOnClick,
               interact: props.interact,
-              [props.type]: props.item
+              [props.type]: props.item,
+              loading: props.loading
             }
           ));
         }

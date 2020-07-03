@@ -60,17 +60,17 @@ export default {
         }
       ]
     },
-    { title: "Image Page",
-      attributes: [
-        { key: "test-image",
-          type: "img"
-        }
-      ]
-    },
     { title: "Editor Page",
       attributes: [
         { key: "text-editor",
           type: "richtext"
+        }
+      ]
+    },
+    { title: "Image Page",
+      attributes: [
+        { key: "test-image",
+          type: "img"
         }
       ]
     },

@@ -52,7 +52,7 @@ export default () => {
         textIndent ? `indent-${ textIndent }` : "",
         textAlign || ""
       ]
-      
+
       const type = block.getType();
       switch (type) {
         case "header-one":
@@ -72,6 +72,8 @@ export default () => {
           break;
         case "header-six":
           styles.push("text-xs font-medium");
+          break;
+        default:
           break;
       }
       return styles.filter(Boolean).join(" ");

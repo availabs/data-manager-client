@@ -1,8 +1,7 @@
 import React from "react"
 
-import { ScalableLoading } from "components/avl-components/components/Loading/LoadingPage"
+import AvlModal from "components/avl-components/components/Modal/avl-modal"
 
-import deepequal from "deep-equal"
 import get from "lodash.get"
 import debounce from "lodash.debounce"
 import throttle from "lodash.throttle"
@@ -13,7 +12,6 @@ import showLoading from "components/avl-components/wrappers/show-loading"
 
 import {
   EditorState,
-  // ContentState,
   convertToRaw,
   convertFromRaw
 } from 'draft-js';
@@ -72,66 +70,81 @@ const plugins = [
   makeStuffPlugin()
 ];
 
+const getSavedStateId = props =>
+  `saved-editor-state-${ props.id }-${ props.itemId }`;
+
 class MyEditor extends React.Component {
   static defaultProps = {
     disabled: false,
-    autoFocus: false
+    autoFocus: false,
+    id: "draft-js-editor",
+    itemId: "",
+    showModal: false
   }
   editor = null;
   state = {
     editorState: EditorState.createEmpty(),
-    loading: false,
     hasFocus: false,
-    loadedFromSavedState: false
+    loadedFromSavedState: false,
+    saved: null,
+    showModal: false
   }
   componentDidMount() {
-    this.loadFromLocalStorage();
-    if (this.props.autoFocus) {
-      setTimeout(() => this.focusEditor(), 25);
+    if (this.props.value) {
+      this.loadFromSavedState(convertFromRaw(this.props.value));
+    }
+    else {
+      this.loadFromLocalStorage();
     }
   }
   componentWillUnmount() {
     this.editor = null;
-    this.updateProps.cancel();
+    this.updateProps.flush();
+    this.saveToLocalStorage.flush();
   }
-  componentDidUpdate() {
-    if (!this.state.loadedFromSavedState && this.props.value) {
-      this.loadFromSavedState(this.props.value);
+  componentDidUpdate(oldProps) {
+    if (!this.props.loading && !this.state.loadedFromSavedState &&
+        !oldProps.value && this.props.value &&
+        !this.state.editorState.getCurrentContent().hasText()) {
+      this.loadFromSavedState(convertFromRaw(this.props.value));
     }
-    this.saveToLocalStorage(this.state.editorState);
+    this.saveToLocalStorage();
   }
   loadFromLocalStorage() {
     if (window.localStorage) {
-      const saved = window.localStorage.getItem("saved-editor-state-" + this.props.id);
+      let saved = JSON.parse(window.localStorage.getItem(getSavedStateId(this.props)));
       if (saved) {
-        this.loadFromSavedState(JSON.parse(saved));
+        if ((saved = convertFromRaw(saved)).hasText()) {
+          this.setState({ showModal: true, saved });
+        }
+        else {
+          window.localStorage.removeItem(getSavedStateId(this.props));
+          this.focusEditor();
+        }
+      }
+      else {
+        this.focusEditor();
       }
     }
   }
   loadFromSavedState(content) {
-    const editorState = EditorState.createWithContent(convertFromRaw(content));
-    // this.handleChange(editorState);
-    this.setState({ loadedFromSavedState: true, editorState });
+    const editorState = EditorState.createWithContent(content);
+    this.setState(
+      state => ({ loadedFromSavedState: true, editorState, saved: null }),
+      () => this.focusEditor()
+    );
   }
-  _saveToLocalStorage(editorState) {
+  _saveToLocalStorage() {
     if (window.localStorage) {
-      const currentContent = editorState.getCurrentContent(),
-        hasText = currentContent.hasText();
-      if (hasText) {
-        const saved = convertToRaw(currentContent);
-        if (!deepequal(saved, this.props.value)) {
-          window.localStorage.setItem("saved-editor-state-" + this.props.id, JSON.stringify(saved));
-        }
-      }
-      else {
-        window.localStorage.removeItem("saved-editor-state-" + this.props.id);
-      }
+      const currentContent = this.state.editorState.getCurrentContent(),
+        saved = convertToRaw(currentContent);
+      window.localStorage.setItem(getSavedStateId(this.props), JSON.stringify(saved));
     }
   }
-  saveToLocalStorage = throttle(this._saveToLocalStorage, 1000);
+  saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
 
-  _updateProps(editorState) {
-    const currentContent = editorState.getCurrentContent(),
+  _updateProps() {
+    const currentContent = this.state.editorState.getCurrentContent(),
       hasText = currentContent.hasText();
     if (hasText) {
       this.props.onChange(convertToRaw(currentContent));
@@ -147,7 +160,7 @@ class MyEditor extends React.Component {
   }
   handleChange(editorState) {
     this.setState(state => ({ editorState }));
-    this.updateProps(editorState);
+    this.updateProps();
   }
   dropIt(e) {
     e.preventDefault();
@@ -164,20 +177,18 @@ class MyEditor extends React.Component {
   }
 
   render() {
-    const { editorState, loading, hasFocus } = this.state;
+    const { editorState, hasFocus } = this.state;
 
     return (
       <EditorWrapper id={ this.props.id } hasFocus={ hasFocus }
         onDrop={ e => this.dropIt(e) }>
-
-        { !loading ? null : <LoadingIndicator /> }
 
         <div className="px-2 pb-2 clearfix">
           <Editor ref={ n => this.editor = n } placeholder="Type a value..."
             editorState={ editorState }
             onChange={ editorState => this.handleChange(editorState) }
             plugins={ plugins }
-            readOnly={ loading || this.props.disabled }
+            readOnly={ this.props.disabled }
             spellCheck={ true }
             onFocus={ e => this.setState(state => ({ hasFocus: true })) }
             onBlur={ e => this.setState(state => ({ hasFocus: false })) }/>
@@ -218,6 +229,24 @@ class MyEditor extends React.Component {
           <TextIndentButton />
         </Toolbar>
 
+        { this.props.children }
+
+        <AvlModal show={ this.state.showModal }
+          onHide={ e => {
+            window.localStorage.removeItem(getSavedStateId(this.props));
+            this.setState({ showModal: false, saved: null }, () => this.focusEditor());
+          } }
+          actions={ [
+            { label: "Load From Local Storage",
+              action: e => this.loadFromSavedState(this.state.saved)
+            }
+          ] }>
+          <div style={ { width: "32rem" } }>
+            <div>Found saved editor data in local storage. Do you wish to load this saved data?</div>
+            <div>Data will deleted if not loaded.</div>
+          </div>
+        </AvlModal>
+
       </EditorWrapper>
     );
   }
@@ -238,12 +267,3 @@ const EditorWrapper = ({ children, hasFocus, id, ...props }) => {
     </div>
   )
 }
-
-const LoadingIndicator = () =>
-  <div className={ `
-    absolute top-0 bottom-0 left-0 right-0
-    bg-black opacity-50 z-30 rounded
-    flex items-center justify-center
-  ` }>
-    <ScalableLoading />
-  </div>

@@ -50,12 +50,9 @@ class ReadOnlyEditor extends React.Component {
   }
   loadFromSavedState(content) {
     const editorState = EditorState.createWithContent(convertFromRaw(content));
-    this.setState({ loadedFromSavedState: true, editorState });
+    this.setState(state => ({ loadedFromSavedState: true, editorState }));
   }
 
-  handleChange(editorState) {
-    this.setState(state => ({ editorState }));
-  }
   render() {
     const { editorState } = this.state;
 
@@ -63,7 +60,7 @@ class ReadOnlyEditor extends React.Component {
       <div className="draft-js-editor">
         <Editor placeholder="Type a value..."
           editorState={ editorState }
-          onChange={ editorState => this.handleChange(editorState) }
+          onChange={ editorState => this.setState(state => ({ editorState })) }
           plugins={ plugins }
           readOnly={ true }
           spellCheck={ this.props.spellCheck }/>

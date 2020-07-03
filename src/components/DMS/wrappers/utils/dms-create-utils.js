@@ -110,7 +110,7 @@ const getInput = (att, props, disabled) => {
       );
     case "richtext":
       return props => (
-        <Editor { ...props } id={ att.id }
+        <Editor { ...props } id={ att.id } itemId={ get(props, ["item", "id"], "") }
           disabled={ disabled || (att.editable === false) }/>
       );
     case "object":
@@ -181,6 +181,12 @@ class Attribute {
         dmsMsg.removeAttributeMessage(msgIds);
       }
     }
+    this.onSave = () => {
+      if (this.type === "richtext" && window.localStorage) {
+        const itemId = get(props, ["item", "id"], "");
+        window.localStorage.removeItem(`saved-editor-state-${ this.id }-${ itemId }`);
+      }
+    }
   }
   getWarnings = () => Object.values(this.msgIds);
   setValue(value) {
@@ -210,11 +216,6 @@ class Attribute {
     }
     else {
       this.verified = true;
-    }
-  }
-  onSave = () => {
-    if (this.type === "richtext" && window.localStorage) {
-      window.localStorage.removeItem("saved-editor-state-" + this.id);
     }
   }
 }

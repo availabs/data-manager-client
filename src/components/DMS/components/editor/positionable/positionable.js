@@ -48,7 +48,7 @@ export default store =>
         <div className={ `${ POSITIONS[position] } relative z-10 my-2` }
           onDrop={ e => e.preventDefault() }>
           <div className={ `
-            inline-block relative pointer-events-auto top-0 hoverable
+            inline-block relative pointer-events-auto hoverable
           ` }>
             <div className={ `
               absolute ${ store.getReadOnly() ? "hidden" : "show-on-hover" }
