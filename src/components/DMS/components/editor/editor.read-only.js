@@ -9,6 +9,7 @@ import Editor from 'draft-js-plugins-editor';
 import 'draft-js/dist/Draft.css';
 import './styles.css'
 
+import makeButtonPlugin from './buttons';
 import makeImagePlugin from "./image"
 import makeLinkItPlugin from "./linkify-it"
 import makeSuperSubScriptPlugin from "./super-sub-script"
@@ -21,6 +22,7 @@ const positionablePlugin = makePositionablePlugin(),
 const imagePlugin = makeImagePlugin({ wrapper: positionable });
 
 const plugins = [
+  makeButtonPlugin(),
   imagePlugin,
   makeLinkItPlugin(),
   makeSuperSubScriptPlugin(),
@@ -58,12 +60,14 @@ class ReadOnlyEditor extends React.Component {
     const { editorState } = this.state;
 
     return (
-      <Editor placeholder="Type a value..."
-        editorState={ editorState }
-        onChange={ editorState => this.handleChange(editorState) }
-        plugins={ plugins }
-        readOnly={ true }
-        spellCheck={ this.props.spellCheck }/>
+      <div className="draft-js-editor">
+        <Editor placeholder="Type a value..."
+          editorState={ editorState }
+          onChange={ editorState => this.handleChange(editorState) }
+          plugins={ plugins }
+          readOnly={ true }
+          spellCheck={ this.props.spellCheck }/>
+      </div>
     );
   }
 }

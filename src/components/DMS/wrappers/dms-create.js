@@ -69,7 +69,8 @@ const useProcessValues = (sections, props) => {
   for (const key in values) {
     if (hasValue(values[key])) {
       DmsCreateState.values[key] = values[key];
-      DmsCreateState.hasValues = (attributeMap[key].editable !== false);
+      const Att = attributeMap[key];
+      DmsCreateState.hasValues = (Att.editable !== false) && (Att.verified);
     }
   }
 
@@ -133,7 +134,7 @@ export const dmsCreate = Component => {
       DmsCreateState = useProcessValues(sections, props);
 
     useEffect(() => {
-      if (DmsCreateState.hasValues) {
+      if (DmsCreateState.hasValues && DmsCreateState.verified) {
         DmsCreateState.setWarning("unsaved", "You have unsaved data!!!");
       }
       else {
@@ -176,7 +177,7 @@ export const dmsEdit = Component => {
       updated = hasBeenUpdated(data, DmsCreateState.values);
 
     useEffect(() => {
-      if (updated && DmsCreateState.verified) {
+      if (DmsCreateState.hasValues && DmsCreateState.verified && updated) {
         DmsCreateState.setWarning("unsaved", "You have unsaved edits!!!");
       }
       else {

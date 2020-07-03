@@ -74,7 +74,8 @@ export default {
               title: "item:data.title",
               body: [
                 "item:data.test-format",
-                "item:data.test-image"
+                "item:data.test-image",
+                "item:data.text-editor"
               ],
               footer: [
                 "item:data.creator",

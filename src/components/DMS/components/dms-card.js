@@ -1,16 +1,22 @@
 import React from "react"
 
-import { Title } from "./parts"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
-export default ({ title, body, footer }) => {
+export default ({ title, body, footer, children }) => {
   const theme = useTheme();
   return (
     <div>
-      { title ? <Title>{ title }</Title> : null }
-      <div className={ `${ theme.contentBg } rounded px-8 py-4 mb-3 shadow` }>
-        { body }
-      </div>
+      { !title ? null :
+        <div className={ `${ theme.contentBg } rounded px-4 py-2 mb-3 shadow text-3xl font-bold` }>
+          { title }
+        </div>
+      }
+      { !body ? null :
+        <div className={ `${ theme.contentBg } rounded px-8 py-4 mb-3 shadow` }>
+          { body }
+        </div>
+      }
+      { children }
       <div className={ `rounded py-2 px-4 ${ theme.contentBg } shadow` }>{ footer }</div>
     </div>
   )

@@ -31,7 +31,7 @@ export const Create = ({ createState, setValues, item, ...props }) => {
             <UserID.Input
               className={`border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
               value={ UserID.value }
-             
+
             />
           </div>
           <div
@@ -55,8 +55,8 @@ export const Create = ({ createState, setValues, item, ...props }) => {
 
 const View = ({ item, dataItems, ...props }) => {
   const theme = useTheme();
-  if (!item || !item.data) return null; 
-  const { data } = item 
+  if (!item || !item.data) return null;
+  const { data } = item
   return (
     <div className={ `max-w-2xl`}>
       <div className="w-full flex flex-col justify-center hasValue h-min-screen">
@@ -117,11 +117,11 @@ const config =  ({
         buttonTheme: "buttonText",
         columns: [
           {
-            source: 'self:data.title',
+            path: 'self:data.title',
             className: 'text-lg font-medium'
           },
           // "title",
-          "userId",
+          "self:data.userId",
           "dms:view",
           "dms:edit",
           "dms:delete"
@@ -131,7 +131,7 @@ const config =  ({
       },
       wrappers: ["with-theme"]
     },
-    { type: View, 
+    { type: View,
       props: { dmsAction: "view" },
       //wrappers: ['dms-view'],
 

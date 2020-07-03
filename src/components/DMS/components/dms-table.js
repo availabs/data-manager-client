@@ -24,11 +24,11 @@ const DmsTable = ({ columns, ...props }) => {
   const columnData = [
     // add attributes
     ...attributes
-      .map(({ source, key, format, ...rest }) => {
+      .map(({ path, key, format, ...rest }) => {
         return {
 					...rest,
-          id: source,
-          accessor: d => d[source],
+          id: path,
+          accessor: d => d[path],
           Header: getAttributeName(key),
 					Cell: ({ value }) => format(value)
         }
@@ -52,7 +52,7 @@ const DmsTable = ({ columns, ...props }) => {
     .map(self => ({
       self,
       ...attributes.reduce((a, c) => {
-        a[c.source] = getValue(c.source, { self });
+        a[c.path] = getValue(c.path, { self });
         return a;
       }, {}),
       ...actions.reduce((o, a) => {

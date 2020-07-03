@@ -1,6 +1,7 @@
 import React from "react"
 
 import { DmsButton } from "../components/dms-button"
+import ReadOnlyEditor from "../components/editor/editor.read-only"
 
 import get from "lodash.get"
 import styled from "styled-components"
@@ -19,7 +20,7 @@ const ViewItem = ({ value, type }) =>
       { JSON.stringify(value, null, 4) }
     </div>
   : type === "richtext" ?
-    null
+    <ReadOnlyEditor value={ value }/>
   : <div>{ value }</div>
 
 const ViewRow = ({ name, children }) =>
