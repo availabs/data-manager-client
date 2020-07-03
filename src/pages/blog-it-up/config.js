@@ -61,7 +61,7 @@ export default ({
         columns: [
           "self:data.title",
           "self:data.bloggerId",
-          { source: "self:updated_at",
+          { path: "self:updated_at",
             format: "date:MMM Do, YYYY h:mm a"
           },
           "dms:view",

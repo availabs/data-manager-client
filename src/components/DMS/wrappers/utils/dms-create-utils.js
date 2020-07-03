@@ -163,7 +163,10 @@ class Attribute {
       if (warning && !(type in this.msgIds)) {
         const msgId = dmsMsg.newMsgId();
         this.msgIds[type] = msgId;
-        dmsMsg.sendAttributeMessage({ msg: warning, id: msgId });
+        if (typeof warning === "string") {
+          warning = { msg: warning };
+        }
+        dmsMsg.sendAttributeMessage({ ...warning, id: msgId });
       }
       else if (!warning && (type in this.msgIds)) {
         const msgId = this.msgIds[type];
@@ -184,10 +187,18 @@ class Attribute {
     this.value = value;
     this.verifyValue();
     if (!this.verified) {
-      this.setWarning("bad-data", `Invalid value for attribute: ${ this.name }.`);
+      if (!hasValue(this.value) && this.required) {
+        this.setWarning("missing-data", `Missing value for required attribute: ${ this.name }.`);
+        this.setWarning("invalid-data", null);
+      }
+      else {
+        this.setWarning("invalid-data", `Invalid value for attribute: ${ this.name }.`);
+        this.setWarning("missing-data", null);
+      }
     }
     else {
-      this.setWarning("bad-data", null);
+      this.setWarning("invalid-data", null);
+      this.setWarning("missing-data", null);
     }
   }
   verifyValue() {

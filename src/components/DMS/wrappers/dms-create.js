@@ -61,10 +61,15 @@ const useProcessValues = (sections, props) => {
     }
   }, [DmsCreateState, Sections.length, sections, props, dmsMsg]);
 
+  const attributeMap = DmsCreateState.formatAttributes
+    .reduce((a, c) => { a[c.key] = c; return a; }, {});
+
   DmsCreateState.values = {};
+  DmsCreateState.hasValues = false;
   for (const key in values) {
     if (hasValue(values[key])) {
       DmsCreateState.values[key] = values[key];
+      DmsCreateState.hasValues = (attributeMap[key].editable !== false);
     }
   }
 
@@ -83,25 +88,25 @@ const useProcessValues = (sections, props) => {
     DmsCreateState.activeIndex = section;
 
     DmsCreateState.hasWarning = Sections[section].hasWarning;
+    const { canGoNext, canGoPrev } = Sections[section].warnings
+      .reduce((a, c) => ({
+        canGoPrev: a.canGoPrev && c.canGoPrev,
+        canGoNext: a.canGoNext && c.canGoNext
+      }), { canGoNext: true, canGoPrev: true })
 
-    DmsCreateState.canGoNext = !DmsCreateState.hasWarning &&
+    DmsCreateState.canGoNext = canGoNext &&
       Sections[section].verified && ((section + 1) < Sections.length);
     DmsCreateState.next = () => {
-      if (DmsCreateState.hasWarning) return;
-      if (!Sections[section].verified) return;
-      if ((section + 1) === Sections.length) return;
+      if (!DmsCreateState.canGoNext) return;
       setSection(section + 1);
     };
-    DmsCreateState.canGoPrev = !DmsCreateState.hasWarning && (section > 0);
+    DmsCreateState.canGoPrev = canGoPrev && (section > 0);
     DmsCreateState.prev = () => {
-      if (DmsCreateState.hasWarning) return;
-      if (section === 0) return;
+      if (!DmsCreateState.canGoPrev) return;
       setSection(section - 1);
     };
   }
 
-  const attributeMap = DmsCreateState.formatAttributes
-    .reduce((a, c) => { a[c.key] = c; return a; }, {});
   DmsCreateState.badAttributes = [];
   for (const att in values) {
     if (!(att in attributeMap) && hasValue(values[att])) {
@@ -128,13 +133,13 @@ export const dmsCreate = Component => {
       DmsCreateState = useProcessValues(sections, props);
 
     useEffect(() => {
-      if (DmsCreateState.verified && Object.values(DmsCreateState.values).length) {
+      if (DmsCreateState.hasValues) {
         DmsCreateState.setWarning("unsaved", "You have unsaved data!!!");
       }
       else {
         DmsCreateState.setWarning("unsaved", null);
       }
-    }, [DmsCreateState.verified, DmsCreateState]);
+    }, [DmsCreateState.hasValues, DmsCreateState]);
 
     useEffect(() => {
       const values = {};

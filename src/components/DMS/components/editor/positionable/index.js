@@ -20,9 +20,10 @@ export default () => {
   }
 
   return {
-    initialize: ({ getEditorState, setEditorState }) => {
+    initialize: ({ getEditorState, setEditorState, getReadOnly }) => {
       store.getEditorState = getEditorState;
       store.setEditorState = setEditorState;
+      store.getReadOnly = getReadOnly;
     },
     blockRendererFn: (block, { getEditorState }) => {
       if (block.getType() === "atomic") {

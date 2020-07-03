@@ -8,6 +8,8 @@ import debounce from "lodash.debounce"
 import throttle from "lodash.throttle"
 
 import { useTheme } from "components/avl-components/wrappers/with-theme"
+import imgLoader from "components/avl-components/wrappers/img-loader"
+import showLoading from "components/avl-components/wrappers/show-loading"
 
 import {
   EditorState,
@@ -72,6 +74,8 @@ const plugins = [
 
 class MyEditor extends React.Component {
   static defaultProps = {
+    disabled: false,
+    autoFocus: false
   }
   editor = null;
   state = {
@@ -147,20 +151,18 @@ class MyEditor extends React.Component {
   }
   dropIt(e) {
     e.preventDefault();
+    e.stopPropagation();
+
+    if (this.props.disabled) return;
 
     const file = get(e, ["dataTransfer", "files", 0], null);
 
-    if (file && /^image\/\w+$/.test(file.type)) {
-      this.setState(state => ({ loading: true }));
-      new Promise(resolve => {
-        setTimeout(resolve, 2000)
-      })
-      .then(() => {
-        this.handleChange(addImage(URL.createObjectURL(file), this.state.editorState));
-        this.setState(state => ({ loading: false }));
+    this.props.uploadImage(file)
+      .then(({ filename, url }) => {
+        this.handleChange(addImage(url, this.state.editorState));
       });
-    }
   }
+
   render() {
     const { editorState, loading, hasFocus } = this.state;
 
@@ -170,12 +172,12 @@ class MyEditor extends React.Component {
 
         { !loading ? null : <LoadingIndicator /> }
 
-        <div className="px-2 pb-2">
+        <div className="px-2 pb-2 clearfix">
           <Editor ref={ n => this.editor = n } placeholder="Type a value..."
             editorState={ editorState }
             onChange={ editorState => this.handleChange(editorState) }
             plugins={ plugins }
-            readOnly={ loading }
+            readOnly={ loading || this.props.disabled }
             spellCheck={ true }
             onFocus={ e => this.setState(state => ({ hasFocus: true })) }
             onBlur={ e => this.setState(state => ({ hasFocus: false })) }/>
@@ -220,7 +222,11 @@ class MyEditor extends React.Component {
     );
   }
 }
-export default MyEditor;
+const LoadingOptions = {
+  position: "absolute",
+  className: "rounded"
+}
+export default imgLoader(showLoading(MyEditor, LoadingOptions));
 
 const EditorWrapper = ({ children, hasFocus, id, ...props }) => {
   const theme = useTheme();

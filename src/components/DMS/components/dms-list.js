@@ -121,9 +121,9 @@ const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
           </tr>
         }
         <tr>
-          { attributes.map(({ source }) =>
-              <th key={ source } className="px-3 border-b-2">
-                { getAttributeName(source) }
+          { attributes.map(({ path }) =>
+              <th key={ path } className="px-3 border-b-2">
+                { getAttributeName(path) }
               </th>
             )
           }
@@ -134,7 +134,7 @@ const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
         { dataItems.map(d =>
             <DmsListRow action="dms:view" item={ d } key={ d.id } striped={ props.striped }>
               { attributes
-                  .map(({ source, format }) => ({ format, ...getValue(source, { self: d }, { preserveKeys: true }) }))
+                  .map(({ path, format }) => ({ format, ...getValue(path, { self: d }, { preserveKeys: true }) }))
                   .map(({ key, value, format }, i) =>
                     <td key={ key } className="py-1 px-3 first:pl-4 first:rounded-l-md">
                       { format(value) }

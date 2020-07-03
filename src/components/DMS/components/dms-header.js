@@ -13,13 +13,13 @@ export default ({ title, showHome = true, dmsActions = [], ...props }) => {
   if (stack.length > 1) {
     dmsActions.unshift({
       action: "dms:back",
-      showConfirm: Boolean(pageMessages.length)
+      // showConfirm: Boolean(pageMessages.length)
     });
   }
   if ((stack.length > 1) && showHome) {
      dmsActions.unshift({
        action: "dms:home",
-       showConfirm: Boolean(pageMessages.length)
+       // showConfirm: Boolean(pageMessages.length)
      });
   }
   if (top.dmsAction === "list") {
@@ -65,9 +65,9 @@ const Warning = ({ warnings, type = "page" }) => {
         <div className={ `
           px-4 py-1 rounded shadow ${ theme.accent2 } ${ theme.text }
         ` }>
-          { warnings.map(msg =>
-              <div key={ msg.id } className={ `my-1 whitespace-no-wrap rounded ${ theme.text }` }>
-                { msg.msg }
+          { warnings.map(({ id, msg }) =>
+              <div key={ id } className={ `my-1 whitespace-no-wrap rounded ${ theme.text }` }>
+                { msg }
               </div>
             )
           }

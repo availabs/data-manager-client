@@ -53,7 +53,7 @@ export default {
         columns: [
           "self:data.title",
           "self:data.creator",
-          { source: "self:updated_at",
+          { path: "self:updated_at",
             format: "date"
           },
           "dms:view",
@@ -78,7 +78,9 @@ export default {
               ],
               footer: [
                 "item:data.creator",
-                "item:updated_at"
+                { path: "item:updated_at",
+                  format: "date"
+                }
               ]
             }
           }
