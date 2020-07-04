@@ -2,7 +2,8 @@ import React from "react"
 
 import {
   EditorState,
-  convertFromRaw
+  convertFromRaw,
+  CompositeDecorator
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 
@@ -21,14 +22,20 @@ const positionablePlugin = makePositionablePlugin(),
 
 const imagePlugin = makeImagePlugin({ wrapper: positionable });
 
+const linkItPlugin = makeLinkItPlugin();
+
 const plugins = [
   makeButtonPlugin(),
   imagePlugin,
-  makeLinkItPlugin(),
+  linkItPlugin,
   makeSuperSubScriptPlugin(),
   positionablePlugin,
   makeStuffPlugin()
 ];
+
+const decorator = new CompositeDecorator(
+  linkItPlugin.decorators
+)
 
 class ReadOnlyEditor extends React.Component {
   static defaultProps = {
@@ -49,7 +56,10 @@ class ReadOnlyEditor extends React.Component {
     }
   }
   loadFromSavedState(content) {
-    const editorState = EditorState.createWithContent(convertFromRaw(content));
+    const editorState = EditorState.createWithContent(
+      convertFromRaw(content),
+      decorator
+    );
     this.setState(state => ({ loadedFromSavedState: true, editorState }));
   }
 

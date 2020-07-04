@@ -201,7 +201,7 @@ export const dmsEdit = Component => {
       }
     }, [data, DmsCreateState]);
 
-    if (!DmsCreateState.activeSection) return null;
+    if (!DmsCreateState.activeSection || !DmsCreateState.hasValues) return null;
     return (
       <Component { ...props } item={ item }
         createState={ DmsCreateState } values={ DmsCreateState.values }/>

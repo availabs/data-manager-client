@@ -2,6 +2,7 @@ import React from "react"
 
 import AvlModal from "components/avl-components/components/Modal/avl-modal"
 
+import deepequal from "deep-equal"
 import get from "lodash.get"
 import debounce from "lodash.debounce"
 import throttle from "lodash.throttle"
@@ -12,6 +13,7 @@ import showLoading from "components/avl-components/wrappers/show-loading"
 
 import {
   EditorState,
+  CompositeDecorator,
   convertToRaw,
   convertFromRaw
 } from 'draft-js';
@@ -60,15 +62,21 @@ const positionablePlugin = makePositionablePlugin(),
 const imagePlugin = makeImagePlugin({ wrapper: positionable }),
   { addImage } = imagePlugin;
 
+const linkItPlugin = makeLinkItPlugin();
+
 const plugins = [
   buttonPlugin,
   toolbarPlugin,
   imagePlugin,
-  makeLinkItPlugin(),
+  linkItPlugin,
   makeSuperSubScriptPlugin(),
   positionablePlugin,
   makeStuffPlugin()
 ];
+
+const decorator = new CompositeDecorator(
+  linkItPlugin.decorators
+)
 
 const getSavedStateId = props =>
   `saved-editor-state-${ props.id }-${ props.itemId }`;
@@ -82,63 +90,57 @@ class MyEditor extends React.Component {
     showModal: false
   }
   editor = null;
-  state = {
-    editorState: EditorState.createEmpty(),
-    hasFocus: false,
-    loadedFromSavedState: false,
-    saved: null,
-    showModal: false
+  constructor(props, ...args) {
+    super(props, ...args);
+    this.state = {
+      hasFocus: false,
+      loadedFromSavedState: false,
+      formLocalStorage: null,
+      showModal: false
+    }
+    this.state.editorState = props.value ?
+      EditorState.createWithContent(convertFromRaw(props.value), decorator) :
+      EditorState.createEmpty(decorator);
   }
   componentDidMount() {
-    if (this.props.value) {
-      this.loadFromSavedState(convertFromRaw(this.props.value));
-    }
-    else {
-      this.loadFromLocalStorage();
-    }
+    this.loadFromLocalStorage();
   }
   componentWillUnmount() {
     this.editor = null;
     this.updateProps.flush();
     this.saveToLocalStorage.flush();
   }
-  componentDidUpdate(oldProps) {
-    if (!this.props.loading && !this.state.loadedFromSavedState &&
-        !oldProps.value && this.props.value &&
-        !this.state.editorState.getCurrentContent().hasText()) {
-      this.loadFromSavedState(convertFromRaw(this.props.value));
+  componentDidUpdate(oldProps, oldState) {
+    if (!deepequal(
+      convertToRaw(oldState.editorState.getCurrentContent()),
+      convertToRaw(this.state.editorState.getCurrentContent())
+    )) {
+      this.saveToLocalStorage();
     }
-    this.saveToLocalStorage();
   }
   loadFromLocalStorage() {
     if (window.localStorage) {
       let saved = JSON.parse(window.localStorage.getItem(getSavedStateId(this.props)));
       if (saved) {
         if ((saved = convertFromRaw(saved)).hasText()) {
-          this.setState({ showModal: true, saved });
+          this.setState({ showModal: true, formLocalStorage: saved });
         }
         else {
           window.localStorage.removeItem(getSavedStateId(this.props));
-          this.focusEditor();
         }
-      }
-      else {
-        this.focusEditor();
       }
     }
   }
   loadFromSavedState(content) {
-    const editorState = EditorState.createWithContent(content);
+    const editorState = EditorState.createWithContent(content, decorator);
     this.setState(
-      state => ({ loadedFromSavedState: true, editorState, saved: null }),
-      () => this.focusEditor()
+      state => ({ loadedFromSavedState: true, editorState })
     );
   }
   _saveToLocalStorage() {
     if (window.localStorage) {
-      const currentContent = this.state.editorState.getCurrentContent(),
-        saved = convertToRaw(currentContent);
-      window.localStorage.setItem(getSavedStateId(this.props), JSON.stringify(saved));
+      const content = convertToRaw(this.state.editorState.getCurrentContent());
+      window.localStorage.setItem(getSavedStateId(this.props), JSON.stringify(content));
     }
   }
   saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
@@ -232,18 +234,15 @@ class MyEditor extends React.Component {
         { this.props.children }
 
         <AvlModal show={ this.state.showModal }
-          onHide={ e => {
-            window.localStorage.removeItem(getSavedStateId(this.props));
-            this.setState({ showModal: false, saved: null }, () => this.focusEditor());
-          } }
+          onHide={ e => this.setState({ showModal: false }) }
           actions={ [
             { label: "Load From Local Storage",
-              action: e => this.loadFromSavedState(this.state.saved)
+              action: e => this.loadFromSavedState(this.state.formLocalStorage)
             }
           ] }>
-          <div style={ { width: "32rem" } }>
-            <div>Found saved editor data in local storage. Do you wish to load this saved data?</div>
-            <div>Data will deleted if not loaded.</div>
+          <div style={ { width: "32rem" } } className="font-bold text-lg">
+            <div>Found saved editor data in local storage.</div>
+            <div>Do you wish to load this saved data?</div>
           </div>
         </AvlModal>
 

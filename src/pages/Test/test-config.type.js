@@ -47,6 +47,13 @@ export default {
   registerFormats: [TestFormat1, TestFormat2],
 
   sections: [
+    { title: "Editor Page",
+      attributes: [
+        { key: "text-editor",
+          type: "richtext"
+        }
+      ]
+    },
     { title: "Info Page",
       attributes: [
         { key: "title",
@@ -57,13 +64,6 @@ export default {
           type: "text",
           default: "props:user.id",
           editable: false
-        }
-      ]
-    },
-    { title: "Editor Page",
-      attributes: [
-        { key: "text-editor",
-          type: "richtext"
         }
       ]
     },

@@ -39,7 +39,6 @@ const Link = ({ store, options, decoratedText, children, ...props }) => {
 const strategy = (contentBlock, callback) => {
   const text = contentBlock.getText(),
     links = linkify.match(text);
-
   links && links.forEach(({ index, lastIndex }) => callback(index, lastIndex));
 }
 
