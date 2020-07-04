@@ -101,6 +101,10 @@ class MyEditor extends React.Component {
     this.state.editorState = props.value ?
       EditorState.createWithContent(convertFromRaw(props.value), decorator) :
       EditorState.createEmpty(decorator);
+
+    this.handleChange = this.handleChange.bind(this);
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
   }
   componentDidMount() {
     this.loadFromLocalStorage();
@@ -177,6 +181,12 @@ class MyEditor extends React.Component {
         this.handleChange(addImage(url, this.state.editorState));
       });
   }
+  onFocus(e) {
+    this.setState(state => ({ hasFocus: true }));
+  }
+  onBlur(e) {
+    this.setState(state => ({ hasFocus: false }));
+  }
 
   render() {
     const { editorState, hasFocus } = this.state;
@@ -188,12 +198,12 @@ class MyEditor extends React.Component {
         <div className="px-2 pb-2 clearfix">
           <Editor ref={ n => this.editor = n } placeholder="Type a value..."
             editorState={ editorState }
-            onChange={ editorState => this.handleChange(editorState) }
+            onChange={ this.handleChange }
             plugins={ plugins }
             readOnly={ this.props.disabled }
             spellCheck={ true }
-            onFocus={ e => this.setState(state => ({ hasFocus: true })) }
-            onBlur={ e => this.setState(state => ({ hasFocus: false })) }/>
+            onFocus={ this.onFocus }
+            onBlur={ this.onBlur }/>
         </div>
 
         <Toolbar>
