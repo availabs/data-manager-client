@@ -34,7 +34,8 @@ export default ({ format, Attribute, id, autoFocus = false, onFocus, onBlur, val
 
   const [hasFocus, setFocus] = React.useState(autoFocus),
     [prev, setPrev] = React.useState(hasFocus),
-    [[_onFocus, _onBlur]] = React.useState([() => setFocus(true), () => setFocus(false)]);
+    _onFocus = React.useCallback(() => setFocus(true), [setFocus]),
+    _onBlur = React.useCallback(() => setFocus(false), [setFocus]);
   React.useEffect(() => {
     if (hasFocus !== prev) {
       (typeof onBlur === "function") && !hasFocus && onBlur();

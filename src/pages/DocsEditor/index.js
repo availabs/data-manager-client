@@ -121,7 +121,10 @@ const config =  ({
             className: 'text-lg font-medium'
           },
           // "title",
-          "self:data.userId",
+          { path: "self:data.userId",
+            disableFilters: true,
+            disableSortBy: true
+          },
           "dms:view",
           "dms:edit",
           "dms:delete"

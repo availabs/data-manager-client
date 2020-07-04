@@ -38,7 +38,8 @@ const DmsTable = ({ columns, ...props }) => {
         return {
 					...a,
           accessor: a.action,
-          // Header: d => null,
+					disableFilters: true,
+					disableSortBy: true,
           Cell: cell =>
 						<div className="flex justify-end">
 	            <DmsButton action={ a } item={ cell.row.original.self }
@@ -58,16 +59,16 @@ const DmsTable = ({ columns, ...props }) => {
       ...actions.reduce((o, a) => {
         o[a.action] = a;
         return o
-      }, {})
+      }, {}),
+			onClick: props.makeOnClick('dms:view', self.id),
+			subRows: []
     }))
 // console.log("DATA ITEMS:", dataItems)
   return !props.dataItems.length ? null : (
     <Content>
       { props.title ? <Header title={ props.title } /> : null }
       <Table data={ data }
-        columns={ columnData }
-        // onRowClick={ d => props.makeInteraction('dms:view', d.original) }
-      />
+        columns={ columnData }/>
     </Content>
   )
 }
