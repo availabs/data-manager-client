@@ -114,7 +114,7 @@ const config =  ({
     { type: "dms-table", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
-        buttonTheme: "buttonText",
+        buttonTheme: "textbutton",
         columns: [
           {
             path: 'self:data.title',
