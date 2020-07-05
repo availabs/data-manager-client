@@ -103,9 +103,7 @@ export const getFormat = format => {
 }
 
 export const useDmsColumns = columns => {
-  const [Columns, setColumns] = React.useState([[], []]);
-
-  React.useEffect(() => {
+  return React.useMemo(() => {
     const temp = columns.map(att => {
       if (typeof att === "string") {
         if (/^(dms|api):(.+)$/.test(att)) {
@@ -126,21 +124,17 @@ export const useDmsColumns = columns => {
         format: getFormat(att.format)
       };
     })
-    setColumns(
-      temp.reduce((a, c) => {
-        const [atts, acts] = a;
-        if (c.path) {
-          atts.push(c);
-        }
-        else {
-          acts.push(c);
-        }
-        return a;
-      }, [[], []])
-    );
+    return temp.reduce((a, c) => {
+      const [atts, acts] = a;
+      if (c.path) {
+        atts.push(c);
+      }
+      else {
+        acts.push(c);
+      }
+      return a;
+    }, [[], []]);
   }, [columns]);
-
-  return Columns;
 }
 
 export const compareActions = (action1 = "", action2 = "") =>

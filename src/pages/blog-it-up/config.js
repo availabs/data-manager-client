@@ -54,21 +54,25 @@ export default ({
     },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list",
+    { type: "dms-table",
       props: {
         dmsAction: "list",
         columns: [
-          "self:data.title",
+          { path: "self:data.title",
+            filter: "fuzzyText"
+          },
           "self:data.bloggerId",
           { path: "self:updated_at",
-            format: "date:MMM Do, YYYY h:mm a"
+            format: "date",
+            disableFilters: true
           },
           "dms:edit",
           "dms:delete"
         ],
         filter: {
           args: ["self:data.replyTo"],
-          comparator: arg1 => !Boolean(arg1)
+          comparator: arg1 => !Boolean(arg1),
+          sortType: d => new Date(d).valueOf()
         }
       }
     },

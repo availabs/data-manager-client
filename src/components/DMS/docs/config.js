@@ -48,23 +48,12 @@ export default ({
     },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list", // generic dms component for viewing multiple data items
+    { type: "dms-table", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
 
-        // sortBy: "data.chapter",
-        // sortOrder: "asc",
-
-        sort: {
-          accessor: "self:data.chapter",
-          comparator: (a, b) => {
-            const av = +a.replace(".", ""),
-              bv = +b.replace(".", "");
-            return av - bv;
-          }
-        },
-
-        // filter: d => !d.data.chapter.includes("."),
+        sortBy: "chapter",
+        sortOrder: "asc",
 
         filter: {
           args: ["self:data.chapter"],
@@ -72,7 +61,10 @@ export default ({
         },
 
         columns: [
-          "title", "chapter",
+          { path: "title",
+            filter: "fuzzyText"
+          },
+          "chapter",
           "dms:edit", "dms:delete",
           { action: "api:delete",
             label: "API delete",
@@ -102,28 +94,28 @@ export default ({
               updated_at: "item:updated_at"
             }
           }
-        },
-        "with-auth"
+        }
       ],
       children: [
-        { type: "dms-list",
+        { type: "dms-table",
           props: {
-            columns: ["title", "chapter", "dms:edit", "dms:delete"],
-            sortBy: "data.chapter",
+            columns: [
+              { path: "title",
+                filter: "fuzzyText"
+              },
+              "chapter", "dms:edit", "dms:delete"
+            ],
+            sortBy: "chapter",
             sortOrder: "asc",
-          },
-          wrappers: [{
-            type: "dms-falcor",
-            options: {
-              filter: {
-                args: ["props:dms-docs.data.chapter", "self:data.chapter"],
-                comparator: (arg1, arg2) => {
-                  const regex = new RegExp(`^${ arg1 }[.]\\d+$`)
-                  return regex.test(arg2);
-                }
+            filter: {
+              args: ["props:dms-docs.data.chapter", "self:data.chapter"],
+              comparator: (arg1, arg2) => {
+                const regex = new RegExp(`^${ arg1 }[.]\\d+$`)
+                return regex.test(arg2);
               }
             }
-          }]
+          },
+          wrappers: ["dms-consumer"]
         }
       ]
     },

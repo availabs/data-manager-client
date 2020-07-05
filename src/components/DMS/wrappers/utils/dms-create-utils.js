@@ -22,6 +22,7 @@ export class DmsCreateStateClass {
     this.warnings = [];
 
     this.values = {};
+    this.hasValues = false;
 
     this.canGoNext = false;
     this.next = () => {};

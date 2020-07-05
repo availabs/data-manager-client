@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 
 import get from "lodash.get"
 
@@ -9,24 +9,18 @@ import { DmsCreateStateClass, makeNewAttribute } from "./utils/dms-create-utils"
 import { useMessenger } from "../contexts/messenger-context"
 
 export const useSetSections = format => {
-  const [sections, setSections] = useState([]);
-
-  useEffect(() => {
+  return useMemo(() => {
     let section = null;
-    setSections(
-      format.attributes
-        .reduce((a, c) => {
-          if (c.title !== section) {
-            section = c.title;
-            a.push({ title: c.title, attributes: [] });
-          }
-          a[a.length - 1].attributes.push(c);
-          return a;
-        }, [])
-    );
-  }, [format])
-
-  return sections;
+    return format.attributes
+      .reduce((a, c) => {
+        if (c.title !== section) {
+          section = c.title;
+          a.push({ title: c.title, attributes: [] });
+        }
+        a[a.length - 1].attributes.push(c);
+        return a;
+      }, []);
+  }, [format]);
 }
 
 const useProcessValues = (sections, props) => {
@@ -36,15 +30,16 @@ const useProcessValues = (sections, props) => {
   const [section, setSection] = useState(0);
   const [values, setValues] = useState({});
 
-  const [DmsCreateState] = useState(new DmsCreateStateClass(setValues, dmsMsg)),
-    [Sections, setSections] = useState([]);
+  const [[DmsCreateState, Sections], setState] = useState([new DmsCreateStateClass(setValues, dmsMsg), []]);
 
   useEffect(() => {
     return DmsCreateState.cleanup;
-  }, [DmsCreateState])
+  }, [DmsCreateState]);
 
   useEffect(() => {
     if (!Sections.length && sections.length) {
+      const DmsCreateState = new DmsCreateStateClass(setValues, dmsMsg);
+
       const Sections = sections.map(({ title, attributes }, index) => ({
         index,
         title,
@@ -53,31 +48,35 @@ const useProcessValues = (sections, props) => {
         attributes: attributes.map(att => makeNewAttribute(att, DmsCreateState.setValues, dmsMsg, props))
       }))
       Sections.forEach(section => section.attributes.forEach(att => att.setValue(null)));
-      setSections(Sections);
+
       DmsCreateState.sections = Sections;
       DmsCreateState.numSections = Sections.length;
       DmsCreateState.formatAttributes = Sections.reduce((a, c) => a.concat(c.attributes), []);
-    }
-  }, [DmsCreateState, Sections.length, sections, props, dmsMsg]);
+
+      setState([DmsCreateState, Sections]);
+    };
+  }, [Sections.length, sections, props, dmsMsg]);
 
   return React.useMemo(() => {
 
-    const { attributeMessages } = dmsMsg;
-
-    const attributeMap = DmsCreateState.formatAttributes
-      .reduce((a, c) => { a[c.key] = c; return a; }, {});
-
-    DmsCreateState.values = {};
-    DmsCreateState.hasValues = false;
-    for (const key in values) {
-      if (hasValue(values[key])) {
-        DmsCreateState.values[key] = values[key];
-        const Att = attributeMap[key];
-        DmsCreateState.hasValues = (Att.editable !== false) && (Att.verified);
-      }
-    }
-
     if (Sections.length) {
+
+      const { attributeMessages } = dmsMsg;
+
+      const attributeMap = DmsCreateState.formatAttributes
+        .reduce((a, c) => { a[c.key] = c; return a; }, {});
+
+      DmsCreateState.values = {};
+      DmsCreateState.hasValues = false;
+      for (const key in values) {
+        if (hasValue(values[key])) {
+          DmsCreateState.values[key] = values[key];
+          const Att = attributeMap[key];
+          DmsCreateState.hasValues = DmsCreateState.hasValues ||
+            ((Att.editable !== false) && (Att.verified));
+        }
+      }
+
       Sections.forEach((sect, index) => {
         sect.isActive = section === index;
         sect.verified = sect.attributes.reduce((a, c) => a && c.verified, true);
@@ -109,15 +108,15 @@ const useProcessValues = (sections, props) => {
         if (!DmsCreateState.canGoPrev) return;
         setSection(section - 1);
       };
-    }
 
-    DmsCreateState.badAttributes = [];
-    for (const att in values) {
-      if (!(att in attributeMap) && hasValue(values[att])) {
-        DmsCreateState.badAttributes.push({
-          key: att,
-          value: JSON.stringify(values[att])
-        });
+      DmsCreateState.badAttributes = [];
+      for (const att in values) {
+        if (!(att in attributeMap) && hasValue(values[att])) {
+          DmsCreateState.badAttributes.push({
+            key: att,
+            value: JSON.stringify(values[att])
+          });
+        }
       }
     }
 

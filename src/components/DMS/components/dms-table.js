@@ -8,11 +8,11 @@ import get from "lodash.get"
 
 import { makeFilter, prettyKey, getValue, useDmsColumns } from "../utils"
 
-const DmsTable = ({ columns, ...props }) => {
+const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, ...props }) => {
 	const [attributes, actions] = useDmsColumns(columns);
 
   const filter = makeFilter(props),
-    dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
+    dataItems = (filter ? props.dataItems.filter(filter) : props.dataItems);
 
   const getAttributeName = att => {
     att = att.split(/[:.]/).pop();
@@ -27,8 +27,8 @@ const DmsTable = ({ columns, ...props }) => {
       .map(({ path, key, format, ...rest }) => {
         return {
 					...rest,
-          id: path,
-          accessor: d => d[path],
+          id: key,
+          accessor: d => d[key],
           Header: getAttributeName(key),
 					Cell: ({ value }) => format(value)
         }
@@ -53,7 +53,8 @@ const DmsTable = ({ columns, ...props }) => {
     .map(self => ({
       self,
       ...attributes.reduce((a, c) => {
-        a[c.path] = getValue(c.path, { self });
+				const { value, key } = getValue(c.path, { self }, { preserveKeys: true });
+        a[key] = value;
         return a;
       }, {}),
       ...actions.reduce((o, a) => {
@@ -68,7 +69,10 @@ const DmsTable = ({ columns, ...props }) => {
     <Content>
       { props.title ? <Header title={ props.title } /> : null }
       <Table data={ data }
-        columns={ columnData }/>
+        columns={ columnData }
+				sortBy={ sortBy }
+				sortOrder={ sortOrder }
+				initialPageSize={ initialPageSize }/>
     </Content>
   )
 }
@@ -80,7 +84,7 @@ DmsTable.defaultProps = {
   filter: false,
   sortBy: "updated_at",
   sortOrder: "desc",
-  transform: null,
-  theme: {}
+  initialPageSize: 10,
+  striped: false
 }
 export default DmsTable;
