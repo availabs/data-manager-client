@@ -1,6 +1,7 @@
 import React from "react"
 
 import { DmsButton } from "../components/dms-button"
+import ReadOnlyEditor from "../components/editor/editor.read-only"
 
 import get from "lodash.get"
 import styled from "styled-components"
@@ -11,15 +12,15 @@ const SEED_PROPS = () => ({});
 
 const ViewItem = ({ value, type }) =>
   type === "img" ?
-    <div>
-      <img src={ value } style={ { maxHeight: "16rem" } } alt=""/>
+    <div className="h-64 flex justify-start items-center">
+      <img src={ value.url } className="h-64" alt={ value.filename }/>
     </div>
   : (type === "object") || /^dms-format:/.test(type) ?
     <div className="whitespace-pre-wrap">
       { JSON.stringify(value, null, 4) }
     </div>
   : type === "richtext" ?
-    null
+    <ReadOnlyEditor value={ value }/>
   : <div>{ value }</div>
 
 const ViewRow = ({ name, children }) =>
@@ -54,10 +55,7 @@ export default (Component, options = {}) => {
 
       if (!value) return { value:null, name };
 
-      if (key === "updated_at") {
-        value = (new Date(value)).toLocaleString();
-      }
-      else if (/-array$/.test(type)) {
+      if (/-array$/.test(type)) {
         value = value.map((v, i) => <ViewItem key={ i } type={ type } value={ v }/>)
       }
       else {

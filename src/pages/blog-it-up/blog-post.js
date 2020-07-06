@@ -18,7 +18,7 @@ const BlogPost = ({ item, dataItems, startOpened = true, ...props }) => {
           Blogger: { item.data.bloggerId }
         </div>
         <div className="flex-1 flex justify-end">
-          { item.updated_at }
+          ({ item.id }) { item.updated_at }
         </div>
       </div>
       <div className="p-4 rounded border bg-white">

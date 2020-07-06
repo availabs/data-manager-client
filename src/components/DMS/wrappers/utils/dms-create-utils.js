@@ -22,6 +22,7 @@ export class DmsCreateStateClass {
     this.warnings = [];
 
     this.values = {};
+    this.hasValues = false;
 
     this.canGoNext = false;
     this.next = () => {};
@@ -110,7 +111,7 @@ const getInput = (att, props, disabled) => {
       );
     case "richtext":
       return props => (
-        <Editor { ...props } id={ att.id }
+        <Editor { ...props } id={ att.id } itemId={ get(props, ["item", "id"], "") }
           disabled={ disabled || (att.editable === false) }/>
       );
     case "object":
@@ -163,9 +164,12 @@ class Attribute {
       if (warning && !(type in this.msgIds)) {
         const msgId = dmsMsg.newMsgId();
         this.msgIds[type] = msgId;
-        dmsMsg.sendAttributeMessage({ msg: warning, id: msgId });
+        if (typeof warning === "string") {
+          warning = { msg: warning };
+        }
+        dmsMsg.sendAttributeMessage({ ...warning, id: msgId });
       }
-      else if (type in this.msgIds) {
+      else if (!warning && (type in this.msgIds)) {
         const msgId = this.msgIds[type];
         dmsMsg.removeAttributeMessage([msgId]);
         delete this.msgIds[type];
@@ -178,16 +182,30 @@ class Attribute {
         dmsMsg.removeAttributeMessage(msgIds);
       }
     }
+    this.onSave = () => {
+      if (this.type === "richtext" && window.localStorage) {
+        const itemId = get(props, ["item", "id"], "");
+        window.localStorage.removeItem(`saved-editor-state-${ this.id }-${ itemId }`);
+      }
+    }
   }
   getWarnings = () => Object.values(this.msgIds);
   setValue(value) {
     this.value = value;
     this.verifyValue();
     if (!this.verified) {
-      this.setWarning("bad-data", `Invalid value for attribute: ${ this.name }.`);
+      if (!hasValue(this.value) && this.required) {
+        this.setWarning("missing-data", `Missing value for required attribute: ${ this.name }.`);
+        this.setWarning("invalid-data", null);
+      }
+      else {
+        this.setWarning("invalid-data", `Invalid value for attribute: ${ this.name }.`);
+        this.setWarning("missing-data", null);
+      }
     }
     else {
-      this.setWarning("bad-data", null);
+      this.setWarning("invalid-data", null);
+      this.setWarning("missing-data", null);
     }
   }
   verifyValue() {
@@ -199,11 +217,6 @@ class Attribute {
     }
     else {
       this.verified = true;
-    }
-  }
-  onSave = () => {
-    if (this.type === "richtext" && window.localStorage) {
-      window.localStorage.removeItem("saved-editor-state-" + this.id);
     }
   }
 }

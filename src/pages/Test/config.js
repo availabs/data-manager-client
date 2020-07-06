@@ -46,14 +46,14 @@ export default {
     },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list",
+    { type: "dms-table",
       props: {
         dmsAction: "list",
         dmsActions: ["dms:fake-one", "dms:fake-two"],
         columns: [
           "self:data.title",
           "self:data.creator",
-          { source: "self:updated_at",
+          { path: "self:updated_at",
             format: "date"
           },
           "dms:view",
@@ -74,11 +74,14 @@ export default {
               title: "item:data.title",
               body: [
                 "item:data.test-format",
-                "item:data.test-image"
+                "item:data.test-image",
+                "item:data.text-editor"
               ],
               footer: [
                 "item:data.creator",
-                "item:updated_at"
+                { path: "item:updated_at",
+                  format: "date"
+                }
               ]
             }
           }

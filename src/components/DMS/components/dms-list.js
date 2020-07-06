@@ -31,11 +31,9 @@ const getPageSpread = (page, maxPage) => {
 const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
 	const [attributes, actions] = useDmsColumns(columns);
 
-	let sorter;
-	if (sort) {
-		sorter = makeSort(sort, { props });
-	}
-	if (!sorter) {
+	let sorter = (sort ? makeSort(sort, { props }) : null);
+
+	const baseSorter = React.useMemo(() => {
     const dir = sortOrder === "desc" ? -1 : 1;
     let _transform = transform;
     if (!_transform && (sortBy === "updated_at")) {
@@ -44,15 +42,15 @@ const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
     else if (!_transform) {
       _transform = v => v;
     }
-    sorter = (a, b) => {
+    return (a, b) => {
       const av = _transform(get(a, sortBy)),
         bv = _transform(get(b, sortBy));
       return (av < bv ? -1 : bv < av ? 1 : 0) * dir;
     }
-	}
+	}, [sortBy, sortOrder, transform]);
 
   const filter = makeFilter(props);
-  let dataItems = (filter ? props.dataItems.filter(filter) : props.dataItems)
+  let dataItems = (filter ? props.dataItems.filter(filter) : props.dataItems).sort(sorter || baseSorter);
 
   const [page, setPage] = React.useState(0);
 	const { rowsPerPage } = props,
@@ -60,7 +58,7 @@ const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
 		length = dataItems.length,
 	  actualPage = Math.min(maxPage, page);
 
-  dataItems = dataItems.sort(sorter).slice(actualPage * rowsPerPage, actualPage * rowsPerPage + rowsPerPage);
+  dataItems = dataItems.slice(actualPage * rowsPerPage, actualPage * rowsPerPage + rowsPerPage);
 
   const getAttributeName = att => {
     att = att.split(/[:.]/).pop();
@@ -121,9 +119,9 @@ const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
           </tr>
         }
         <tr>
-          { attributes.map(({ source }) =>
-              <th key={ source } className="px-3 border-b-2">
-                { getAttributeName(source) }
+          { attributes.map(({ path }) =>
+              <th key={ path } className="px-3 border-b-2">
+                { getAttributeName(path) }
               </th>
             )
           }
@@ -134,7 +132,7 @@ const DmsList = ({ sort, sortBy, sortOrder, transform, columns, ...props }) => {
         { dataItems.map(d =>
             <DmsListRow action="dms:view" item={ d } key={ d.id } striped={ props.striped }>
               { attributes
-                  .map(({ source, format }) => ({ format, ...getValue(source, { self: d }, { preserveKeys: true }) }))
+                  .map(({ path, format }) => ({ format, ...getValue(path, { self: d }, { preserveKeys: true }) }))
                   .map(({ key, value, format }, i) =>
                     <td key={ key } className="py-1 px-3 first:pl-4 first:rounded-l-md">
                       { format(value) }

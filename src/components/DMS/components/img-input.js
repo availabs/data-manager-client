@@ -9,77 +9,7 @@ import { useTheme } from "components/avl-components/wrappers/with-theme"
 import imgLoader from "components/avl-components/wrappers/img-loader"
 import showLoading from "components/avl-components/wrappers/show-loading"
 
-import * as d3brush from "d3-brush"
-import * as d3selection from "d3-selection"
-
-const d3 = {
-  ...d3brush,
-  ...d3selection
-}
-
-const getInitialState = type => ({
-  group: null,
-  brush: d3[type](),
-  Brush: () => null,
-  width: 0,
-  height: 0,
-  selection: null
-})
-const reducer = (state, action) => ({ ...state, ...action });
-
-const useBrush = (node, type = "brush") => {
-  const [{
-    group,
-    brush,
-    Brush,
-    width,
-    height,
-    selection
-  }, dispatch] = React.useReducer(reducer, type, getInitialState);
-
-  React.useEffect(() => {
-    const setGroup = n => dispatch({ group: n });
-    dispatch({
-      Brush: React.memo(() => <g ref={ setGroup }/>)
-    })
-  }, []);
-
-  React.useEffect(() => {
-    if (node && group) {
-      const brushEnd = e =>
-        dispatch({ selection: group ? d3.brushSelection(group) : null });
-      d3.select(group).call(brush.on("end", brushEnd, 50));
-    }
-    else if (width && height) {
-      dispatch({ selection: null });
-      dispatch({ width: 0, height: 0 });
-    }
-    return () => brush.on("end", null);
-  }, [node, group, brush, width, height]);
-
-  if (node) {
-    const rect = node.getBoundingClientRect();
-    if ((rect.width !== width) || (rect.height !== height)) {
-      dispatch({ width: rect.width, height: rect.height });
-      brush.extent([[0, 0], [rect.width, rect.height]]);
-    }
-  }
-  React.useEffect(() => {
-    if (node) {
-      const rect = node.getBoundingClientRect();
-      if ((rect.width !== width) || (rect.height !== height)) {
-        dispatch({ width: rect.width, height: rect.height });
-        brush.extent([[0, 0], [rect.width, rect.height]]);
-      }
-    }
-  }, [node, brush, width, height]);
-
-  return {
-    Brush,
-    selection,
-    clearBrush: () => brush.clear(d3.select(group))
-  }
-}
+import { useBrush } from "components/avl-components/components/utils"
 
 const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValue, onChange, ...props }) => {
   const [draggingOver, setDragging] = React.useState(false);
@@ -156,10 +86,10 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
       filename = stack[index].filename;
 
     props.editImage(imgSrc, filename, "crop", [x2 - x1, y2 - y1, x1, y1])
-      .then(url => pushStack({ filename, url }))
-      .then(() => setHistory([...history, imgSrc]))
-      // .then(() => Attribute.setWarning("Unsaved Image!!!"))
-      .then(() => onChange(propsValue))
+      .then(url => {
+        pushStack({ filename, url });
+        setHistory([...history, url]);
+      })
       .then(clearBrush);
   }
   const undo = e => {
@@ -188,7 +118,10 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
       Attribute.setWarning("unsaved", null);
     }
     else {
-      Attribute.setWarning("unsaved", "You have unsaved edits to your image!!! Either Save or Undo your edits.");
+      Attribute.setWarning("unsaved", {
+        msg: "You have unsaved edits to your image!!! Either Save or Undo your edits.",
+        canGoPrev: false
+      });
     }
   }, [index, Attribute, propsValue, onChange])
 

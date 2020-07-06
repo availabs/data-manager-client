@@ -54,82 +54,31 @@ export default ({
     },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
-    { type: "dms-list",
+    { type: "dms-table",
       props: {
         dmsAction: "list",
-        dmsActions: ["dms:fake-one", "dms:fake-two"],
         columns: [
-          "self:data.title",
-          "self:data.bloggerId",
-          { source: "self:updated_at",
-            format: "date:MMM Do, YYYY h:mm a"
+          { path: "self:data.title",
+            filter: "fuzzyText"
           },
-          "dms:view",
+          "self:data.bloggerId",
+          { path: "self:updated_at",
+            format: "date",
+            disableFilters: true
+          },
           "dms:edit",
           "dms:delete"
         ],
         filter: {
           args: ["self:data.replyTo"],
-          comparator: arg1 => !Boolean(arg1)
+          comparator: arg1 => !Boolean(arg1),
+          sortType: d => new Date(d).valueOf()
         }
       }
     },
 
     { type: BlogPost,
       props: { dmsAction: "view" }
-    },
-
-    { type: "dms-card", // generic dms component for viewing a single data item
-      props: {
-        dmsAction: "viewOld",
-        dmsActions: [
-          { action: "dms:fake-three",
-            buttonTheme: "buttonPrimary"
-          },
-          { action: "dms:fake-four",
-            buttonTheme: "buttonSuccess"
-          }
-        ],
-      },
-      wrappers: [
-        { type: "dms-view",
-          options: {
-            mapDataToProps: {
-// mapDataToProps is used by dms-view to map data items to wrapped component props
-// prop: [...attributes]
-              title: "item:data.title",
-              body: [
-                "item:data.body",
-                "item:data.bloggerId",
-                "item:data.tags",
-                "item:updated_at"
-              ]
-            },
-            actions: ["dms:reply"]
-          }
-        }
-      ],
-      children: [
-        { type: "dms-list",
-          props: {
-            columns: ["title", "bloggerId", "body"],
-            className: "mt-5",
-            title: "Replies"
-          },
-          wrappers: [
-            "with-theme",
-            {
-              type: "dms-falcor",
-              options: {
-                filter: {
-                  args: ["self:data.replyTo", "props:blog-post.id"],
-                  comparator: (arg1, arg2) => +arg1 === +arg2
-                }
-              }
-            }
-          ]
-        }
-      ]
     },
 
     { type: "dms-create",
@@ -160,19 +109,31 @@ export default ({
                 "item:data.bloggerId",
                 "item:data.body",
                 "item:data.tags",
-                "item:data.image",
-                "item:updated_at",
-                "props:user.id"
+              ],
+              footer: [
+                "item:updated_at"
               ]
             },
             actions: [{
               action: "api:delete",
               showConfirm: true,
-              seedProps: props =>
+              seedProps: props => {
 // these ids are sent to the api:delete function
-                get(props, "dataItems", []).reduce((a, c) =>
-                  get(c, ["data", "replyTo"]) === get(props, ["blog-post", "id"]) ? [...a, c.id] : a
-                , [])
+                const postId = +get(props, ["blog-post", "id"], null),
+                  posts = get(props, "dataItems", []).map(d => ({ id: +d.id, replyTo: +d.data.replyTo }));
+
+                const getReplies = (posts, id, final) => {
+                  const replies = posts.filter(d => d.replyTo === id);
+                  if (!replies.length) return final;
+
+                  for (const reply of replies) {
+                    final.push(...getReplies(posts, reply.id, [reply.id]));
+                  }
+
+                  return final;
+                }
+                return getReplies(posts, postId, [postId]);
+              }
             }]
           }
         },

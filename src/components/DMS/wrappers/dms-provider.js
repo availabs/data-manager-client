@@ -32,6 +32,13 @@ export const useMakeOnClick = (dmsAction, item, props) => {
   return makeOnClick(dmsAction, item, props)
 }
 
+const processMessage = msg => ({
+  canGoPrev: true,
+  canGoNext: false,
+  canGo: true,
+  ...msg
+})
+
 let UNIQUE_ID = 0;
 const newMsgId = () => `dms-msg-${ ++UNIQUE_ID }`;
 
@@ -142,7 +149,7 @@ export default (Component, options = {}) => {
       this.setState(state => {
         const { pageMessages } = state;
         return {
-          pageMessages: [...pageMessages, msg]
+          pageMessages: [...pageMessages, processMessage(msg)]
         }
       })
     }
@@ -158,7 +165,7 @@ export default (Component, options = {}) => {
       this.setState(state => {
         const { attributeMessages } = state;
         return {
-          attributeMessages: [...attributeMessages, msg]
+          attributeMessages: [...attributeMessages, processMessage(msg)]
         };
       })
     }

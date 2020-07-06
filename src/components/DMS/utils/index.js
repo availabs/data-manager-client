@@ -103,44 +103,38 @@ export const getFormat = format => {
 }
 
 export const useDmsColumns = columns => {
-  const [Columns, setColumns] = React.useState([[], []]);
-
-  React.useEffect(() => {
+  return React.useMemo(() => {
     const temp = columns.map(att => {
       if (typeof att === "string") {
         if (/^(dms|api):(.+)$/.test(att)) {
           att = { action: att };
         }
         else {
-          att = { source: att };
+          att = { path: att };
         }
       }
       if (att.action) {
         return processAction(att);
       }
-      if (att.source && !/^self|item|props:/.test(att.source)) {
-        att.source = `self:data.${ att.source }`;
+      if (att.path && !/^self|item|props:/.test(att.path)) {
+        att.path = `self:data.${ att.path }`;
       }
       return { ...att,
-        key: att.source.split(/[:.]/).pop(),
+        key: att.path.split(/[:.]/).pop(),
         format: getFormat(att.format)
       };
     })
-    setColumns(
-      temp.reduce((a, c) => {
-        const [atts, acts] = a;
-        if (c.source) {
-          atts.push(c);
-        }
-        else {
-          acts.push(c);
-        }
-        return a;
-      }, [[], []])
-    );
+    return temp.reduce((a, c) => {
+      const [atts, acts] = a;
+      if (c.path) {
+        atts.push(c);
+      }
+      else {
+        acts.push(c);
+      }
+      return a;
+    }, [[], []]);
   }, [columns]);
-
-  return Columns;
 }
 
 export const compareActions = (action1 = "", action2 = "") =>
@@ -323,7 +317,7 @@ const reduceSplit = (split, source, func) => {
   return reduceSplit(split, get(source, path, null), func);
 }
 
-const getValueFromPath = (pathArg, sources, directives, _default) => {
+const getValueFromPath = (pathArg, sources, directives, _default, format) => {
   if (typeof pathArg !== "string") return _default || pathArg;
 
   const {
@@ -356,7 +350,7 @@ const getValueFromPath = (pathArg, sources, directives, _default) => {
       return [...a, c];
     }, []).reverse();
 
-  const value = reduceSplit(split, split.pop(), setPreserve);
+  const value = format(reduceSplit(split, split.pop(), setPreserve));
 
   if (preserveKeys) {
     return { key, value };
@@ -395,10 +389,11 @@ export const getValue = (arg, sources, directives = {}, _default = null) => {
     type,
     key,
     value,
+    format,
     interact = []
   } = arg;
 
-  let data = getValueFromPath(path, sources, directives, _default);
+  let data = getValueFromPath(path, sources, directives, _default, getFormat(format));
 
   if (type) {
     if (!Array.isArray(data)) {

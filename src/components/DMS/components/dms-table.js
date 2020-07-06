@@ -8,11 +8,11 @@ import get from "lodash.get"
 
 import { makeFilter, prettyKey, getValue, useDmsColumns } from "../utils"
 
-const DmsTable = ({ columns, ...props }) => {
+const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, ...props }) => {
 	const [attributes, actions] = useDmsColumns(columns);
 
   const filter = makeFilter(props),
-    dataItems = filter ? props.dataItems.filter(filter) : props.dataItems;
+    dataItems = (filter ? props.dataItems.filter(filter) : props.dataItems);
 
   const getAttributeName = att => {
     att = att.split(/[:.]/).pop();
@@ -24,11 +24,11 @@ const DmsTable = ({ columns, ...props }) => {
   const columnData = [
     // add attributes
     ...attributes
-      .map(({ source, key, format, ...rest }) => {
+      .map(({ path, key, format, ...rest }) => {
         return {
 					...rest,
-          id: source,
-          accessor: d => d[source],
+          id: key,
+          accessor: d => d[key],
           Header: getAttributeName(key),
 					Cell: ({ value }) => format(value)
         }
@@ -38,7 +38,8 @@ const DmsTable = ({ columns, ...props }) => {
         return {
 					...a,
           accessor: a.action,
-          // Header: d => null,
+					disableFilters: true,
+					disableSortBy: true,
           Cell: cell =>
 						<div className="flex justify-end">
 	            <DmsButton action={ a } item={ cell.row.original.self }
@@ -52,13 +53,16 @@ const DmsTable = ({ columns, ...props }) => {
     .map(self => ({
       self,
       ...attributes.reduce((a, c) => {
-        a[c.source] = getValue(c.source, { self });
+				const { value, key } = getValue(c.path, { self }, { preserveKeys: true });
+        a[key] = value;
         return a;
       }, {}),
       ...actions.reduce((o, a) => {
         o[a.action] = a;
         return o
-      }, {})
+      }, {}),
+			onClick: props.makeOnClick('dms:view', self.id),
+			subRows: []
     }))
 // console.log("DATA ITEMS:", dataItems)
   return !props.dataItems.length ? null : (
@@ -66,8 +70,9 @@ const DmsTable = ({ columns, ...props }) => {
       { props.title ? <Header title={ props.title } /> : null }
       <Table data={ data }
         columns={ columnData }
-        // onRowClick={ d => props.makeInteraction('dms:view', d.original) }
-      />
+				sortBy={ sortBy }
+				sortOrder={ sortOrder }
+				initialPageSize={ initialPageSize }/>
     </Content>
   )
 }
@@ -79,7 +84,7 @@ DmsTable.defaultProps = {
   filter: false,
   sortBy: "updated_at",
   sortOrder: "desc",
-  transform: null,
-  theme: {}
+  initialPageSize: 10,
+  striped: false
 }
 export default DmsTable;
