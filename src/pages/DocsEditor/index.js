@@ -12,7 +12,7 @@ export const Create = ({ createState, setValues, item, ...props }) => {
   let UserID = createState.sections[0].attributes[2]
 
   return (
-    <div className='max-w-2xl'>
+    <div className='max-w-2xl mx-auto'>
       <form onSubmit={ e => e.preventDefault() }>
         <div className="w-full flex flex-col justify-centerhasValue h-min-screen">
           <div

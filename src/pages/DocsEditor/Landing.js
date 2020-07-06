@@ -60,9 +60,6 @@ const Card = ({id, Title='', Tags=[], Preview='', User='',Updated='', ReadTime=f
 const Content = ({dataItems}) =>
   <div className=''>
     <div className="relative pt-16 pb-20 px-4 sm:px-6 lg:pt-24 lg:pb-28 lg:px-8">
-      <div className="absolute inset-0">
-        <div className="bg-blue-100 h-1/3 sm:h-2/3" />
-      </div>
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center">
           <h2 className="text-3xl leading-9 tracking-tight font-extrabold text-gray-900 sm:text-4xl sm:leading-10">
@@ -75,7 +72,8 @@ const Content = ({dataItems}) =>
         </div>
 
         <div className="mt-12 grid gap-5 max-w-lg mx-auto lg:grid-cols-3 lg:max-w-none">
-        { dataItems.map(item => {
+        { 
+          dataItems.map(item => {
           
           const Words = item.data.body.blocks.reduce((a,c) => {  return a + +c.text.split(' ').length },0)
           const ReadTime = Math.max(1, Math.round(Words / 200))
@@ -91,16 +89,18 @@ const Content = ({dataItems}) =>
             key={item.id}
             id={item.id}
           />
-        })}
+          })
+        }
         </div>
         
       </div>
     </div>
+  {/*
     <pre>
       Hello world
       {JSON.stringify(dataItems, null, 4)}
     </pre>
-
+  */}
   </div>
 
 export default {
