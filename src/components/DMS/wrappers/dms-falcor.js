@@ -106,8 +106,7 @@ export default (WrappedComponent, options = {}) => {
     falcorEdit(action, id, data) {
       if (!(id && data)) return Promise.resolve();
 
-      return this.props.falcor
-        .setValue(["dms", "data", "byId", id, "data"], JSON.stringify(data));
+      return this.props.falcor.call(["dms", "data", "update"], [id, data]);
     }
     falcorCreate(action, id, data) {
       const args = [this.props.app, this.props.type, data].filter(Boolean);

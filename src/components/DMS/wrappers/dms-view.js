@@ -15,7 +15,7 @@ const ViewItem = ({ value, type }) =>
     <div className="h-64 flex justify-start items-center">
       <img src={ value.url } className="h-64" alt={ value.filename }/>
     </div>
-  : (type === "object") || /^dms-format:/.test(type) ?
+  : (type === "object") || (type === "dms-format") ?
     <div className="whitespace-pre-wrap">
       { JSON.stringify(value, null, 4) }
     </div>
@@ -53,9 +53,9 @@ export default (Component, options = {}) => {
         name = attribute.name || prettyKey(key),
         type = attribute.type;
 
-      if (!value) return { value:null, name };
+      if (!value) return { value: null, name };
 
-      if (/-array$/.test(type)) {
+      if (attribute.isArray) {
         value = value.map((v, i) => <ViewItem key={ i } type={ type } value={ v }/>)
       }
       else {
@@ -73,7 +73,7 @@ export default (Component, options = {}) => {
 
       if (source === "item") {
         const { value, name } = this.renderItem(objectArg, sources.item);
-        return (
+        return ( !value ? null :
           <ViewRow key={ key } name={ name }>
             { value }
           </ViewRow>

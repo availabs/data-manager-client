@@ -13,8 +13,8 @@ const TestFormat1 = {
       type: "number"
     },
     { key: "test-1-4",
-      type: "dms-format:dms+dms-test-2",
-      // required: false
+      type: "dms-format",
+      format: "dms+dms-test-2"
     }
   ]
 }
@@ -47,6 +47,30 @@ export default {
   registerFormats: [TestFormat1, TestFormat2],
 
   sections: [
+    { title: "Numbers Page",
+      attributes: [
+        { key: "test-number",
+          type: "number"
+        },
+        { key: "test-number-array",
+          type: "number",
+          isArray: true
+        },
+        { key: "test-format-2",
+          type: "dms-format",
+          format: "dms+dms-test-2"
+        },
+        { key: "test-format-array",
+          type: "dms-format",
+          format: "dms+dms-test-2",
+          isArray: true
+        },
+        { key: "test-format-1",
+          type: "dms-format",
+          format: "dms+dms-test-1"
+        }
+      ]
+    },
     { title: "Editor Page",
       attributes: [
         { key: "text-editor",
@@ -95,24 +119,13 @@ export default {
         },
       ]
     },
-    { title: "Format Page",
-      attributes: [
-        { key: "test-format",
-          type: "dms-format:dms+dms-test-1",
-          // required: true
-        }
-      ]
-    },
-    { title: "Numbers Page",
-      attributes: [
-        { key: "test-number",
-          type: "number"
-        },
-        { key: "test-number-array",
-          type: "number",
-          isArray: true
-        }
-      ]
-    },
+    // { title: "Format Page",
+    //   attributes: [
+    //     { key: "test-format",
+    //       type: "dms-format:dms+dms-test-1",
+    //       // required: true
+    //     }
+    //   ]
+    // },
   ]
 }

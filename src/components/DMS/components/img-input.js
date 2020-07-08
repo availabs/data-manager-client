@@ -8,10 +8,9 @@ import styled from "styled-components"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 import imgLoader from "components/avl-components/wrappers/img-loader"
 import showLoading from "components/avl-components/wrappers/show-loading"
-
 import { useBrush } from "components/avl-components/components/utils"
 
-const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValue, onChange, ...props }) => {
+const ImgInput = ({ height = 500, autoFocus = false, value: propsValue, onChange, ...props }) => {
   const [draggingOver, setDragging] = React.useState(false);
 
   const dragOver = e => {
@@ -113,17 +112,17 @@ const ImgInput = ({ height = 500, autoFocus = false, Attribute, value: propsValu
     onChange(null);
   }
 
-  React.useEffect(() => {
-    if (index < 1) {
-      Attribute.setWarning("unsaved", null);
-    }
-    else {
-      Attribute.setWarning("unsaved", {
-        msg: "You have unsaved edits to your image!!! Either Save or Undo your edits.",
-        canGoPrev: false
-      });
-    }
-  }, [index, Attribute, propsValue, onChange])
+  // React.useEffect(() => {
+  //   if (index < 1) {
+  //     Attribute.setWarning("unsaved", null);
+  //   }
+  //   else {
+  //     Attribute.setWarning("unsaved", {
+  //       msg: "You have unsaved edits to your image!!! Either Save or Undo your edits.",
+  //       canGoPrev: false
+  //     });
+  //   }
+  // }, [index, Attribute, propsValue, onChange])
 
   const [svg, setSvg] = React.useState(null)
   const {
