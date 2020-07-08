@@ -1,9 +1,10 @@
 import React from "react"
 
-import { Input, TextArea, ArrayInput, Select, ObjectInput } from "components/avl-components/components/Inputs"
+import { Input, TextArea, Select, ObjectInput } from "components/avl-components/components/Inputs"
 import Editor from "../../components/editor"
 import ImgInput from "../../components/img-input"
 import DmsInput from "../../components/dms-input"
+import ArrayInput from "../../components/array-input"
 
 import get from "lodash.get"
 
@@ -15,7 +16,6 @@ export class DmsCreateStateClass {
     this.numSections = 0;
     this.activeSection = null;
     this.activeIndex = -1;
-
 
     this.verified = false;
     this.hasWarning = false;
@@ -44,10 +44,7 @@ export class DmsCreateStateClass {
     }
     this.ininitialized = false;
     this.initValues = values => {
-      this.formatAttributes.forEach(att => {
-        att.setValue(values[att.key]);
-      });
-      setValues(prev => ({ ...prev, ...values }));
+      this.formatAttributes.forEach(att => att.onChange(values[att.key]));
     }
 
     this.msgIds = {};
@@ -98,65 +95,76 @@ const getInput = (att, props, disabled) => {
   const { type, isArray } = att,
     domain = getDomain(att, props);
 
+  if (domain) {
+    return props => (
+      <Select { ...props } multi={ isArray } domain={ domain } id={ att.id }
+        disabled={ disabled || (att.editable === false) }/>
+    );
+  }
+  let InputComp = null, inputProps = {};
+
   switch (type) {
     case "textarea":
-      return props => (
-        <TextArea { ...props } id={ att.id }
-          disabled={ disabled || att.editable === false }/>
-      );
+      InputComp = TextArea;
+      break;
     case "img":
-      return props => (
-        <ImgInput { ...props } id={ att.id } Attribute={ att }
-          disabled={ disabled || (att.editable === false) }/>
-      );
+      InputComp = ImgInput;
+      break;
     case "richtext":
-      return props => (
-        <Editor { ...props } id={ att.id } itemId={ get(props, ["item", "id"], "") }
-          disabled={ disabled || (att.editable === false) }/>
-      );
+      InputComp = Editor;
+      inputProps = { itemId: get(props, ["item", "id"], "") };
+      break;
     case "object":
-      return props => (
-        <ObjectInput { ...props } id={ att.id }
-          disabled={ disabled || (att.editable === false) }/>
-      )
+      InputComp = ObjectInput;
+      break;
     default:
-      if (isArray && domain) {
-        return props => (
-          <Select { ...props } multi={ true } domain={ domain } id={ att.id }
-            disabled={ disabled || (att.editable === false) }/>
-        );
-      }
-      if (domain) {
-        return props => (
-          <Select { ...props } multi={ false } domain={ domain } id={ att.id }
-            disabled={ disabled || (att.editable === false) }/>
-        );
-      }
-      if (isArray) {
-        return props => (
-          <ArrayInput { ...props } type={ type } id={ att.id }
-            disabled={disabled || ( att.editable === false) }/>
-        );
-      }
-      return props => (
-        <Input { ...props } type={ type } id={ att.id }
-          disabled={ disabled || (att.editable === false) }/>
-        );
+      InputComp = Input;
+      inputProps = { type };
+      break;
   }
+  if (isArray) {
+    return props => (
+      <ArrayInput Input={ InputComp } id={ att.id }
+        { ...props } inputProps={ inputProps } verifyValue={ att.verifyValue }
+        disabled={ disabled || (att.editable === false) }/>
+    )
+  }
+  return props => (
+    <InputComp id={ att.id } { ...inputProps } { ...props }
+      disabled={ disabled || (att.editable === false) }/>
+  )
 }
 
 class Attribute {
   constructor(att, setValues, dmsMsg, props) {
     Object.assign(this, att);
     this.name = this.name || prettyKey(this.key);
-    this.verified = false;
-    this.value = null;
     this.Input = getInput(this, props);
 
+    this.value = this.isArray ? [] : null;
+    this.hasValue = false;
+    this.verified = !this.required;
+
     this.onChange = value => {
-      this.setValue(value);
+      this.value = value;
+      this.hasValue = hasValue(value);
+      this.verified = this.verifyValue(value);
+      if (!this.verified) {
+        if (!this.hasValue && this.required) {
+          this.setWarning("missing-data", `Missing value for required attribute: ${ this.name }.`);
+          this.setWarning("invalid-data", null);
+        }
+        else {
+          this.setWarning("invalid-data", `Invalid value for attribute: ${ this.name }.`);
+          this.setWarning("missing-data", null);
+        }
+      }
+      else {
+        this.setWarning("invalid-data", null);
+        this.setWarning("missing-data", null);
+      }
       setValues(this.key, value);
-    };
+    }
 
     this.msgIds = {};
     this.hasWarning = false;
@@ -190,95 +198,159 @@ class Attribute {
     }
   }
   getWarnings = () => Object.values(this.msgIds);
-  setValue(value) {
-    this.value = value;
-    this.verifyValue();
-    if (!this.verified) {
-      if (!hasValue(this.value) && this.required) {
-        this.setWarning("missing-data", `Missing value for required attribute: ${ this.name }.`);
-        this.setWarning("invalid-data", null);
+
+  verifyValue = value => {
+    if (hasValue(value)) {
+      if (Array.isArray(value)) {
+        return value.reduce((a, c) =>
+          a && verifyValue(c, this.type, this.verify)
+        , true)
       }
       else {
-        this.setWarning("invalid-data", `Invalid value for attribute: ${ this.name }.`);
-        this.setWarning("missing-data", null);
+        return verifyValue(value, this.type, this.verify);
       }
     }
-    else {
-      this.setWarning("invalid-data", null);
-      this.setWarning("missing-data", null);
-    }
-  }
-  verifyValue() {
-    if (hasValue(this.value)) {
-      this.verified = verifyValue(this.value, this.type, this.verify);
-    }
-    else if (this.required) {
-      this.verified = false;
-    }
-    else {
-      this.verified = true;
-    }
+    return !this.required;
   }
 }
+
+export const isRequired = attributes => {
+  return attributes.reduce((a, c) => {
+    if (c.type === "dms-format") {
+      return a || isRequired(c.attributes);
+    }
+    return a || c.required;
+  }, false)
+}
+
+export const getAttributes = (format, formats) => {
+  const attributes = [];
+  format.attributes.forEach(att => {
+    const Att = Object.assign({}, att);
+    Att.name = att.name || prettyKey(att.key);
+    if (Att.type === "dms-format") {
+      Att.attributes = getAttributes(formats[Att.format], formats);
+    }
+    attributes.push(Att);
+  })
+  return attributes;
+}
+
 class DmsAttribute {
-  constructor(att, setValues, dmsMsg, props, formatName) {
+  constructor(att, setValues, dmsMsg, props) {
     Object.assign(this, att);
     this.name = this.name || prettyKey(this.key);
-    this.format = props.registeredFormats[formatName];
+    this.Format = JSON.parse(JSON.stringify(props.registeredFormats[att.format]));
 
-    this.onChange = (key, value) => {
-      this.value = { ...this.value, [key]: value };
-      if (!hasValue(value)) {
-        delete this.value[key];
+    this.attributes = getAttributes(this.Format, props.registeredFormats);
+
+    this.value = this.isArray ? [] : null;
+    this.hasValue = false;
+    this.required = this.isArray ? this.required : isRequired(this.attributes);
+    this.verified = !this.required;
+
+    this.onChange = value => {
+      this.value = value;
+      this.hasValue = hasValue(value);
+      this.verified = this.verifyValue(value);
+      this.sendWarnings(value);
+      setValues(this.key, value);
+    }
+
+    this.msgIds = {};
+    this.hasWarning = false;
+    this.setWarning = (type, warning) => {
+      if (warning && !(type in this.msgIds)) {
+        const msgId = dmsMsg.newMsgId();
+        this.msgIds[type] = msgId;
+        if (typeof warning === "string") {
+          warning = { msg: warning };
+        }
+        dmsMsg.sendAttributeMessage({ ...warning, id: msgId });
       }
-      this.verifyValue();
-      setValues(this.key, this.value);
+      else if (!warning && (type in this.msgIds)) {
+        const msgId = this.msgIds[type];
+        dmsMsg.removeAttributeMessage([msgId]);
+        delete this.msgIds[type];
+      }
+      this.hasWarning = Boolean(this.getWarnings().length);
     }
-    this.attributes = this.format.attributes.reduce((a, c) => {
-      a[c.key] = makeNewAttribute(c, this.onChange, dmsMsg, props);
-      return a;
-    }, {});
-    if (this.required !== false) {
-      this.required = Object.values(this.attributes).reduce((a, c) => a || c.required, false);
+    this.cleanup = () => {
+      const msgIds = Object.values(this.msgIds);
+      if (msgIds.length) {
+        dmsMsg.removeAttributeMessage(msgIds);
+      }
     }
-    this.verified = false;
-    this.value = null;
-    this.Input = props => (
-      <DmsInput { ...props } Attribute={ this } id={ this.id } format={ this.format }/>
-    )
 
-    this.getWarnings = () => Object.values(this.attributes)
-      .reduce((a, c) => a.concat(c.getWarnings()), []);
-  }
-  cleanup = () => {
-    Object.values(this.attributes).forEach(att => att.cleanup());
-  }
-  onSave = () => {
-    Object.values(this.attributes).forEach(att => att.onSave());
-  }
-  setValue(value) {
-    this.value = value;
-    Object.values(this.attributes).forEach(att => att.setValue(get(value, att.key)));
-    this.verifyValue();
-  }
-  verifyValue() {
-    if (hasValue(this.value)) {
-      this.verified = Object.values(this.attributes)
-        .reduce((a, c) => a && c.verified, true);
-    }
-    else if (this.required) {
-      this.verified = false;
+    if (this.isArray) {
+      this.Input = others => (
+        <ArrayInput { ...others } verifyValue={ this.verifyValue } id={ this.id }
+          Input={ DmsInput } inputProps={ { Attribute: this } }/>
+      )
     }
     else {
-      this.verified = true;
+      this.Input = others => (
+        <DmsInput { ...others } Attribute={ this } id={ this.id }/>
+      )
     }
+  }
+  getWarnings = () => Object.values(this.msgIds);
+  cleanup = () => {
+
+  }
+  onSave = () => {
+
+  }
+  sendWarnings = (value, attributes = this.attributes) => {
+    if (this.isArray) {
+      if (this.required && !hasValue(value)) {
+        this.setWarning(`missing-data-${ this.key }`, `Missing value for required attribute: ${ this.name }.`);
+      }
+      else {
+        this.setWarning(`missing-data-${ this.key }`, null);
+      }
+      return;
+    }
+    attributes.forEach(att => {
+      const Value = get(value, att.key),
+        _hasValue = hasValue(Value);
+
+      if (att.type === "dms-format") {
+        this.sendWarnings(Value, att.attributes);
+        return;
+      }
+      if (!_hasValue && att.required) {
+        this.setWarning(`missing-data-${ att.key }`, `Missing value for required attribute: ${ att.name }.`);
+      }
+      else if (_hasValue) {
+        this.setWarning(`missing-data-${ att.key }`, null);
+        if (!verifyValue(Value, att.type, att.verify)) {
+          this.setWarning(`invalid-data-${ att.key }`, `Invalid value for attribute: ${ att.name }.`);
+        }
+        else {
+          this.setWarning(`invalid-data-${ att.key }`, null);
+        }
+      }
+    })
+  }
+  verifyValue = (value, attributes = this.attributes) => {
+    if (!hasValue(value)) return !this.required;
+
+    if (Array.isArray(value)) {
+      return value.reduce((a, c) => a && this.verifyValue(c, attributes), true);
+    }
+    return attributes.reduce((a, c) => {
+      if (c.type === "dms-format") {
+        return a && this.verifyValue(value[c.key], c.attributes);
+      }
+      return a && (hasValue(value[c.key]) ?
+        verifyValue(value[c.key], c.type, c.verify) : !c.required);
+    }, true)
   }
 }
 export const makeNewAttribute = (att, setValues, dmsMsg, props) => {
-  const match = /^dms-format:(.+)$/.exec(att.type);
-  if (match) {
-    const [, name] = match;
-    return new DmsAttribute(att, setValues, dmsMsg, props, name);
+  if (att.type === "dms-format") {
+    return new DmsAttribute(att, setValues, dmsMsg, props);
   }
   return new Attribute(att, setValues, dmsMsg, props);
 }

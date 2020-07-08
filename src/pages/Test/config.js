@@ -1,5 +1,3 @@
-import React from 'react';
-
 import TEST_FORMAT from "./test-config.type"
 
 const domain = [
@@ -23,7 +21,7 @@ const domain = [
 ]
 
 export default {
-  type: ({ children }) => <div className="flex"><div className="mt-20 flex-1 w-full mx-auto max-w-7xl mb-10">{ children }</div></div>,
+  type: "dms-content",
   // type: "dms-manager",
   wrappers: [
 // wrapper order is important
@@ -56,7 +54,6 @@ export default {
           { path: "self:updated_at",
             format: "date"
           },
-          "dms:view",
           "dms:edit",
           { action: "api:delete", showConfirm: true }
         ]
@@ -73,7 +70,10 @@ export default {
 // prop: [...attributes]
               title: "item:data.title",
               body: [
-                "item:data.test-format",
+                "item:data.test-format-2",
+                "item:data.test-format-array",
+                "item:data.test-format-1",
+                "item:data.test-number-array",
                 "item:data.test-image",
                 "item:data.text-editor"
               ],
@@ -110,27 +110,5 @@ export default {
       wrappers: ["with-auth"]
     },
 
-    { type: "dms-card",
-      props: { dmsAction: "delete" },
-      wrappers: [
-        { type: "dms-view",
-          options: {
-            mapDataToProps: {
-// mapDataToProps is used by dms-view to map data items to wrapped component props
-// prop: [...attributes]
-              title: "item:data.title",
-              body: [
-                "item:data.test-format",
-                "item:data.test-image"
-              ],
-              footer: [
-                "item:data.creator",
-                "item:updated_at"
-              ]
-            }
-          }
-        }
-      ]
-    }
   ]
 }

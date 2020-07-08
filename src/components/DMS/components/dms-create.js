@@ -2,7 +2,7 @@ import React from "react"
 
 import { Button } from "components/avl-components/components/Button"
 import Select from "components/avl-components/components/Inputs/select"
-import { hasValue } from "components/avl-components/components/Inputs/utils"
+// import { hasValue } from "components/avl-components/components/Inputs/utils"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import { DmsButton } from "./dms-button"
@@ -53,7 +53,7 @@ const BadAttributeRow = ({ oldKey, value, formatAttributes, deleteOld, mapOldToN
     </div>
   )
 }
-export const DmsCreateBase = ({ createState, setValues, ...props }) => {
+export const DmsCreateBase = ({ createState, ...props }) => {
   const theme = useTheme();
   return (
     <div>
@@ -65,19 +65,19 @@ export const DmsCreateBase = ({ createState, setValues, ...props }) => {
           </div>
           <div className="w-full flex flex-col justify-center">
             { createState.activeSection.attributes
-              .map(({ Input, key, ...att }, i) =>
-                <div key={ key }
-                  className={ `
-                    border-l-4 pl-2 mb-2 pb-2
-                    ${ att.type === "richtext" || att.type === "img" ? "" : "max-w-2xl" }
-                    ${ !att.verified ? theme.borderDanger : att.required && att.verified ? theme.borderSuccess :
-                        hasValue(att.value) ? theme.borderInfo : "border-current" }
-                  ` }>
-                  <label htmlFor={ att.id }>{ att.name }</label>
-                  <Input value={ att.value } onChange={ att.onChange }
-                    autoFocus={ i === 0 }/>
-                </div>
-              )
+                .map(({ Input, key, ...att }, i) => (
+                  <div key={ key }
+                    className={ `
+                      border-l-4 pl-2 mb-2 pb-2
+                      ${ att.type === "richtext" || att.type === "img" ? "" : "max-w-2xl" }
+                      ${ !att.verified ? theme.borderDanger : att.required ? theme.borderSuccess :
+                          att.hasValue ? theme.borderInfo : "border-current" }
+                    ` }>
+                    <label htmlFor={ att.id }>{ att.name }</label>
+                    <Input value={ att.value } onChange={ att.onChange }
+                      autoFocus={ i === 0 }/>
+                  </div>
+                ))
             }
           </div>
         </form>

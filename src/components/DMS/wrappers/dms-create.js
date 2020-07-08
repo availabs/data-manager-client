@@ -23,7 +23,7 @@ export const useSetSections = format => {
   }, [format]);
 }
 
-const useProcessValues = (sections, props) => {
+export const useDmsCreateState = (sections, props) => {
 
   const dmsMsg = useMessenger();
 
@@ -47,7 +47,6 @@ const useProcessValues = (sections, props) => {
         verified: false,
         attributes: attributes.map(att => makeNewAttribute(att, DmsCreateState.setValues, dmsMsg, props))
       }))
-      Sections.forEach(section => section.attributes.forEach(att => att.setValue(null)));
 
       DmsCreateState.sections = Sections;
       DmsCreateState.numSections = Sections.length;
@@ -134,7 +133,7 @@ const useProcessValues = (sections, props) => {
 export const dmsCreate = Component => {
   return ({ ...props }) => {
     const sections = useSetSections(props.format),
-      DmsCreateState = useProcessValues(sections, props);
+      DmsCreateState = useDmsCreateState(sections, props);
 
     useEffect(() => {
       if (DmsCreateState.hasValues && DmsCreateState.verified) {
@@ -143,7 +142,7 @@ export const dmsCreate = Component => {
       else {
         DmsCreateState.setWarning("unsaved", null);
       }
-    }, [DmsCreateState.hasValues, DmsCreateState]);
+    }, [DmsCreateState.hasValues, DmsCreateState.verified, DmsCreateState]);
 
     useEffect(() => {
       const values = {};
@@ -161,7 +160,7 @@ export const dmsCreate = Component => {
 
     if (!DmsCreateState.activeSection) return null;
     return (
-      <Component { ...props } createState={ DmsCreateState } values={ DmsCreateState.values }/>
+      <Component { ...props } createState={ DmsCreateState }/>
     )
   }
 }
@@ -176,7 +175,7 @@ export const dmsEdit = Component => {
     }, [item]);
 
     const sections = useSetSections(props.format),
-      DmsCreateState = useProcessValues(sections, props),
+      DmsCreateState = useDmsCreateState(sections, props),
       updated = hasBeenUpdated(data, DmsCreateState.values);
 
     useEffect(() => {
