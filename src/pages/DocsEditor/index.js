@@ -90,6 +90,10 @@ const config =  ({
     className: 'h-full',
     // noHeader: true,
     authRules: {
+      view: {
+        args: ["props:user.authLevel"],
+        comparator: al => true
+      },
       create: {
         args: ["props:user.authLevel"],
         comparator: al => al !== null
@@ -186,7 +190,7 @@ export default {
   path: "/docs",
   mainNav: true,
   // exact: true,
-  auth: true,
+  auth: false,
   name: 'Docs',
   icon: '',
   layoutSettings: {

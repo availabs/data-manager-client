@@ -35,15 +35,15 @@ const Card = ({id, Title='', Tags=[], Preview='', User='',Updated='', ReadTime=f
                 <img
                   className="h-10 w-10 rounded-full"
                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt
+                  alt='test'
                 />
               </div>
             </div>
             <div className="ml-3">
               <p className="text-sm leading-5 font-medium text-gray-900">
-                <a href="#" className="hover:underline">
+                <div className="hover:underline">
                   {User}
-                </a>
+                </div>
               </p>
               <div className="flex text-sm leading-5 text-gray-500">
                 <time dateTime="2020-03-16">{Updated}</time>
