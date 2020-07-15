@@ -121,8 +121,8 @@ export const useDmsCreateState = (sections, props) => {
 
     DmsCreateState.dmsAction = {
       action: "api:create",
-      seedProps: () => DmsCreateState.values,
-      isDisabled: DmsCreateState.hasWarning || !DmsCreateState.verified,
+      seedProps: () => DmsCreateState.getValues(values),
+      disabled: DmsCreateState.hasWarning || !DmsCreateState.verified,
       then: DmsCreateState.onSave
     }
 
@@ -189,7 +189,7 @@ export const dmsEdit = Component => {
 
     DmsCreateState.dmsAction.action = "api:edit";
     if (!updated) {
-      DmsCreateState.dmsAction.isDisabled = true;
+      DmsCreateState.dmsAction.disabled = true;
     }
 
     useEffect(() => {

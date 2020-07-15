@@ -5,15 +5,15 @@ import DMS_DOCS from "components/DMS/docs/dms-docs.type"
 class Component extends React.Component {
   render() {
     return (
-      <div className="relative">
+      <div className="relative flex">
         { this.props.children }
       </div>
     )
   }
 }
 const SideBar = ({ children, ...props }) =>
-  <div className="absolute left-0 top-0 p-5"
-    style={ { width: "250px" } }>
+  <div className="p-5"
+    style={ { flexBasis: "250px" } }>
     <ul>
       { children }
     </ul>
@@ -21,15 +21,14 @@ const SideBar = ({ children, ...props }) =>
 const SideBarItem = ({ children, active, level, ...props }) =>
   <li { ...props } style={ { marginLeft: `${ level * 3 / 4 }rem` } }
     className={ `
-      px-5 cursor-pointer border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-200 rounded
+      px-5 my-0.5 cursor-pointer border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-200 rounded
       ${ active ? "bg-gray-300" : "" }
     ` }>
     { children }
   </li>
 
 const Content = ({ title, content, children }) =>
-  <div className="absolute left-0 top-0 p-5"
-    style={ { marginLeft: "250px" } }>
+  <div className="py-5 pr-5 flex-1">
     <div className="text-2xl font-bold">{ title }</div>
     <div className="p-5 rounded-lg border-2">{ content }</div>
     <div>
@@ -90,7 +89,7 @@ export default {
                     type: SideBarItem,
                     key: "self:id",
                     value: "self:data.title",
-                    interact: "self:id"
+                    interact: ["click", "self:id"]
                   }, // END CHILD 1
 
                   { type: "div",
@@ -174,8 +173,13 @@ export default {
           }
         ],
         children: [
-          ({ children, ...props }) => <div className="border-2 rounded p-2 my-2">SHARED!!!<div>{ JSON.stringify(props) }</div></div>,
-          { type: ({ children, ...props }) => <div><div>{ JSON.stringify(props) }</div><div>{ children }</div></div>,
+          { type: ({ children, ...props }) => (
+              <div>
+                <div className="border-2 rounded p-2 my-2">
+                  { JSON.stringify(props) }
+                </div>
+                <div>{ children }</div>
+              </div>),
             children: [
               { type: "div",
                 children: [

@@ -28,15 +28,36 @@ export default {
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
     "dms-manager",
-    "dms-provider",
+    { type: "dms-provider",
+      options: {
+        buttonThemes: {
+          home: "buttonInfo",
+          create: "buttonSuccess",
+          edit: "buttonPrimary"
+        },
+        authRules: {
+          create: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al === 10
+          },
+          edit: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al === 10
+          },
+          delete: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al === 10
+          }
+        }
+      }
+    },
     "dms-router",
     "show-loading",
     "dms-falcor",
     "with-auth"
   ],
   props: {
-    format: TEST_FORMAT,
-    title: "Testing",
+    format: TEST_FORMAT
   },
   children: [
     { type: "dms-header",

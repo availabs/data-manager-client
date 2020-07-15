@@ -78,7 +78,28 @@ const config =  ({
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-provider",
+    { type: "dms-provider",
+      options: {
+        authRules: {
+          create: {
+            args: ["props:user.authLevel"],
+            comparator: al => al >= 0
+          },
+          edit: {
+            args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
+            comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
+          },
+          delete: {
+            args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
+            comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
+          },
+          reply: {
+            args: ["props:user.authLevel"],
+            comparator: al => al >= 0
+          }
+        }
+      }
+    },
     "dms-router",
     "show-loading",
     "dms-falcor",
@@ -89,24 +110,6 @@ const config =  ({
     title: " ",
     className: 'h-full',
     // noHeader: true,
-    authRules: {
-      create: {
-        args: ["props:user.authLevel"],
-        comparator: al => al !== null
-      },
-      edit: {
-        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
-      },
-      delete: {
-        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
-      },
-      reply: {
-        args: ["props:user.authLevel"],
-        comparator: al => al !== null
-      }
-    }
   },
   children: [
     // dms-manager children are special
@@ -118,7 +121,7 @@ const config =  ({
         columns: [
           {
             path: 'self:data.title',
-            className: 'text-lg font-medium'
+            Cell: ({ value }) => <span className='text-lg font-medium'>{ value }</span>
           },
           // "title",
           { path: "self:data.userId",
@@ -186,7 +189,7 @@ export default {
   path: "/docs",
   mainNav: true,
   // exact: true,
-  auth: true,
+  // auth: true,
   name: 'Docs',
   icon: '',
   layoutSettings: {

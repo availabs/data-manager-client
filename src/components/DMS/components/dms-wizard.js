@@ -7,22 +7,29 @@ import { useTheme } from "components/avl-components/wrappers/with-theme"
 import styled from "styled-components"
 
 export default ({ sections, activeIndex, canGoPrev, prev, canGoNext, next, children, ...props }) => {
+  const theme = useTheme();
   return (
     <div className="w-full">
       { sections.length < 2 ? null :
         <>
-          <div className="text-2xl flex mb-2">
-            { sections.map((sect, i) =>
-                <StyledBorderDiv key={ i } className="flex-1 font-bold"
-                  active={ i <= activeIndex }
-                  current={ i === activeIndex }>
-                  <div className="pr-6 pl-2">
-                    { sect.title || `Page ${ i + 1 }` }
+          <StyledBorderDiv className={ `text-2xl mb-2 ${ theme.borderInfo }` }
+            width={ ((activeIndex + 1) / sections.length) * 100 }>
+            <div className="flex">
+              { sections.map((sect, i) =>
+                  <div key={ i } className={ `
+                    flex-1 font-bold ${ theme.transition }
+                    ${ (i === activeIndex) ? theme.text :
+                        (i < activeIndex) ? theme.textInfo :
+                        theme.textLight }
+                  ` }>
+                    <div className="pr-6 pl-2">
+                      { sect.title || `Page ${ i + 1 }` }
+                    </div>
                   </div>
-                </StyledBorderDiv>
-              )
-            }
-          </div>
+                )
+              }
+            </div>
+          </StyledBorderDiv>
           <div className="flex">
             { sections.length < 2 ? null :
               <Button className="flex-0" disabled={ !canGoPrev }
@@ -48,23 +55,11 @@ export default ({ sections, activeIndex, canGoPrev, prev, canGoNext, next, child
   )
 }
 
-const BorderDiv = ({ active, current, className, children }) => {
-  const theme = useTheme();
-  return (
-    <div className={ `
-      ${ theme.borderInfo } ${ theme.transition } ${ className }
-      ${ current ? theme.textInfo : active ? theme.text : theme.textLight }
-    ` }>
-      { children }
-    </div>
-  )
-}
-
-const StyledBorderDiv = styled(BorderDiv)`
+const StyledBorderDiv = styled.div`
   &::after {
     content: "";
     display: block;
-    width: ${ props => props.active ? 100 : 0 }%;
+    width: ${ props => props.width }%;
     border-bottom: 4px;
     border-style: solid;
     border-color: inherit;

@@ -2,8 +2,9 @@ import { processAction, checkAuth } from "../../utils"
 
 import get from "lodash.get"
 
-const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
+const flattenAttributes = (Sections, Attributes = [], depth = 0, id = [0]) => {
   if (!Sections.length) return Attributes;
+
   const { attributes, sections, ...rest } = Sections.pop();
   if (sections) {
     flattenAttributes(sections, Attributes, depth + 1, [...id, 0]);
@@ -20,19 +21,24 @@ const flattenAttributes = (Sections, Attributes, depth = 0, id = [0]) => {
   return flattenAttributes(Sections, Attributes, depth, [...id, last + 1]);
 }
 
-export const processFormat = format => {
+export const processFormat = (format, formats = {}) => {
+  format = JSON.parse(JSON.stringify(format));
+
   if (format.registerFormats) {
-    format.registerFormats.forEach(processFormat);
+    format.registerFormats.forEach(f => processFormat(f, formats));
   }
-  format["$processed"] = true;
+
   if (!format.sections) {
     const attributes = format.attributes;
-    format.attributes = [];
-    return flattenAttributes([{ attributes }], format.attributes);
-  };
+    format.attributes = flattenAttributes([{ attributes }]);
+  }
+  else {
+    format.attributes = flattenAttributes(format.sections.reverse());
+  }
 
-  format.attributes = [];
-  flattenAttributes(format.sections.reverse(), format.attributes);
+  formats[`${ format.app }+${ format.type }`] = format;
+
+  return formats;
 }
 
 export const getItem = (id, props) => {
@@ -63,7 +69,7 @@ const normalizeArgs = (dmsAction, item, props, ...rest) => {
 }
 export const makeInteraction = (...args) => {
   const [
-    { action, seedProps, isDisabled, doThen, ...rest },
+    { action, seedProps, disabled, doThen, ...rest },
     item, itemId,
     props,
     interact
@@ -73,7 +79,7 @@ export const makeInteraction = (...args) => {
 
     hasAuth = checkAuth(authRules, action, props, item);
 
-  if (useRouter && hasAuth && !isDisabled) {
+  if (useRouter && hasAuth && !disabled) {
     const { push } = history,
       { pathname } = location,
       state = get(location, "state", null) || [],
@@ -82,7 +88,8 @@ export const makeInteraction = (...args) => {
     return /^(dms:)*back$/.test(action) ?
       { type: "link",
         key: action,
-        action: { action, isDisabled, ...rest },
+        action,
+        ...rest,
         to: {
           pathname: get(state, [length - 1], basePath),
           state: state.slice(0, length - 1)
@@ -91,7 +98,8 @@ export const makeInteraction = (...args) => {
       : /^(dms:)*home$/.test(action) ?
         { type: "link",
           key: action,
-          action: { action, isDisabled, ...rest },
+          action,
+          ...rest,
           to: {
             pathname: basePath,
             state: []
@@ -100,7 +108,8 @@ export const makeInteraction = (...args) => {
       : /^api:/.test(action) ?
         { type: "button",
           key: action,
-          action: { action, isDisabled, ...rest },
+          action,
+          ...rest,
           onClick: e => {
             e.stopPropagation();
             return Promise.resolve(interact(action, itemId, seedProps(props)))
@@ -113,7 +122,8 @@ export const makeInteraction = (...args) => {
         }
       : { type: "link",
           key: action,
-          action: { action, isDisabled, ...rest },
+          action,
+          ...rest,
           to: {
             pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
             state: [...state, pathname]
@@ -123,7 +133,9 @@ export const makeInteraction = (...args) => {
   return {
     type: "button",
     key: action,
-    action: { action, isDisabled, ...rest },
+    action,
+    disabled: disabled || !hasAuth,
+    ...rest,
     onClick: e => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();

@@ -2,29 +2,34 @@ import React from "react"
 
 import { Button } from "components/avl-components/components/Button"
 import { ValueContainer, ValueItem } from "components/avl-components/components/Inputs/parts"
-import { verifyValue as utilityVerify, hasValue } from "components/avl-components/components/Inputs/utils"
+import { verifyValue as utilityVerify, hasValue as defaultHasValue } from "components/avl-components/components/Inputs/utils"
 
-const Display = d => {
-  switch (typeof d) {
+const DefaultDisplay = ({ value }) => {
+  switch (typeof value) {
     case "object":
-      return JSON.stringify(d, null, 3);
+      return JSON.stringify(value, null, 3);
     default:
-      return d.toString();
+      return value.toString();
   }
 };
+const defaultGetEmptyValue = () => null;
 
-export default ({ Input, onChange, value, disabled, autoFocus, display = Display, inputProps, type, verify, verifyValue, ...props }) => {
+export default React.forwardRef(({ Input, onChange, value, disabled, autoFocus,
+  DisplayComp = DefaultDisplay, inputProps, type, verify,
+  verifyValue, hasValue = defaultHasValue,
+  getEmptyValue = defaultGetEmptyValue, ...props }, ref) => {
+
   value = value || [];
 
   const [node, setNode] = React.useState(null),
-    [newItem, setNewItem] = React.useState(null),
+    [newItem, setNewItem] = React.useState(getEmptyValue),
 
     addToArray = React.useCallback(e => {
       const newValue = [...value, newItem];
       onChange(newValue);
-      setNewItem(null);
+      setNewItem(getEmptyValue());
       node && node.focus();
-    }, [value, newItem, node, onChange]),
+    }, [value, newItem, node, onChange, getEmptyValue]),
 
     removeFromArray = React.useCallback(v => {
       onChange(value.filter(vv => vv !== v));
@@ -42,7 +47,7 @@ export default ({ Input, onChange, value, disabled, autoFocus, display = Display
       value.includes(newItem) ||
       !(verifyValue ? verifyValue(newItem) : utilityVerify(newItem, type, verify)) ||
       ((type === "number") && !value.reduce((a, c) => a && (+c !== +newItem), true))
-    , [value, newItem, verifyValue, verify, type, disabled]),
+    , [value, newItem, hasValue, verifyValue, verify, type, disabled]),
 
     onKeyDown = React.useCallback(e => {
       if (!buttonDisabled && e.keyCode === 13) {
@@ -50,14 +55,28 @@ export default ({ Input, onChange, value, disabled, autoFocus, display = Display
         e.preventDefault();
         addToArray();
       }
-    }, [addToArray, buttonDisabled]);
+    }, [addToArray, buttonDisabled]),
+
+    setRef = React.useCallback(n => {
+      setNode(n);
+      switch (typeof ref) {
+        case "function":
+          ref(n);
+          break;
+        case "object":
+          ref && ref.current && (ref.current = n);
+          break;
+        default:
+          break;
+      }
+    }, [ref]);
 
   return (
     <div className="w-full">
       <div className="flex">
         <Input value={ newItem } onChange={ setNewItem } { ...props } { ...inputProps }
           disabled={ disabled } autoFocus={ autoFocus } onKeyDown={ onKeyDown }
-          placeholder={ `Type a value...`} ref={ setNode }/>
+          placeholder={ `Type a value...`} ref={ setRef }/>
         <Button onClick={ addToArray } className="ml-1"
           disabled={ buttonDisabled }>
           add
@@ -69,7 +88,7 @@ export default ({ Input, onChange, value, disabled, autoFocus, display = Display
             { value.map((v, i) => (
                 <ValueItem key={ i } edit={ e => editItem(v) }
                   remove={ e => removeFromArray(v) }>
-                  { display(v) }
+                  { <DisplayComp value={ v }/> }
                 </ValueItem>
               ))
             }
@@ -78,4 +97,4 @@ export default ({ Input, onChange, value, disabled, autoFocus, display = Display
       }
     </div>
   )
-}
+})

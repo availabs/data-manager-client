@@ -56,12 +56,15 @@ export default (Component, options = {}) => {
       app: "app-name",
       type: "format-type",
       format: null,
-      authRules,
-      buttonColors: {},
       apiInteract: () => Promise.resolve()
     }
-    constructor(...args) {
-      super(...args);
+
+    constructor(props) {
+      super(props);
+
+      this.registeredFormats = {};
+
+      this.registeredFormats = processFormat(props.format);
 
       this.state = {
         stack: [{
@@ -102,7 +105,7 @@ export default (Component, options = {}) => {
         dmsAction = "click";
       }
 
-      const hasAuth = checkAuth(this.props.authRules, dmsAction, this.props, this.getItem(id));
+      const hasAuth = checkAuth(authRules, dmsAction, this.props, this.getItem(id));
       if (!hasAuth) return;
 
       if (/^(dms:)*back$/.test(dmsAction)) {
@@ -191,26 +194,16 @@ export default (Component, options = {}) => {
       const { app, type, dataItems, format } = this.props,
         { id, ...top } = this.getTop(),
         item = this.getItem(id);
-
-      if (!format["$processed"]) {
-        processFormat(format);
-      }
-      const registeredFormats = get(format, "registerFormats", [])
-        .reduce((a, c) => {
-          a[`${ c.app }+${ c.type }`] = c;
-          return a;
-        }, {});
-      registeredFormats[`${ format.app }+${ format.type }`] = format;
-
+        
       return {
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
         interact: this.interact,
         stack: this.state.stack,
-        registeredFormats,
+        registeredFormats: this.registeredFormats,
         [type]: item,
         dataItems,
-        format,
+        format: this.registeredFormats[`${ format.app }+${ format.type }`],
         item,
         type,
         app,
@@ -218,7 +211,7 @@ export default (Component, options = {}) => {
       }
     }
     render() {
-      const { authRules, user } = this.props,
+      const { user } = this.props,
         dmsProps = this.getDmsProps(),
         msgProps = this.getMessengerProps();
       return (
@@ -226,7 +219,7 @@ export default (Component, options = {}) => {
           <AuthContext.Provider value={ { authRules, user } }>
             <ButtonContext.Provider value={ { buttonThemes } }>
               <MessengerContext.Provider value={ msgProps }>
-                <Component { ...dmsProps } { ...msgProps } { ...this.props }/>
+                <Component { ...this.props } { ...dmsProps } { ...msgProps }/>
               </MessengerContext.Provider>
             </ButtonContext.Provider>
           </AuthContext.Provider>

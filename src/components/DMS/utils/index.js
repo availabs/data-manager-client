@@ -5,7 +5,40 @@ import get from "lodash.get"
 import * as d3format from "d3-format"
 import * as d3timeFormat from "d3-time-format"
 
-import { hasValue } from "components/avl-components/components/Inputs/utils"
+import { hasValue, verifyValue } from "components/avl-components/components/Inputs/utils"
+
+export const checkEditorValue = value => Boolean(value) && value.getCurrentContent().hasText();
+
+export const checkDmsValue = (value, attributes) => {
+  if (!hasValue(value)) return false;
+
+  return attributes.reduce((a, c) => {
+    if (c.type === "dms-format") {
+      return a || checkDmsValue(get(value, c.key), c.attributes);
+    }
+    else if (c.type === "richtext") {
+      return a || (get(value, c.key) && get(value, c.key).getCurrentContent().hasText());
+    }
+    return a || hasValue(get(value, c.key));
+  }, false)
+}
+export const verifyDmsValue = (value, attributes, required = false) => {
+  if (!hasValue(value)) return !required;
+
+  if (Array.isArray(value)) {
+    return value.reduce((a, c) => a && verifyDmsValue(c, attributes), true);
+  }
+  return attributes.reduce((a, c) => {
+    if (c.type === "dms-format") {
+      return a && verifyDmsValue(value[c.key], c.attributes);
+    }
+    else if (c.type === "richtext") {
+      return a && (!c.required || (value && value.getCurrentContent().hasText()));
+    }
+    return a && (hasValue(value[c.key]) ?
+      verifyValue(value[c.key], c.type, c.verify) : !c.required);
+  }, true)
+}
 
 export const processAction = arg => {
   let response = {
@@ -14,7 +47,7 @@ export const processAction = arg => {
     showConfirm: false,
     label: null,
     buttonTheme: null,
-    isDisabled: false,
+    disabled: false,
     then: null
   };
   if (typeof arg === "string") {
@@ -92,6 +125,7 @@ const getDateFormat = format => {
   return v => { const date = new Date(v); return args.reduce((a, c) => a + c(date), ""); };
 }
 
+const identity = d => d;
 export const getFormat = format => {
   if (format === "date") {
     return getDateFormat("MMM Do, YYYY h:mm a");
@@ -99,7 +133,7 @@ export const getFormat = format => {
   else if (/^date:/.test(format)) {
     return getDateFormat(format.slice(5));//value => moment(value).format(format.replace(/^date:/, ""));
   }
-  return format ? d3format.format(format) : d => d;
+  return format ? d3format.format(format) : identity;
 }
 
 export const useDmsColumns = columns => {
@@ -317,7 +351,7 @@ const reduceSplit = (split, source, func) => {
   return reduceSplit(split, get(source, path, null), func);
 }
 
-const getValueFromPath = (pathArg, sources, directives, _default, format) => {
+const getValueFromPath = (pathArg, sources, directives, _default, format = identity) => {
   if (typeof pathArg !== "string") return _default || pathArg;
 
   const {

@@ -1,3 +1,5 @@
+import React from "react"
+
 import { BLOG_POST } from "./blog-post.type"
 import BlogPost from "./blog-post"
 
@@ -15,6 +17,24 @@ export default ({
       options: {
         buttonThemes: {
           reply: "buttonInfo"
+        },
+        authRules: {
+          create: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al >= 0
+          },
+          edit: {
+            args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
+            comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
+          },
+          delete: {
+            args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
+            comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
+          },
+          reply: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al >= 0
+          }
         }
       }
     },
@@ -24,27 +44,7 @@ export default ({
     "with-auth"
   ],
   props: {
-    format: BLOG_POST,
-    title: "Blog it Up",
-    className: "max-w-7xl m-auto pb-10",
-    authRules: {
-      create: {
-        args: ["props:user.authLevel"],
-        comparator: al => al !== null
-      },
-      edit: {
-        args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
-      },
-      delete: {
-        args: ["item:data.bloggerId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
-      },
-      reply: {
-        args: ["props:user.authLevel"],
-        comparator: al => al !== null
-      }
-    }
+    format: BLOG_POST
   },
   children: [
     { type: "dms-header",
@@ -55,6 +55,7 @@ export default ({
     { type: "dms-table",
       props: {
         dmsAction: "list",
+        Container: ({ children }) => <div className="bg-white pb-2 rounded-b-lg">{ children }</div>,
         columns: [
           { path: "self:data.title",
             filter: "fuzzyText"

@@ -2,13 +2,13 @@ import React from "react"
 
 import { DmsButton } from "./dms-button"
 
-import { Content, Table, Header } from 'components/avl-components/components'
+import { Table } from 'components/avl-components/components'
 
 import get from "lodash.get"
 
 import { makeFilter, prettyKey, getValue, useDmsColumns } from "../utils"
 
-const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, ...props }) => {
+const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...props }) => {
 	const [attributes, actions] = useDmsColumns(columns);
 
   const filter = makeFilter(props),
@@ -24,13 +24,14 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, ...props }) => 
   const columnData = [
     // add attributes
     ...attributes
-      .map(({ path, key, format, ...rest }) => {
+      .map(({ path, key, format, Cell, ...rest }) => {
         return {
-					...rest,
           id: key,
           accessor: d => d[key],
           Header: getAttributeName(key),
-					Cell: ({ value }) => format(value)
+					Cell: ({ value, ...others }) =>
+						Cell ? <Cell value={ format(value) } { ...others }/> : format(value),
+					...rest
         }
       }),
     ...actions
@@ -66,21 +67,17 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, ...props }) => 
     }))
 // console.log("DATA ITEMS:", dataItems)
   return !props.dataItems.length ? null : (
-    <Content>
-      { props.title ? <Header title={ props.title } /> : null }
-      <Table data={ data }
-        columns={ columnData }
-				sortBy={ sortBy }
-				sortOrder={ sortOrder }
-				initialPageSize={ initialPageSize }/>
-    </Content>
+    <Table data={ data }
+      columns={ columnData }
+			sortBy={ sortBy }
+			sortOrder={ sortOrder }
+			initialPageSize={ initialPageSize }/>
   )
 }
 DmsTable.defaultProps = {
   dmsAction: "list",
   dataItems: [],
   columns: [],
-  format: {},
   filter: false,
   sortBy: "updated_at",
   sortOrder: "desc",

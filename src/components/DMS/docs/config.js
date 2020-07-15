@@ -12,9 +12,21 @@ export default ({
     { type: "dms-provider",
       options: {
         buttonThemes: {
-          home: "buttonInfo",
-          // create: "buttonSuccess",
-          // edit: "buttonPrimary"
+          home: "buttonInfo"
+        },
+        authRules: {
+          create: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al === 10
+          },
+          edit: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al === 10
+          },
+          delete: {
+            args: ["props:user.authLevel"],
+            comparator: al => +al === 10
+          }
         }
       }
     },
@@ -23,23 +35,7 @@ export default ({
     "dms-falcor", // generates loading prop and passes to children
     "with-auth"
   ],
-  props: {
-    format: DMS_DOCS,
-    authRules: {
-      create: {
-        args: ["props:user.authLevel"],
-        comparator: al => +al === 10
-      },
-      edit: {
-        args: ["props:user.authLevel"],
-        comparator: al => +al === 10
-      },
-      delete: {
-        args: ["props:user.authLevel"],
-        comparator: al => +al === 10
-      }
-    }
-  },
+  props: { format: DMS_DOCS },
   children: [
     { type: "dms-header",
       props: { title: "Dms Docs" }
@@ -63,13 +59,12 @@ export default ({
             filter: "fuzzyText"
           },
           "chapter",
-          "dms:edit", "dms:delete",
+          "dms:edit",
           { action: "api:delete",
             label: "API delete",
             showConfirm: true }
         ]
-      },
-      wrappers: ["with-theme"]
+      }
     },
 
     { type: DocsPage, // generic dms component for viewing a single data item

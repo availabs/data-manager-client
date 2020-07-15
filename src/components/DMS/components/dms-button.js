@@ -50,7 +50,7 @@ const ActionLink = ({ action, label, buttonTheme, ...props }) => {
   )
 }
 
-const OpenConfirm = ({ Button, interaction, ...props }) => {
+const OpenConfirm = ({ Button, ...props }) => {
   const OpenedAndWating = ({ setOpen }) => {
     const [waiting, setWaiting] = useState(true);
     useEffect(() => {
@@ -71,32 +71,32 @@ const OpenConfirm = ({ Button, interaction, ...props }) => {
   }
   const [openConfirm, setOpen] = useState(false);
   return openConfirm ? <OpenedAndWating setOpen={ setOpen }/> :
-    <ActionButton { ...props } { ...interaction }
+    <ActionButton { ...props }
       onClick={ e => { e.stopPropagation(); setOpen(true); } }/>
 }
 
 export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...others }) => {
-  const { action, type, to, ...interaction } = useMakeInteraction(arg, item, props),
-    { showConfirm, isDisabled, ...dms } = action;
+  const { showConfirm, type, to, ...interaction } = useMakeInteraction(arg, item, props);
+
+  const Disabled = disabled || interaction.disabled;
 
   const RenderButton = ({ waiting }) => {
     if (waiting) {
-      return <ActionButton { ...interaction } { ...dms } { ...others }
+      return <ActionButton { ...interaction } { ...others }
         disabled={ true }/>
     }
     switch (type) {
       case "link":
-        return <ActionLink { ...interaction } { ...dms } { ...others } to={ to }
-          disabled={ waiting || disabled || isDisabled }/>
+        return <ActionLink { ...interaction } { ...others } to={ to }
+          disabled={ Disabled }/>
       default:
-        return <ActionButton { ...interaction } { ...dms } { ...others }
-          disabled={ waiting || disabled || isDisabled }/>
+        return <ActionButton { ...interaction } { ...others }
+          disabled={ Disabled }/>
     }
   }
 
-  if (showConfirm) {
-    return <OpenConfirm Button={ RenderButton }
-              interaction={ interaction } { ...dms } { ...others }/>
+  if (!Disabled && showConfirm) {
+    return <OpenConfirm Button={ RenderButton } { ...interaction } { ...others }/>
   }
   return <RenderButton />;
 }

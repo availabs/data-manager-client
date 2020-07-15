@@ -1,5 +1,6 @@
 import React from "react"
 
+import { UserMenu, UserMenuItem } from "components/avl-components/components/HeaderBar/UserMenu"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 import { useDms } from "../contexts/dms-context"
 import { useMessenger } from "../contexts/messenger-context"
@@ -33,7 +34,7 @@ export default ({ title, showHome = true, dmsActions = [], ...props }) => {
       <div className="flex-1 text-4xl font-bold">
         { title || `${ props.app } Manager` }
       </div>
-      <div className="flex-0 flex">
+      <div className="flex-0 flex items-center">
         { !pageMessages.length ? null :
           <Warning warnings={ pageMessages }/>
         }
@@ -44,11 +45,23 @@ export default ({ title, showHome = true, dmsActions = [], ...props }) => {
             <DmsButton className="ml-1" key={ a.action || a } action={ a } item={ item }/>
           )
         }
+        <div className="ml-8">
+          <UserMenu>
+            <UserMenuItem>
+              Profile
+            </UserMenuItem>
+            <UserMenuItem>
+              Settings
+            </UserMenuItem>
+            <UserMenuItem to="logout">
+              Logout
+            </UserMenuItem>
+          </UserMenu>
+        </div>
       </div>
     </div>
   )
 }
-
 const Warning = ({ warnings, type = "page" }) => {
   const theme = useTheme();
   return (

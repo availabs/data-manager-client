@@ -2,6 +2,10 @@ const TestFormat1 = {
   app: "dms",
   type: "dms-test-1",
   attributes: [
+    { key: "test-1-4",
+      type: "dms-format",
+      format: "dms+dms-test-2"
+    },
     { key: "test-1-1",
       type: "text",
       required: true
@@ -12,10 +16,6 @@ const TestFormat1 = {
     { key: "test-1-3",
       type: "number"
     },
-    { key: "test-1-4",
-      type: "dms-format",
-      format: "dms+dms-test-2"
-    }
   ]
 }
 const TestFormat2 = {
@@ -40,61 +40,50 @@ const TestFormat2 = {
   ]
 }
 
+const Doc = {
+  app: "dms",
+  type: "doc",
+  attributes: [
+    { key: "content",
+      type: "richtext"
+    },
+    { key: "tags",
+      type: "text",
+      isArray: true
+    }
+  ]
+}
+
 export default {
   app: "dms",
   type: "dms-test",
 
-  registerFormats: [TestFormat1, TestFormat2],
+  registerFormats: [TestFormat1, TestFormat2, Doc],
 
   sections: [
-    { title: "Numbers Page",
-      attributes: [
-        { key: "test-number",
-          type: "number"
-        },
-        { key: "test-number-array",
-          type: "number",
-          isArray: true
-        },
-        { key: "test-format-2",
-          type: "dms-format",
-          format: "dms+dms-test-2"
-        },
-        { key: "test-format-array",
-          type: "dms-format",
-          format: "dms+dms-test-2",
-          isArray: true
-        },
-        { key: "test-format-1",
-          type: "dms-format",
-          format: "dms+dms-test-1"
-        }
-      ]
-    },
     { title: "Editor Page",
       attributes: [
         { key: "text-editor",
           type: "richtext"
-        }
-      ]
-    },
-    { title: "Info Page",
-      attributes: [
-        { key: "title",
-          type: "text",
-          required: true
         },
-        { key: "creator",
-          type: "text",
-          default: "props:user.id",
-          editable: false
+        { key: "test-1",
+          type: "text"
+        },
+        { key: "test-2",
+          type: "text"
+        },
+        { key: "test-3",
+          type: "text"
         }
       ]
     },
-    { title: "Image Page",
+    { title: "Test Doc",
       attributes: [
-        { key: "test-image",
-          type: "img"
+        { key: "doc-page",
+          type: "dms-format",
+          format: "dms+doc",
+          fullWidth: true,
+          isArray: true
         }
       ]
     },
@@ -116,6 +105,50 @@ export default {
           type: "text",
           searchable: false,
           domain: "props:domain"
+        },
+      ]
+    },
+    { title: "Image Page",
+      attributes: [
+        { key: "test-image",
+          type: "img"
+        }
+      ]
+    },
+    { title: "Info Page",
+      attributes: [
+        { key: "title",
+          type: "text",
+          required: true
+        },
+        { key: "creator",
+          type: "text",
+          default: "props:user.id",
+          editable: false
+        }
+      ]
+    },
+    { title: "Numbers Page",
+      attributes: [
+        { key: "test-format-1",
+          type: "dms-format",
+          format: "dms+dms-test-1"
+        },
+        { key: "test-number",
+          type: "number"
+        },
+        { key: "test-number-array",
+          type: "number",
+          isArray: true
+        },
+        { key: "test-format-2",
+          type: "dms-format",
+          format: "dms+dms-test-2"
+        },
+        { key: "test-format-array",
+          type: "dms-format",
+          format: "dms+dms-test-2",
+          isArray: true
         },
       ]
     },

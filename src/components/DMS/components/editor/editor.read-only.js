@@ -39,20 +39,18 @@ const decorator = new CompositeDecorator(
 
 class ReadOnlyEditor extends React.Component {
   static defaultProps = {
-    spellCheck: true
+    spellCheck: true,
+    isRaw: true
   }
   state = {
-    editorState: EditorState.createEmpty(),
-    loadedFromSavedState: false
+    editorState: EditorState.createEmpty()
   }
   componentDidMount() {
-    if (this.props.value) {
+    if (this.props.isRaw) {
       this.loadFromSavedState(this.props.value);
     }
-  }
-  componentDidUpdate() {
-    if (!this.state.loadedFromSavedState && this.props.value) {
-      this.loadFromSavedState(this.props.value);
+    else {
+      this.setState(state => ({ editorState: this.props.value }));
     }
   }
   loadFromSavedState(content) {
@@ -60,7 +58,7 @@ class ReadOnlyEditor extends React.Component {
       convertFromRaw(content),
       decorator
     );
-    this.setState(state => ({ loadedFromSavedState: true, editorState }));
+    this.setState(state => ({ editorState }));
   }
 
   render() {

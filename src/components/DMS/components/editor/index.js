@@ -1,12 +1,5 @@
 import React from "react"
 
-import AvlModal from "components/avl-components/components/Modal/avl-modal"
-
-import deepequal from "deep-equal"
-import get from "lodash.get"
-import debounce from "lodash.debounce"
-import throttle from "lodash.throttle"
-
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 import imgLoader from "components/avl-components/wrappers/img-loader"
 import showLoading from "components/avl-components/wrappers/show-loading"
@@ -78,129 +71,112 @@ const decorator = new CompositeDecorator(
   linkItPlugin.decorators
 )
 
-const getSavedStateId = props =>
-  `saved-editor-state-${ props.id }-${ props.itemId }`;
+export const createEmpty = () =>
+  EditorState.createEmpty(decorator);
+export const createWithContent = content =>
+  EditorState.createWithContent(convertFromRaw(content), decorator);
+export const createEditorState = value =>
+  Boolean(value) ? createWithContent(value) : createEmpty();
+export { convertToRaw }
+
+export const loadFromLocalStorage = id => {
+  if (window.localStorage) {
+    let saved = JSON.parse(window.localStorage.getItem(id));
+    if (saved) {
+      if ((saved = convertFromRaw(saved)).hasText()) {
+        return createWithContent(saved);
+      }
+      else {
+        window.localStorage.removeItem(id);
+      }
+    }
+  }
+  return createEmpty();
+}
+export const saveToLocalStorage = (id, editorState) => {
+  if (window.localStorage) {
+    const saved = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
+    window.localStorage.setItem(id, saved);
+  }
+}
 
 class MyEditor extends React.Component {
   static defaultProps = {
     disabled: false,
     autoFocus: false,
     id: "draft-js-editor",
-    itemId: "",
-    showModal: false
+    placeholder: "Type a value..."
   }
-  editor = null;
   constructor(props, ...args) {
     super(props, ...args);
     this.state = {
-      hasFocus: false,
-      loadedFromSavedState: false,
-      formLocalStorage: null,
-      showModal: false
+      hasFocus: false
     }
-    this.state.editorState = props.value ?
-      EditorState.createWithContent(convertFromRaw(props.value), decorator) :
-      EditorState.createEmpty(decorator);
 
+    this.editor = null;
+
+    this.handleDroppedFiles = this.handleDroppedFiles.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.onFocus = this.onFocus.bind(this);
     this.onBlur = this.onBlur.bind(this);
   }
   componentDidMount() {
-    this.loadFromLocalStorage();
+    this.props.autoFocus && this.focus();
   }
   componentWillUnmount() {
     this.editor = null;
-    this.updateProps.flush();
-    this.saveToLocalStorage.flush();
   }
   componentDidUpdate(oldProps, oldState) {
-    if (!deepequal(
-      convertToRaw(oldState.editorState.getCurrentContent()),
-      convertToRaw(this.state.editorState.getCurrentContent())
-    )) {
-      this.saveToLocalStorage();
-    }
+// console.log("DID UPDATE:", this.props.value)
   }
-  loadFromLocalStorage() {
-    if (window.localStorage) {
-      let saved = JSON.parse(window.localStorage.getItem(getSavedStateId(this.props)));
-      if (saved) {
-        if ((saved = convertFromRaw(saved)).hasText()) {
-          this.setState({ showModal: true, formLocalStorage: saved });
-        }
-        else {
-          window.localStorage.removeItem(getSavedStateId(this.props));
-        }
-      }
-    }
-  }
-  loadFromSavedState(content) {
-    const editorState = EditorState.createWithContent(content, decorator);
-    this.setState(
-      state => ({ loadedFromSavedState: true, editorState })
-    );
-  }
-  _saveToLocalStorage() {
-    if (window.localStorage) {
-      const content = convertToRaw(this.state.editorState.getCurrentContent());
-      window.localStorage.setItem(getSavedStateId(this.props), JSON.stringify(content));
-    }
-  }
-  saveToLocalStorage = throttle(this._saveToLocalStorage, 500);
 
-  _updateProps() {
-    const currentContent = this.state.editorState.getCurrentContent(),
-      hasText = currentContent.hasText();
-    if (hasText) {
-      this.props.onChange(convertToRaw(currentContent));
-    }
-    else {
-      this.props.onChange(null);
-    }
-  }
-  updateProps = debounce(this._updateProps, 250);
-
-  focusEditor() {
-    this.editor && this.editor.focus();
+  focus() {
+    setTimeout(() => { this.editor && this.editor.focus(); }, 25);
   }
   handleChange(editorState) {
-    this.setState(state => ({ editorState }));
-    this.updateProps();
+    this.props.onChange(editorState);
   }
-  dropIt(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  handleDroppedFiles(selection, files, { getEditorState }) {
+    if (this.props.disabled || !files.length) return "not-handled";
 
-    if (this.props.disabled) return;
+    const file = files[0];
 
-    const file = get(e, ["dataTransfer", "files", 0], null);
+    if (!/^image[/]/.test(file.type)) {
+      return "not-handled";
+    }
 
     this.props.uploadImage(file)
       .then(({ filename, url }) => {
-        this.handleChange(addImage(url, this.state.editorState));
+        this.handleChange(addImage(url, getEditorState()));
       });
+    return "handled";
   }
   onFocus(e) {
     this.setState(state => ({ hasFocus: true }));
+    if (typeof this.props.onFocus === "function") {
+      this.props.onFocus(e);
+    }
   }
   onBlur(e) {
     this.setState(state => ({ hasFocus: false }));
+    if (typeof this.props.onBlur === "function") {
+      this.props.onBlur(e);
+    }
   }
 
   render() {
-    const { editorState, hasFocus } = this.state;
-
     return (
-      <EditorWrapper id={ this.props.id } hasFocus={ hasFocus }
-        onDrop={ e => this.dropIt(e) }>
+      <EditorWrapper id={ this.props.id }
+        hasFocus={ this.state.hasFocus }>
 
         <div className="px-2 pb-2 clearfix">
-          <Editor ref={ n => this.editor = n } placeholder="Type a value..."
-            editorState={ editorState }
+          <Editor ref={ n => this.editor = n }
+            placeholder={ this.props.placeholder }
+            editorState={ this.props.value }
             onChange={ this.handleChange }
             plugins={ plugins }
             readOnly={ this.props.disabled }
+            handleDroppedFiles={ this.handleDroppedFiles }
             spellCheck={ true }
             onFocus={ this.onFocus }
             onBlur={ this.onBlur }/>
@@ -243,19 +219,6 @@ class MyEditor extends React.Component {
 
         { this.props.children }
 
-        <AvlModal show={ this.state.showModal }
-          onHide={ e => this.setState({ showModal: false }) }
-          actions={ [
-            { label: "Load From Local Storage",
-              action: e => this.loadFromSavedState(this.state.formLocalStorage)
-            }
-          ] }>
-          <div style={ { width: "32rem" } } className="font-bold text-lg">
-            <div>Found saved editor data in local storage.</div>
-            <div>Do you wish to load this saved data?</div>
-          </div>
-        </AvlModal>
-
       </EditorWrapper>
     );
   }
@@ -269,9 +232,9 @@ export default imgLoader(showLoading(MyEditor, LoadingOptions));
 const EditorWrapper = ({ children, hasFocus, id, ...props }) => {
   const theme = useTheme();
   return (
-    <div className={ `pt-15 relative rounded draft-js-editor ${ theme.inputBg }
-        ${ hasFocus ? theme.inputBorderFocus : theme.inputBorder }
-    ` } { ...props } tabIndex="0">
+    <div className={ `pt-15 relative rounded draft-js-editor ${ theme.inputBg } w-full
+      ${ hasFocus ? theme.inputBorderFocus : theme.inputBorder }
+    ` } { ...props }>
       { children }
     </div>
   )

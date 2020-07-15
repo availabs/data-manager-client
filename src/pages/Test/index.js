@@ -1,13 +1,13 @@
 import config from "./config"
-import wrapper from "./TestWrapper"
+import consumer from "./TestConsumer"
 
 export default [
-  wrapper,
+  consumer,
   {
     path: "/test",
     mainNav: true,
     // exact: true,
-    auth: true,
+    auth: true, 
     name: 'Test',
     icon: 'fas fa-vial',
     layoutSettings: {

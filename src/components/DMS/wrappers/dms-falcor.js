@@ -80,7 +80,7 @@ export default (WrappedComponent, options = {}) => {
       }).then(() => this.stopLoading())
     }
     apiInteract(action, id, data) {
-      let falcorAction = null;
+      let falcorAction = false;
 
       switch (action) {
         case "api:edit":
@@ -93,25 +93,25 @@ export default (WrappedComponent, options = {}) => {
           falcorAction = this.falcorDelete;
           break;
         default:
-          falcorAction = false;
+          break;
       }
 
       if (falcorAction) {
         this.startLoading();
-        return falcorAction.call(this, action, id, data)
+        return Promise.resolve(falcorAction.call(this, action, id, data))
           .then(() => this.stopLoading());
       }
       return Promise.resolve();
     }
     falcorEdit(action, id, data) {
-      if (!(id && data)) return Promise.resolve();
+      if (!(id && data)) return;
 
       return this.props.falcor.call(["dms", "data", "update"], [id, data]);
     }
     falcorCreate(action, id, data) {
       const args = [this.props.app, this.props.type, data].filter(Boolean);
 
-      if (args.length < 3) return Promise.resolve();
+      if (args.length < 3) return;
 
       return this.props.falcor.call(["dms", "data", "create"], args);
     }
@@ -119,7 +119,7 @@ export default (WrappedComponent, options = {}) => {
       ids = ids || [];
       const args = [this.props.app, this.props.type, id, ...ids].filter(Boolean);
 
-      if (args.length < 3) return Promise.resolve();
+      if (args.length < 3) return;
 
       return this.props.falcor.call(["dms", "data", "delete"], args);
     }

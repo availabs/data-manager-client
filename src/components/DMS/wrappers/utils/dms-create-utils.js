@@ -1,15 +1,19 @@
-import React from "react"
+import {
+  createEditorState,
+  convertToRaw
+} from "../../components/editor"
 
-import { Input, TextArea, Select, ObjectInput } from "components/avl-components/components/Inputs"
-import Editor from "../../components/editor"
-import ImgInput from "../../components/img-input"
-import DmsInput from "../../components/dms-input"
-import ArrayInput from "../../components/array-input"
+import { getInput } from "./get-dms-input"
 
 import get from "lodash.get"
 
 import { verifyValue, hasValue } from "components/avl-components/components/Inputs/utils"
-import { getValue, prettyKey } from "../../utils"
+import {
+  prettyKey,
+  checkEditorValue,
+  checkDmsValue,
+  verifyDmsValue
+} from "../../utils"
 
 export class DmsCreateStateClass {
   constructor(setValues, dmsMsg) {
@@ -44,7 +48,7 @@ export class DmsCreateStateClass {
     }
     this.ininitialized = false;
     this.initValues = values => {
-      this.formatAttributes.forEach(att => att.onChange(values[att.key]));
+      this.formatAttributes.forEach(att => att.initValue(values[att.key]));
     }
 
     this.msgIds = {};
@@ -69,6 +73,15 @@ export class DmsCreateStateClass {
       );
     }
   }
+  getValues = values => {
+    return this.formatAttributes.reduce((a, c) => {
+      const value = get(values, c.key);
+      if (c.checkHasValue(value)) {
+        a[c.key] = c.getValue(value);
+      }
+      return a;
+    }, {})
+  }
   onSave = () => {
     this.sections.forEach(section =>
       section.attributes.forEach(att => att.onSave())
@@ -81,63 +94,10 @@ export class DmsCreateStateClass {
   deleteOld = oldKey => this.setValues(oldKey, null);
 }
 
-const getDomain = (att, props) => {
-  if (att.domain) {
-    if (typeof att.domain === "string") {
-      return getValue(att.domain, { props }) || [];
-    }
-    return att.domain;
-  }
-  return null;
-}
-
-const getInput = (att, props, disabled) => {
-  const { type, isArray } = att,
-    domain = getDomain(att, props);
-
-  if (domain) {
-    return props => (
-      <Select { ...props } multi={ isArray } domain={ domain } id={ att.id }
-        disabled={ disabled || (att.editable === false) }/>
-    );
-  }
-  let InputComp = null, inputProps = {};
-
-  switch (type) {
-    case "textarea":
-      InputComp = TextArea;
-      break;
-    case "img":
-      InputComp = ImgInput;
-      break;
-    case "richtext":
-      InputComp = Editor;
-      inputProps = { itemId: get(props, ["item", "id"], "") };
-      break;
-    case "object":
-      InputComp = ObjectInput;
-      break;
-    default:
-      InputComp = Input;
-      inputProps = { type };
-      break;
-  }
-  if (isArray) {
-    return props => (
-      <ArrayInput Input={ InputComp } id={ att.id }
-        { ...props } inputProps={ inputProps } verifyValue={ att.verifyValue }
-        disabled={ disabled || (att.editable === false) }/>
-    )
-  }
-  return props => (
-    <InputComp id={ att.id } { ...inputProps } { ...props }
-      disabled={ disabled || (att.editable === false) }/>
-  )
-}
-
 class Attribute {
   constructor(att, setValues, dmsMsg, props) {
     Object.assign(this, att);
+
     this.name = this.name || prettyKey(this.key);
     this.Input = getInput(this, props);
 
@@ -147,22 +107,9 @@ class Attribute {
 
     this.onChange = value => {
       this.value = value;
-      this.hasValue = hasValue(value);
+      this.hasValue = this.checkHasValue(value);
       this.verified = this.verifyValue(value);
-      if (!this.verified) {
-        if (!this.hasValue && this.required) {
-          this.setWarning("missing-data", `Missing value for required attribute: ${ this.name }.`);
-          this.setWarning("invalid-data", null);
-        }
-        else {
-          this.setWarning("invalid-data", `Invalid value for attribute: ${ this.name }.`);
-          this.setWarning("missing-data", null);
-        }
-      }
-      else {
-        this.setWarning("invalid-data", null);
-        this.setWarning("missing-data", null);
-      }
+      this.sendWarnings(value);
       setValues(this.key, value);
     }
 
@@ -197,10 +144,15 @@ class Attribute {
       }
     }
   }
-  getWarnings = () => Object.values(this.msgIds);
-
+  getValue = value => value;
+  checkHasValue = value => {
+    if (Array.isArray(value)) {
+      return value && value.reduce((a, c) => a || hasValue(c), false)
+    }
+    return hasValue(value);
+  }
   verifyValue = value => {
-    if (hasValue(value)) {
+    if (this.checkHasValue(value)) {
       if (Array.isArray(value)) {
         return value.reduce((a, c) =>
           a && verifyValue(c, this.type, this.verify)
@@ -211,6 +163,57 @@ class Attribute {
       }
     }
     return !this.required;
+  }
+  sendWarnings = value => {
+    if (!this.verified) {
+      if (!this.hasValue && this.required) {
+        this.setWarning("missing-data", `Missing value for required attribute: ${ this.name }.`);
+        this.setWarning("invalid-data", null);
+      }
+      else {
+        this.setWarning("invalid-data", `Invalid value for attribute: ${ this.name }.`);
+        this.setWarning("missing-data", null);
+      }
+    }
+    else {
+      this.setWarning("invalid-data", null);
+      this.setWarning("missing-data", null);
+    }
+  };
+  initValue = value => {
+    this.onChange(value);
+  }
+  getWarnings = () => Object.values(this.msgIds);
+}
+
+class EditorAttribute extends Attribute {
+  constructor(att, setValues, dmsMsg, props) {
+    super(att, setValues, dmsMsg, props);
+
+    this.value = this.isArray ? [] : createEditorState(null);
+  }
+  getValue = value => {
+    if (Array.isArray(value)) {
+      return value.map(v => convertToRaw(v.getCurrentContent()));
+    }
+    return convertToRaw(value.getCurrentContent());
+  }
+  initValue = value => {
+    if (this.isArray) {
+      this.onChange(value ? value.map(createEditorState) : []);
+    }
+    else {
+      this.onChange(createEditorState(value));
+    }
+  }
+  checkHasValue = value => {
+    if (Array.isArray(value)) {
+      return value && value.reduce((a, c) => a || checkEditorValue(c), false);
+    }
+    return checkEditorValue(value);
+  }
+  verifyValue = value => {
+    return !this.required || this.checkHasValue(value);
   }
 }
 
@@ -236,65 +239,70 @@ export const getAttributes = (format, formats) => {
   return attributes;
 }
 
-class DmsAttribute {
+class DmsAttribute extends Attribute {
   constructor(att, setValues, dmsMsg, props) {
-    Object.assign(this, att);
-    this.name = this.name || prettyKey(this.key);
-    this.Format = JSON.parse(JSON.stringify(props.registeredFormats[att.format]));
+    super(att, setValues, dmsMsg, props);
 
+    this.Format = JSON.parse(JSON.stringify(props.registeredFormats[att.format]));
     this.attributes = getAttributes(this.Format, props.registeredFormats);
 
-    this.value = this.isArray ? [] : null;
-    this.hasValue = false;
+    this.value = this.isArray ? [] : {};
+
     this.required = this.isArray ? this.required : isRequired(this.attributes);
-    this.verified = !this.required;
-
-    this.onChange = value => {
-      this.value = value;
-      this.hasValue = hasValue(value);
-      this.verified = this.verifyValue(value);
-      this.sendWarnings(value);
-      setValues(this.key, value);
-    }
-
-    this.msgIds = {};
-    this.hasWarning = false;
-    this.setWarning = (type, warning) => {
-      if (warning && !(type in this.msgIds)) {
-        const msgId = dmsMsg.newMsgId();
-        this.msgIds[type] = msgId;
-        if (typeof warning === "string") {
-          warning = { msg: warning };
-        }
-        dmsMsg.sendAttributeMessage({ ...warning, id: msgId });
-      }
-      else if (!warning && (type in this.msgIds)) {
-        const msgId = this.msgIds[type];
-        dmsMsg.removeAttributeMessage([msgId]);
-        delete this.msgIds[type];
-      }
-      this.hasWarning = Boolean(this.getWarnings().length);
-    }
-    this.cleanup = () => {
-      const msgIds = Object.values(this.msgIds);
-      if (msgIds.length) {
-        dmsMsg.removeAttributeMessage(msgIds);
-      }
-    }
-
-    if (this.isArray) {
-      this.Input = others => (
-        <ArrayInput { ...others } verifyValue={ this.verifyValue } id={ this.id }
-          Input={ DmsInput } inputProps={ { Attribute: this } }/>
-      )
-    }
-    else {
-      this.Input = others => (
-        <DmsInput { ...others } Attribute={ this } id={ this.id }/>
-      )
-    }
   }
-  getWarnings = () => Object.values(this.msgIds);
+  getValue = (value, attributes = this.attributes) => {
+    return attributes.reduce((a, c) => {
+      const Value = get(value, c.key),
+        length = get(Value, "length", 0);
+      if (c.type === "dms-format") {
+        if (c.isArray && length) {
+          a[c.key] = Value.map(v => this.getValue(v, c.attributes))
+        }
+        else if (checkDmsValue(Value, c.attributes)) {
+          a[c.key] = this.getValue(Value, c.attributes);
+        }
+      }
+      else if (c.type === "richtext") {
+        if (c.isArray && length) {
+          a[c.key] = Value.map(v => convertToRaw(v.getCurrentContent()));
+        }
+        else if (checkEditorValue(Value)) {
+          a[c.key] = convertToRaw(Value.getCurrentContent());
+        }
+      }
+      else if (hasValue(Value)) {
+        a[c.key] = Value;
+      }
+      return a;
+    }, {});
+  }
+  _initValue = (value, attributes) => {
+    return attributes.reduce((a, c) => {
+      if (c.type === "dms-format") {
+        a[c.key] = c.isArray ?
+          get(value, c.key, []).map(v => this._initValue(v, c.attributes)) :
+          this._initValue(get(value, c.key, {}), c.attributes);
+      }
+      else if (c.type === "richtext") {
+        a[c.key] = c.isArray ?
+          get(value, c.key, []).map(createEditorState) :
+          createEditorState(get(value, c.key));
+      }
+      else {
+        a[c.key] = get(value, c.key);
+      }
+      return a;
+    }, {})
+  }
+  initValue = (value, attributes = this.attributes) => {
+    this.onChange(this.isArray ?
+      get(value, this.key, []).map(v => this._initValue(v, attributes)) :
+      this._initValue(value, attributes)
+    );
+  }
+  checkHasValue = (value, attributes = this.attributes) => {
+    return checkDmsValue(value, attributes);
+  }
   cleanup = () => {
 
   }
@@ -313,7 +321,7 @@ class DmsAttribute {
     }
     attributes.forEach(att => {
       const Value = get(value, att.key),
-        _hasValue = hasValue(Value);
+        _hasValue = att.type === "richtext" ? (Value && Value.getCurrentContent().hasText()) : hasValue(Value);
 
       if (att.type === "dms-format") {
         this.sendWarnings(Value, att.attributes);
@@ -334,23 +342,15 @@ class DmsAttribute {
     })
   }
   verifyValue = (value, attributes = this.attributes) => {
-    if (!hasValue(value)) return !this.required;
-
-    if (Array.isArray(value)) {
-      return value.reduce((a, c) => a && this.verifyValue(c, attributes), true);
-    }
-    return attributes.reduce((a, c) => {
-      if (c.type === "dms-format") {
-        return a && this.verifyValue(value[c.key], c.attributes);
-      }
-      return a && (hasValue(value[c.key]) ?
-        verifyValue(value[c.key], c.type, c.verify) : !c.required);
-    }, true)
+    return verifyDmsValue(value, attributes, this.required);
   }
 }
 export const makeNewAttribute = (att, setValues, dmsMsg, props) => {
   if (att.type === "dms-format") {
     return new DmsAttribute(att, setValues, dmsMsg, props);
+  }
+  else if (att.type === "richtext") {
+    return new EditorAttribute(att, setValues, dmsMsg, props);
   }
   return new Attribute(att, setValues, dmsMsg, props);
 }
