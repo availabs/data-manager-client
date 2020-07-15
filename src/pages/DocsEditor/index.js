@@ -12,7 +12,7 @@ export const Create = ({ createState, setValues, item, ...props }) => {
   let UserID = createState.sections[0].attributes[2]
 
   return (
-    <div className='max-w-2xl'>
+    <div className='max-w-2xl mx-auto'>
       <form onSubmit={ e => e.preventDefault() }>
         <div className="w-full flex flex-col justify-centerhasValue h-min-screen">
           <div
@@ -58,7 +58,7 @@ const View = ({ item, dataItems, ...props }) => {
   if (!item || !item.data) return null;
   const { data } = item
   return (
-    <div className={ `max-w-2xl`}>
+    <div className={ `max-w-2xl mx-auto`}>
       <div className="w-full flex flex-col justify-center hasValue h-min-screen">
         <div className={`px-2 pt-2 pb-6 text-3xl font-bold leading-7 ${theme.text}`}>
             {data.title}
@@ -110,6 +110,31 @@ const config =  ({
     title: " ",
     className: 'h-full',
     // noHeader: true,
+<<<<<<< HEAD
+=======
+    authRules: {
+      view: {
+        args: ["props:user.authLevel"],
+        comparator: al => true
+      },
+      create: {
+        args: ["props:user.authLevel"],
+        comparator: al => al !== null
+      },
+      edit: {
+        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
+        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
+      },
+      delete: {
+        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
+        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
+      },
+      reply: {
+        args: ["props:user.authLevel"],
+        comparator: al => al !== null
+      }
+    }
+>>>>>>> 78d35111557a0b99389cd80298ef145ca87ccd5a
   },
   children: [
     // dms-manager children are special
@@ -189,13 +214,17 @@ export default {
   path: "/docs",
   mainNav: true,
   // exact: true,
+<<<<<<< HEAD
   // auth: true,
+=======
+  auth: false,
+>>>>>>> 78d35111557a0b99389cd80298ef145ca87ccd5a
   name: 'Docs',
   icon: '',
   layoutSettings: {
     fixed: true,
     nav: 'side',
-    maxWidth: 'max-w-6xl',
+    maxWidth: '',
     headerBar: false,
     theme: 'flat'
   },

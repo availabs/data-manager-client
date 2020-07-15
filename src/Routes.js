@@ -6,6 +6,8 @@ import MyBlog from 'pages/blog-it-up'
 
 import DocsEditor from 'pages/DocsEditor'
 
+import DocsLanding from 'pages/DocsEditor/Landing'
+
 import NoMatch from 'pages/404';
 import Login from "pages/Login"
 import Logout from "pages/Logout"
@@ -15,6 +17,7 @@ import DmsDocs from "components/DMS/docs"
 
 export default [
 	// -- public
+	DocsLanding,
 	DocsEditor,
 	MyBlog,
 	DmsDocs,
