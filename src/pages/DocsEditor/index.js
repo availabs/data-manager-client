@@ -189,11 +189,7 @@ export default {
   path: "/docs",
   mainNav: true,
   // exact: true,
-<<<<<<< HEAD
-  // auth: true,
-=======
   auth: false,
->>>>>>> 78d35111557a0b99389cd80298ef145ca87ccd5a
   name: 'Docs',
   icon: '',
   layoutSettings: {
