@@ -110,31 +110,6 @@ const config =  ({
     title: " ",
     className: 'h-full',
     // noHeader: true,
-<<<<<<< HEAD
-=======
-    authRules: {
-      view: {
-        args: ["props:user.authLevel"],
-        comparator: al => true
-      },
-      create: {
-        args: ["props:user.authLevel"],
-        comparator: al => al !== null
-      },
-      edit: {
-        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
-      },
-      delete: {
-        args: ["item:data.userId", "props:user.id", "props:user.authLevel"],
-        comparator: (arg1, arg2, arg3) => (+arg1 === +arg2) || (+arg3 === 10)
-      },
-      reply: {
-        args: ["props:user.authLevel"],
-        comparator: al => al !== null
-      }
-    }
->>>>>>> 78d35111557a0b99389cd80298ef145ca87ccd5a
   },
   children: [
     // dms-manager children are special
