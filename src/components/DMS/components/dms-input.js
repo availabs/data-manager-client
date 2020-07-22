@@ -1,5 +1,6 @@
 import React from "react"
 
+import { useDms } from "../contexts/dms-context"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import { useSetSections } from "../wrappers/dms-create"
@@ -11,8 +12,10 @@ import {
 export default React.forwardRef(({ Attribute, id, autoFocus = false, onFocus, onBlur, onChange, value, ...props }, ref) => {
   value = value || {};
 
+  const Props = { ...props, ...useDms() };
+
   const sections = useSetSections(Attribute.Format),
-    Sections = useDmsSections(sections, value, onChange, props);
+    Sections = useDmsSections(sections, value, onChange, Props);
 
   const [hasFocus, setFocus] = React.useState(autoFocus),
     [prev, setPrev] = React.useState(hasFocus),

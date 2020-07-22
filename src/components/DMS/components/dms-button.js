@@ -19,9 +19,11 @@ const DEFAULT_BUTTON_THEMES = {
   cancel: "buttonInfo"
 }
 
-const getButtonTheme = (theme, themes, action)=> {
+const getButtonTheme = (themes, label, action)=> {
   action = cleanAction(action);
-  return theme || get(themes, action, get(DEFAULT_BUTTON_THEMES, action, "button"));
+  let theme = get(themes, label, get(DEFAULT_BUTTON_THEMES, label, null));
+  if (theme) return theme;
+  return get(themes, action, get(DEFAULT_BUTTON_THEMES, action, "button"));
 }
 
 const ActionButton = ({ action, label, buttonTheme, ...props }) => {
@@ -29,7 +31,7 @@ const ActionButton = ({ action, label, buttonTheme, ...props }) => {
   return (
     <ButtonContext.Consumer>
       { ({ buttonThemes }) =>
-        <Button { ...props } buttonTheme={ getButtonTheme(buttonTheme, buttonThemes, action) }>
+        <Button { ...props } buttonTheme={ buttonTheme || getButtonTheme(buttonThemes, label, action) }>
           { label }
         </Button>
       }
@@ -42,7 +44,7 @@ const ActionLink = ({ action, label, buttonTheme, ...props }) => {
   return (
     <ButtonContext.Consumer>
       { ({ buttonThemes }) =>
-        <LinkButton { ...props } buttonTheme={ getButtonTheme(buttonTheme, buttonThemes, action) }>
+        <LinkButton { ...props } buttonTheme={ buttonTheme || getButtonTheme(buttonThemes, label, action) }>
           { label  }
         </LinkButton>
       }

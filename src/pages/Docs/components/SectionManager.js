@@ -34,15 +34,20 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
   return (
     <div>
       <Input className='w-full text-xl p-4' />
-      <DmsButton  />
+      <DmsButton 
+        action={{
+          action: 'api:create',
+          seedProps: () => ({title: 'new section 123'})
+        }}
+      />
       {!props.dataItems.length ? null : 
       (
-        dataItems.map(d => {
+        dataItems.map((d,i) => {
           return (
-            <List className='my-3'>
+            <List key={i} className='my-3'>
               <ListItemAction 
                 item={d.data.title} 
-                action={<Link className='rounded bg-blue-400 hover:bg-blue-600 p-2 text-white' to={'/admin/dms:create'}>Add Page</Link>}
+                action={<Link className='rounded bg-blue-400 hover:bg-blue-600 p-2 text-white' to={'/admin/dms:create/'}>Add Page</Link>}
               />
             </List>
           )

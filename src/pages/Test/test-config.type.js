@@ -54,26 +54,46 @@ const Doc = {
   ]
 }
 
+const TestFormat3 = {
+  app: "dms",
+  type: "dms-test-3",
+  attributes: [
+    { key: "test-3-1",
+      type: "text",
+      isArray: true,
+      verify: "^tag-\\d+$"
+    },
+    { key: "test-3-2",
+      type: "text",
+      verify: "^text:\\w+",
+      required: true
+    },
+    { key: "test-3-3",
+      type: "number",
+      verify: "[0, 10]"
+    }
+  ]
+}
+
 export default {
   app: "dms",
   type: "dms-test",
 
-  registerFormats: [TestFormat1, TestFormat2, Doc],
+  registerFormats: [TestFormat1, TestFormat2, TestFormat3, Doc],
 
   sections: [
-    { title: "Editor Page",
+    { title: "Tests",
+      attributes: [
+        { key: "test-1",
+          type: "dms-format",
+          format: "dms+dms-test-3"
+        }
+      ]
+    },
+    { title: "Editor",
       attributes: [
         { key: "text-editor",
           type: "richtext"
-        },
-        { key: "test-1",
-          type: "text"
-        },
-        { key: "test-2",
-          type: "text"
-        },
-        { key: "test-3",
-          type: "text"
         }
       ]
     },
@@ -87,7 +107,7 @@ export default {
         }
       ]
     },
-    { title: "Random Page",
+    { title: "Random",
       attributes: [
         { key: "test-date-array",
           type: 'date',
@@ -108,14 +128,25 @@ export default {
         },
       ]
     },
-    { title: "Image Page",
+    { title: "Image",
       attributes: [
         { key: "test-image",
           type: "img"
         }
       ]
     },
-    { title: "Info Page",
+    { title: "Numbers",
+      attributes: [
+        { key: "test-number",
+          type: "number"
+        },
+        { key: "test-number-array",
+          type: "number",
+          isArray: true
+        },
+      ]
+    },
+    { title: "Info",
       attributes: [
         { key: "title",
           type: "text",
@@ -128,18 +159,11 @@ export default {
         }
       ]
     },
-    { title: "Numbers Page",
+    { title: "Format",
       attributes: [
         { key: "test-format-1",
           type: "dms-format",
           format: "dms+dms-test-1"
-        },
-        { key: "test-number",
-          type: "number"
-        },
-        { key: "test-number-array",
-          type: "number",
-          isArray: true
         },
         { key: "test-format-2",
           type: "dms-format",
@@ -152,13 +176,5 @@ export default {
         },
       ]
     },
-    // { title: "Format Page",
-    //   attributes: [
-    //     { key: "test-format",
-    //       type: "dms-format:dms+dms-test-1",
-    //       // required: true
-    //     }
-    //   ]
-    // },
   ]
 }

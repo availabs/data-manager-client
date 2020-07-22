@@ -1,6 +1,5 @@
 import React from "react"
 
-import deepequal from "deep-equal"
 import get from "lodash.get"
 import * as d3format from "d3-format"
 import * as d3timeFormat from "d3-time-format"
@@ -12,14 +11,27 @@ export const checkEditorValue = value => Boolean(value) && value.getCurrentConte
 export const checkDmsValue = (value, attributes) => {
   if (!hasValue(value)) return false;
 
+  if (Array.isArray(value)) {
+    return value.reduce((a, c) => a || checkDmsValue(c, attributes), false)
+  }
+
   return attributes.reduce((a, c) => {
+    if (a === true) return true;
+
+    const Value = get(value, c.key);
     if (c.type === "dms-format") {
-      return a || checkDmsValue(get(value, c.key), c.attributes);
+      return checkDmsValue(Value, c.attributes);
     }
     else if (c.type === "richtext") {
-      return a || (get(value, c.key) && get(value, c.key).getCurrentContent().hasText());
+      if (Array.isArray(Value)) {
+        return Value.reduce((a, c) => a || c.getCurrentContent().hasText(), false);
+      }
+      return Boolean(Value) && Value.getCurrentContent().hasText();
     }
-    return a || hasValue(get(value, c.key));
+    else if (Array.isArray(Value)) {
+      return Value.reduce((a, c) => a || hasValue(c), false);
+    }
+    return hasValue(Value);
   }, false)
 }
 export const verifyDmsValue = (value, attributes, required = false) => {
@@ -29,14 +41,27 @@ export const verifyDmsValue = (value, attributes, required = false) => {
     return value.reduce((a, c) => a && verifyDmsValue(c, attributes), true);
   }
   return attributes.reduce((a, c) => {
+    const Value = get(value, c.key);
+
     if (c.type === "dms-format") {
-      return a && verifyDmsValue(value[c.key], c.attributes);
+      return a && verifyDmsValue(Value, c.attributes);
     }
     else if (c.type === "richtext") {
-      return a && (!c.required || (value && value.getCurrentContent().hasText()));
+      if (!c.required) return a;
+
+      if (Array.isArray(Value)) {
+        return a && Value.reduce((a, c) => a && c.getCurrentContent().hasText, true);
+      }
+      return a && (Boolean(Value) && Value.getCurrentContent().hasText())   ;
+    }
+    else if (Array.isArray(Value)) {
+      return a && (Value.length ?
+        Value.reduce((aa, cc) => aa && verifyValue(cc, c.type, c.verify)) : !c.required
+      )
     }
     return a && (hasValue(value[c.key]) ?
-      verifyValue(value[c.key], c.type, c.verify) : !c.required);
+      verifyValue(value[c.key], c.type, c.verify) : !c.required
+    );
   }, true)
 }
 
@@ -185,24 +210,6 @@ export const prettyKey = key =>
 export const ITEM_REGEX = /^item:(.+)$/;
 export const PROPS_REGEX = /^props:(.+)$/;
 const SELF_REGEX = /^self:(.+)$/;
-
-export const hasBeenUpdated = (base, data) => {
-  const checked = [];
-  for (const key in base) {
-    checked.push(key);
-    const baseHasValue = hasValue(base[key]),
-      dataHasValue = hasValue(data[key]);
-    if (baseHasValue && dataHasValue) {
-      if (!deepequal(base[key], data[key])) return true;
-    }
-    if (baseHasValue ^ dataHasValue) return true;
-  }
-  for (const key in data) {
-    if (checked.includes(key)) continue;
-    if (hasValue(data[key])) return true;
-  }
-  return false;
-}
 
 export const dmsIsNum = value => {
   if ((value === "") ||
