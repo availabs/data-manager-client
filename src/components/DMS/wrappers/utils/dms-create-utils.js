@@ -35,32 +35,38 @@ export class DmsCreateStateClass {
     this.prev = () => {};
 
     this.sections = [];
-    this.formatAttributes = []
+    this.attributes = [];
+    this.badAttributes = [];
+    this.ignoredAttributes = [];
 
     this.setValues = (key, value) => {
-      setValues(prev => {
-        const newValues = { ...prev, [key]: value };
-        if (!hasValue(value)) {
-          delete newValues[key];
-        }
-        return newValues;
-      });
+      setValues(prev => ({ ...prev, [key]: value }));
     }
+    this.mapOldToNew = (oldKey, newKey, value) => {
+      this.ignoredAttributes.push(oldKey);
+      this.attributes.find(d => d.key === newKey).onChange(value);
+    };
+    this.deleteOld = oldKey => {
+      this.ignoredAttributes.push(oldKey);
+      setValues(prev => ({ ...prev }));
+    };
     this.ininitialized = false;
-    this.initValues = values => {
-      this.formatAttributes.forEach(att => att.initValue(values[att.key]));
+    this.initValues = (values, initialized = true) => {
+      this.attributes.forEach(att => att.initValue(values[att.key]));
+      this.initialized = initialized;
     }
 
     this.msgIds = {};
     this.setWarning = (type, warning) => {
-      if (warning) {
+      if (warning && !(type in this.msgIds)) {
         const msgId = dmsMsg.newMsgId();
         this.msgIds[type] = msgId;
         dmsMsg.sendPageMessage({ msg: warning, id: msgId });
       }
-      else if (type in this.msgIds) {
+      else if (!warning && (type in this.msgIds)) {
         const msgId = this.msgIds[type];
         dmsMsg.removePageMessage([msgId]);
+        delete this.msgIds[type];
       }
     }
     this.cleanup = () => {
@@ -74,7 +80,7 @@ export class DmsCreateStateClass {
     }
   }
   getValues = values => {
-    return this.formatAttributes.reduce((a, c) => {
+    return this.attributes.reduce((a, c) => {
       const value = get(values, c.key);
       if (c.checkHasValue(value)) {
         a[c.key] = c.getValue(value);
@@ -87,11 +93,6 @@ export class DmsCreateStateClass {
       section.attributes.forEach(att => att.onSave())
     );
   }
-  mapOldToNew = (oldKey, newKey) => {
-    this.setValues(newKey, this.values[oldKey]);
-    this.setValues(oldKey, null);
-  };
-  deleteOld = oldKey => this.setValues(oldKey, null);
 }
 
 class Attribute {
@@ -138,10 +139,7 @@ class Attribute {
       }
     }
     this.onSave = () => {
-      if (this.type === "richtext" && window.localStorage) {
-        const itemId = get(props, ["item", "id"], "");
-        window.localStorage.removeItem(`saved-editor-state-${ this.id }-${ itemId }`);
-      }
+
     }
   }
   getValue = value => value;
@@ -181,7 +179,12 @@ class Attribute {
     }
   };
   initValue = value => {
-    this.onChange(value);
+    if (this.isArray) {
+      this.onChange(value || [])
+    }
+    else {
+      this.onChange(value);
+    }
   }
   getWarnings = () => Object.values(this.msgIds);
 }
@@ -250,16 +253,16 @@ class DmsAttribute extends Attribute {
 
     this.required = this.isArray ? this.required : isRequired(this.attributes);
   }
-  getValue = (value, attributes = this.attributes) => {
+  _getValue = (value, attributes) => {
     return attributes.reduce((a, c) => {
       const Value = get(value, c.key),
         length = get(Value, "length", 0);
       if (c.type === "dms-format") {
         if (c.isArray && length) {
-          a[c.key] = Value.map(v => this.getValue(v, c.attributes))
+          a[c.key] = Value.map(v => this._getValue(v, c.attributes))
         }
         else if (checkDmsValue(Value, c.attributes)) {
-          a[c.key] = this.getValue(Value, c.attributes);
+          a[c.key] = this._getValue(Value, c.attributes);
         }
       }
       else if (c.type === "richtext") {
@@ -276,6 +279,12 @@ class DmsAttribute extends Attribute {
       return a;
     }, {});
   }
+  getValue = (values, attributes = this.attributes) => {
+    if (Array.isArray(values)) {
+      return values.map(v => this._getValue(v, attributes));
+    }
+    return this._getValue(values, attributes);
+  }
   _initValue = (value, attributes) => {
     return attributes.reduce((a, c) => {
       if (c.type === "dms-format") {
@@ -289,27 +298,64 @@ class DmsAttribute extends Attribute {
           createEditorState(get(value, c.key));
       }
       else {
-        a[c.key] = get(value, c.key);
+        a[c.key] = get(value, c.key, c.isArray ? [] : null);
       }
       return a;
     }, {})
   }
   initValue = (value, attributes = this.attributes) => {
-    this.onChange(this.isArray ?
-      get(value, this.key, []).map(v => this._initValue(v, attributes)) :
+    this.onChange(
+      this.isArray ? (value ? value.map(v => this._initValue(v, attributes)) : []) :
       this._initValue(value, attributes)
     );
   }
   checkHasValue = (value, attributes = this.attributes) => {
     return checkDmsValue(value, attributes);
   }
-  cleanup = () => {
-
-  }
+  // cleanup = () => {
+  //
+  // }
   onSave = () => {
 
   }
-  sendWarnings = (value, attributes = this.attributes) => {
+  _sendWarnings = (value, attributes, attTree) => {
+    attributes.forEach(att => {
+      const Value = get(value, att.key);
+
+      const missingKey = `missing-data-${ attTree.map(att => att.key).join("-") }-${ att.key }`,
+        invalidKey = `invalid-data-${ attTree.map(att => att.key).join("-") }-${ att.key }`;
+
+      let missingMsg = null,
+        invalidMsg = null;
+
+      if (att.isArray) {
+         if (att.required && !(Value && Value.length)) {
+           missingMsg = `Missing value for required attribute: ${ attTree.map(att => att.name).join(" -> ") } -> ${ att.name }.`;
+         }
+      }
+      else if (att.type === "dms-format") {
+        return this._sendWarnings(Value, att.attributes, [...attTree, att]);
+      }
+      else if (att.type === "richtext") {
+        if (att.required && !checkEditorValue(Value)) {
+          missingMsg = `Missing value for required attribute: ${ attTree.map(att => att.name).join(" -> ") } -> ${ att.name }.`;
+        }
+      }
+      else {
+        const _hasValue = hasValue(Value),
+          verified = verifyValue(Value, att.type, att.verify);
+        if (att.required && !_hasValue) {
+          missingMsg = `Missing value for required attribute: ${ attTree.map(att => att.name).join(" -> ") } -> ${ att.name }.`;
+        }
+        else if (_hasValue && !verified) {
+          invalidMsg = `Invalid value for attribute: ${ attTree.map(att => att.name).join(" -> ") } -> ${ att.name }.`;
+        }
+      }
+      this.setWarning(missingKey, missingMsg);
+      this.setWarning(invalidKey, invalidMsg);
+    })
+  }
+  sendWarnings = (value, attributes = this.attributes, attTree = [this]) => {
     if (this.isArray) {
       if (this.required && !hasValue(value)) {
         this.setWarning(`missing-data-${ this.key }`, `Missing value for required attribute: ${ this.name }.`);
@@ -319,27 +365,7 @@ class DmsAttribute extends Attribute {
       }
       return;
     }
-    attributes.forEach(att => {
-      const Value = get(value, att.key),
-        _hasValue = att.type === "richtext" ? (Value && Value.getCurrentContent().hasText()) : hasValue(Value);
-
-      if (att.type === "dms-format") {
-        this.sendWarnings(Value, att.attributes);
-        return;
-      }
-      if (!_hasValue && att.required) {
-        this.setWarning(`missing-data-${ att.key }`, `Missing value for required attribute: ${ att.name }.`);
-      }
-      else if (_hasValue) {
-        this.setWarning(`missing-data-${ att.key }`, null);
-        if (!verifyValue(Value, att.type, att.verify)) {
-          this.setWarning(`invalid-data-${ att.key }`, `Invalid value for attribute: ${ att.name }.`);
-        }
-        else {
-          this.setWarning(`invalid-data-${ att.key }`, null);
-        }
-      }
-    })
+    this._sendWarnings(value, attributes, attTree);
   }
   verifyValue = (value, attributes = this.attributes) => {
     return verifyDmsValue(value, attributes, this.required);

@@ -81,7 +81,7 @@ const EditorDisplayComp = ({ value }) =>
   <ReadOnlyEditor value={ value } isRaw={ false }/>;
 
 export const getInput = (att, props, disabled) => {
-  let { type, isArray = false } = att,
+  let { type, min, max, isArray = false } = att,
     domain = getDomain(att, props);
 
   if (domain) {
@@ -115,7 +115,7 @@ export const getInput = (att, props, disabled) => {
       break;
     default:
       InputComp = Input;
-      inputProps = { type };
+      inputProps = { type, min, max };
       break;
   }
   if (isArray) {

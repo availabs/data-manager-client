@@ -10,7 +10,7 @@ import dmsManager from "./wrappers/dms-manager"
 
 // import "./styles.css"
 
-const DmsManager = ({ showHome = true, stack, top = {}, ...props }) => {
+const DmsManager = ({ showHome = true, stack, top = {}, noHeader = false, className = null, ...props }) => {
   if (!props.format) {
     return <NoFormat />
   }
@@ -36,16 +36,14 @@ const DmsManager = ({ showHome = true, stack, top = {}, ...props }) => {
     })
   }
 
-  //console.log('<DmsManager 39>', props)
   return (
-    <div className={ props.className }>
-      { props.noHeader ? '' : <Header title={ props.title || `${ props.app } Manager` } actions={ actions }/>  }
+    <div className={ className }>
+      { noHeader ? null : <Header title={ props.title || `${ props.app } Manager` } actions={ actions }/>  }
       { props.children }
     </div>
   )
 }
 const NoFormat = () => <div large className="p-5">No format supplied!!!</div>;
-// const NoAuth = () => <div large className="p-5">You do not have authorization for this action!!!</div>;
 
 export default {
   ...DmsComponents,
