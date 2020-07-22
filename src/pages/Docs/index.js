@@ -1,4 +1,4 @@
-import { docsPage, docsSection } from './docs.type'
+import { /*docsPage, docsSection,*/ npmrdsDoc } from './docs.type'
 import SectionManager from './components/SectionManager'
 
 
@@ -17,9 +17,8 @@ let config = {
     "with-auth"
   ],
   props: {
-    format: docsSection,
+    format: npmrdsDoc,
     title: "Documentation",
-    
   },
   children: [
     { type: "dms-header",
