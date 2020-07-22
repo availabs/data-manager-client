@@ -45,12 +45,15 @@ export const getItem = (id, props) => {
   return (props.dataItems || []).reduce((a, c) => c.id === id ? c : a, null);
 }
 
+const makePath = (basePath, action, itemId = null, props = null) =>
+  `${ basePath }/${ action }${ itemId ? `/${ itemId }` : "" }`
+
 const normalizeArgs = (dmsAction, item, props, ...rest) => {
   let itemId = null;
   if (typeof item === "object") {
     itemId = get(item, "id", null);
   }
-  else if (typeof item === "string") {
+  else if ((typeof item === "string") || (typeof item === "number")) {
     itemId = item;
     item = getItem(itemId, props);
   }
@@ -82,8 +85,11 @@ export const makeInteraction = (...args) => {
   if (useRouter && hasAuth && !disabled) {
     const { push } = history,
       { pathname } = location,
-      state = get(location, "state", null) || [],
-      length = state.length;
+
+      stack = get(location, ["state", "stack"], []),
+      stackLength = get(stack, "length", 0),
+
+      seededProps = seedProps(props);
 
     return /^(dms:)*back$/.test(action) ?
       { type: "link",
@@ -91,8 +97,11 @@ export const makeInteraction = (...args) => {
         action,
         ...rest,
         to: {
-          pathname: get(state, [length - 1], basePath),
-          state: state.slice(0, length - 1)
+          pathname: get(stack, [stackLength - 1], basePath),
+          state: {
+            stack: stack.slice(0, -1),
+            // props: seededProps.slice(0, -1)
+          }
         }
       }
       : /^(dms:)*home$/.test(action) ?
@@ -102,7 +111,10 @@ export const makeInteraction = (...args) => {
           ...rest,
           to: {
             pathname: basePath,
-            state: []
+            state: {
+              stack: [],
+              // props: []
+            }
           }
         }
       : /^api:/.test(action) ?
@@ -112,11 +124,14 @@ export const makeInteraction = (...args) => {
           ...rest,
           onClick: e => {
             e.stopPropagation();
-            return Promise.resolve(interact(action, itemId, seedProps(props)))
+            return Promise.resolve(interact(action, itemId, seededProps))
               .then(() => doThen())
               .then(() => push({
-                pathname: get(state, [length - 1], basePath),
-                state: state.slice(0, length - 1)
+                pathname: get(stack, [stackLength - 1], basePath),
+                state: {
+                  stack: stack.slice(0, -1),
+                  // props: seededProps.slice(0, -1)
+                }
               }))
           }
         }
@@ -125,8 +140,12 @@ export const makeInteraction = (...args) => {
           action,
           ...rest,
           to: {
-            pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-            state: [...state, pathname]
+            pathname: makePath(basePath, action, itemId, seedProps(props)),
+            search: !seededProps ? "" : `?${ Object.keys(seededProps).map(k => `${ k }=${ seededProps[k] }`).join('&') }`,
+            state: {
+              stack: [...stack, pathname]
+              // props: [...seededProps, seedProps(props)]
+            }
           }
         }
   }
@@ -161,15 +180,19 @@ export const makeOnClick = (...args) => {
   if (useRouter && hasAuth) {
     const { push } = history,
       { pathname } = location,
-      state = get(location, "state", null) || [],
-      length = state.length;
+
+      stack = get(location, ["state", "stack"], []),
+      stackLength = get(stack, "length", 0);
 
     return /^(dms:)*back$/.test(action) ?
       (e => {
         e.stopPropagation();
         push({
-          pathname: get(state, [length - 1], basePath),
-          state: state.slice(0, -1)
+          pathname: get(stack, [stackLength - 1], basePath),
+          state: {
+            stack: stack.slice(0, -1),
+            // props: seededProps.slice(0, -1)
+          }
         });
       })
       : /^(dms:)*home$/.test(action) ?
@@ -177,7 +200,10 @@ export const makeOnClick = (...args) => {
           e.stopPropagation();
           push({
             pathname: basePath,
-            state: []
+            state: {
+              stack: [],
+              // props: []
+            }
           });
         })
       : /^api:/.test(action) ?
@@ -186,15 +212,21 @@ export const makeOnClick = (...args) => {
           return Promise.resolve(interact(action, itemId, seedProps(props)))
             .then(() => doThen())
             .then(() => push({
-              pathname: get(state, [length - 1], basePath),
-              state: state.slice(0, -1)
+              pathname: get(stack, [stackLength - 1], basePath),
+              state: {
+                stack: stack.slice(0, -1),
+                // props: seededProps.slice(0, -1)
+              }
             }))
         })
       : (e => {
           e.stopPropagation();
           push({
-            pathname: itemId ? `${ basePath }/${ action }/${ itemId }` : `${ basePath }/${ action }`,
-            state: [...state, pathname]
+            pathname: makePath(basePath, action, itemId, seedProps(props)),
+            state: {
+              stack: [...stack, pathname],
+              // props: [...seededProps, seedProps(props)]
+            }
           })
         })
   }

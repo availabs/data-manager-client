@@ -70,7 +70,23 @@ const TestFormat3 = {
     },
     { key: "test-3-3",
       type: "number",
-      verify: "[0, 10]"
+      verify: "(0, 10]",
+      isArray: true
+    },
+    { key: "test-3-4",
+      type: "number",
+      verify: "[-10, 10)",
+      isArray: true
+    },
+    { key: "test-3-5",
+      type: "number",
+      verify: "> 10",
+      isArray: true
+    },
+    { key: "test-3-6",
+      type: "number",
+      verify: "<= 10",
+      isArray: true
     }
   ]
 }

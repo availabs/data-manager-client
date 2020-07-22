@@ -10,8 +10,17 @@ import {
 
 import get from "lodash.get"
 
-const GetParams = ({ Component, ...props }) =>
-  <Component { ...props } params={ useParams() }/>;
+const GetParams = ({ Component, ...others }) => {
+  const params = useParams(),
+    { search } = useLocation();
+  const searchParams = new URLSearchParams(search),
+    props = [...searchParams.entries()]
+      .reduce((a, [k, v]) => {
+        a[k] = v;
+        return a;
+      }, {});
+  return <Component { ...others } params={ { ...params, props } }/>;
+}
 
 const ParseItems = ({ Component, ...props}) => {
   const { action, attribute, value } = useParams();
@@ -28,9 +37,9 @@ const ParseItems = ({ Component, ...props}) => {
 export default (Component, options = {}) => {
   return ({ ...props }) => {
     const { path } = useRouteMatch(),
-      alt1 = `${ path }/:action`,
-      alt2 = `${ path }/:action/:id`,
-      alt3 = `${ path }/:action/:attribute/:value`,
+      alt11 = `${ path }/:action/`,
+      alt13 = `${ path }/:action/:id/`,
+      alt21 = `${ path }/:action/:attribute/:value`,
       routerProps = {
         basePath: path,
         useRouter: true,
@@ -43,10 +52,10 @@ export default (Component, options = {}) => {
           <Route exact path={ path }>
             <Component { ...props } { ...routerProps }/>
           </Route>
-          <Route exact path={ [alt1, alt2] }>
+          <Route exact path={ [alt11, alt13] }>
             <GetParams { ...props } { ...routerProps } Component={ Component }/>
           </Route>
-          <Route exact path={ alt3 }>
+          <Route exact path={ alt21 }>
             <ParseItems { ...props } { ...routerProps } Component={ Component }/>
           </Route>
         </Switch>

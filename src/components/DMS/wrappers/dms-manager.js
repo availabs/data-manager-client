@@ -16,20 +16,9 @@ export default Component =>
           dmsActions.push(...get(child.props, ["dmsActions"], []));
 
           children.push(React.cloneElement(child,
-            { app: props.app,
-              type: props.type,
-              format: props.format,
-              registeredFormats: props.registeredFormats,
-              dataItems: props.dataItems,
-              stack: props.stack,
-              top: props.top,
-              ...get(props, ["top", "props"], {}), // <-- result of DmsAction seedProps
-              item: props.item,
-              makeInteraction: props.makeInteraction,
-              makeOnClick: props.makeOnClick,
-              interact: props.interact,
-              [props.type]: props.item,
-              loading: props.loading
+            { ...props,
+              ...get(props, ["top", "props"], {}), // <-- result of DmsAction seedProps,
+              [props.type]: props.item
             }
           ));
         }
@@ -42,18 +31,8 @@ export default Component =>
         if (!compareActions(child.props.dmsAction, props.top.dmsAction)) {
           return React.cloneElement(child,
             { dmsActions,
-              app: props.app,
-              type: props.type,
-              format: props.format,
-              registeredFormats: props.registeredFormats,
-              dataItems: props.dataItems,
-              stack: props.stack,
-              top: props.top,
+              ...props,
               ...get(props, ["top", "props"], {}), // <-- result of DmsAction seed props
-              item: props.item,
-              makeInteraction: props.makeInteraction,
-              makeOnClick: props.makeOnClick,
-              interact: props.interact,
               [props.type]: props.item
             }
           );

@@ -1,4 +1,16 @@
+import React from "react"
+
 import TEST_FORMAT from "./test-config.type"
+
+const FakeComp = ({ text, children, className, ...props }) =>
+  <div>
+    <div className={ className }>
+      <div>{ text }</div>
+    </div>
+    <div>
+     { children }
+    </div>
+  </div>
 
 const domain = [
   "Text 1", "Text 2", "Text 3",
@@ -68,7 +80,14 @@ export default {
     { type: "dms-table",
       props: {
         dmsAction: "list",
-        dmsActions: ["dms:fake-one", "dms:fake-two"],
+        dmsActions: [
+          { action: "dms:fake-one",
+            seedProps: () => ({ text: "FAKE ONE IS SUPER FAKE!!!" })
+          },
+          { action: "dms:fake-two",
+            seedProps: () => ({ text: "FAKE TWO IS SUPER FAKE!!!" })
+          }
+        ],
         columns: [
           "self:data.title",
           "self:data.creator",
@@ -78,6 +97,20 @@ export default {
           "dms:edit",
           { action: "api:delete", showConfirm: true }
         ]
+      }
+    },
+
+    { type: FakeComp,
+      props: {
+        dmsAction: "fake-one",
+        className: "text-xl text-center font-bold"
+      }
+    },
+
+    { type: FakeComp,
+      props: {
+        dmsAction: "fake-two",
+        className: "text-xl text-center font-bold"
       }
     },
 

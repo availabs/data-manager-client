@@ -82,9 +82,9 @@ export default (Component, options = {}) => {
     }
 
     componentDidMount() {
-      const { action, id } = get(this.props, "params", {});
+      const { action, id, props } = get(this.props, "params", {});
       if (action) {
-        this.interact(action, id, null);
+        this.interact(action, id, props);
       }
     }
 
@@ -194,7 +194,7 @@ export default (Component, options = {}) => {
       const { app, type, dataItems, format } = this.props,
         { id, ...top } = this.getTop(),
         item = this.getItem(id);
-        
+
       return {
         makeInteraction: this.makeInteraction,
         makeOnClick: this.makeOnClick,
