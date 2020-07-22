@@ -4,9 +4,10 @@ import Test from 'pages/Test';
 
 import MyBlog from 'pages/blog-it-up'
 
-import DocsEditor from 'pages/DocsEditor'
+import Blog from 'pages/Blog'
+import Docs from 'pages/Docs'
 
-import DocsLanding from 'pages/DocsEditor/Landing'
+import BlogPublic from 'pages/Blog/Landing'
 
 import NoMatch from 'pages/404';
 import Login from "pages/Login"
@@ -17,8 +18,9 @@ import DmsDocs from "components/DMS/docs"
 
 export default [
 	// -- public
-	DocsLanding,
-	DocsEditor,
+	BlogPublic,
+	Blog,
+	Docs,
 	MyBlog,
 	DmsDocs,
 	// ConfigSimple,
