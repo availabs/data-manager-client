@@ -77,8 +77,8 @@ const OpenConfirm = ({ Button, ...props }) => {
       onClick={ e => { e.stopPropagation(); setOpen(true); } }/>
 }
 
-export const DmsButton = ({ action: arg, item, props = {}, disabled = false, ...others }) => {
-  const { showConfirm, type, to, ...interaction } = useMakeInteraction(arg, item, props);
+export const DmsButton = ({ action, item, props = {}, disabled = false, ...others }) => {
+  const { showConfirm, type, to, ...interaction } = useMakeInteraction(action, item, props);
 
   const Disabled = disabled || interaction.disabled;
 

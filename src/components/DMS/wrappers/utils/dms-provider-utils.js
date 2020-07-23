@@ -10,12 +10,19 @@ const flattenAttributes = (Sections, Attributes = [], depth = 0, id = [0]) => {
     flattenAttributes(sections, Attributes, depth + 1, [...id, 0]);
   }
   if (attributes) {
-    Attributes.push(...attributes.map((att, i) => ({
-      ...rest,
-      ...att,
-      depth,
-      id: `${ att.key }-${ id.join(".") }.${ i }`
-    })))
+    Attributes.push(...attributes.map((att, i) => {
+      const Att = {
+        ...rest,
+        ...att,
+        depth,
+        id: `${ att.key }-${ id.join(".") }.${ i }`
+      }
+      if ((Att.type === "boolean") && !Att.default) {
+        Att.default = false;
+  console.log("???????", Att)
+      }
+      return Att;
+    }))
   }
   const last = id.pop()
   return flattenAttributes(Sections, Attributes, depth, [...id, last + 1]);
@@ -80,16 +87,19 @@ export const makeInteraction = (...args) => {
 
   const { authRules, useRouter, basePath, location, history } = props,
 
-    hasAuth = checkAuth(authRules, action, props, item);
+    hasAuth = checkAuth(authRules, action, props, item),
+
+    propsToSeed = seedProps(props, item);
 
   if (useRouter && hasAuth && !disabled) {
     const { push } = history,
-      { pathname } = location,
+      { pathname, search = "" } = location,
 
       stack = get(location, ["state", "stack"], []),
-      stackLength = get(stack, "length", 0),
+      stackLength = stack.length,
 
-      seededProps = seedProps(props);
+      searchStack = get(location, ["state", "search"], []),
+      searchLength = searchStack.length;
 
     return /^(dms:)*back$/.test(action) ?
       { type: "link",
@@ -98,9 +108,10 @@ export const makeInteraction = (...args) => {
         ...rest,
         to: {
           pathname: get(stack, [stackLength - 1], basePath),
+          search: get(searchStack, [searchLength - 1], ""),
           state: {
             stack: stack.slice(0, -1),
-            // props: seededProps.slice(0, -1)
+            search: searchStack.slice(0, -1)
           }
         }
       }
@@ -113,7 +124,7 @@ export const makeInteraction = (...args) => {
             pathname: basePath,
             state: {
               stack: [],
-              // props: []
+              search: []
             }
           }
         }
@@ -124,13 +135,14 @@ export const makeInteraction = (...args) => {
           ...rest,
           onClick: e => {
             e.stopPropagation();
-            return Promise.resolve(interact(action, itemId, seededProps))
+            return Promise.resolve(interact(action, itemId, propsToSeed))
               .then(() => doThen())
               .then(() => push({
                 pathname: get(stack, [stackLength - 1], basePath),
+                search: get(searchStack, [searchLength - 1], ""),
                 state: {
                   stack: stack.slice(0, -1),
-                  // props: seededProps.slice(0, -1)
+                  search: searchStack.slice(0, -1)
                 }
               }))
           }
@@ -140,11 +152,11 @@ export const makeInteraction = (...args) => {
           action,
           ...rest,
           to: {
-            pathname: makePath(basePath, action, itemId, seedProps(props)),
-            search: !seededProps ? "" : `?${ Object.keys(seededProps).map(k => `${ k }=${ seededProps[k] }`).join('&') }`,
+            pathname: makePath(basePath, action, itemId),
+            search: !propsToSeed ? "" : `?${ Object.keys(propsToSeed).map(k => `${ k }=${ propsToSeed[k] }`).join('&') }`,
             state: {
-              stack: [...stack, pathname]
-              // props: [...seededProps, seedProps(props)]
+              stack: [...stack, pathname],
+              search: [...searchStack, search]
             }
           }
         }
@@ -158,7 +170,7 @@ export const makeInteraction = (...args) => {
     onClick: e => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();
-      return Promise.resolve(interact(action, itemId, seedProps(props)))
+      return Promise.resolve(interact(action, itemId, propsToSeed))
         .then(() => /^api:/.test(action) && doThen())
         .then(() => /^api:/.test(action) && interact("dms:back"));
     }
@@ -175,23 +187,29 @@ export const makeOnClick = (...args) => {
 
   const { authRules, useRouter, basePath, location, history } = props,
 
-    hasAuth = checkAuth(authRules, action, props, item);
+    hasAuth = checkAuth(authRules, action, props, item),
+
+    propsToSeed = seedProps(props, item);
 
   if (useRouter && hasAuth) {
     const { push } = history,
-      { pathname } = location,
+      { pathname, search = "" } = location,
 
       stack = get(location, ["state", "stack"], []),
-      stackLength = get(stack, "length", 0);
+      stackLength = stack.length,
+
+      searchStack = get(location, ["state", "search"], []),
+      searchLength = searchStack.length;
 
     return /^(dms:)*back$/.test(action) ?
       (e => {
         e.stopPropagation();
         push({
           pathname: get(stack, [stackLength - 1], basePath),
+          search: get(searchStack, [searchLength - 1], ""),
           state: {
             stack: stack.slice(0, -1),
-            // props: seededProps.slice(0, -1)
+            search: searchStack.slice(0, -1)
           }
         });
       })
@@ -202,30 +220,32 @@ export const makeOnClick = (...args) => {
             pathname: basePath,
             state: {
               stack: [],
-              // props: []
+              search: []
             }
           });
         })
       : /^api:/.test(action) ?
         (e => {
           e.stopPropagation();
-          return Promise.resolve(interact(action, itemId, seedProps(props)))
+          return Promise.resolve(interact(action, itemId, propsToSeed))
             .then(() => doThen())
             .then(() => push({
               pathname: get(stack, [stackLength - 1], basePath),
+              search: get(searchStack, [searchLength - 1], ""),
               state: {
                 stack: stack.slice(0, -1),
-                // props: seededProps.slice(0, -1)
+                search: searchStack.slice(0, -1)
               }
             }))
         })
       : (e => {
           e.stopPropagation();
           push({
-            pathname: makePath(basePath, action, itemId, seedProps(props)),
+            pathname: makePath(basePath, action, itemId, propsToSeed),
+            search: !propsToSeed ? "" : `?${ Object.keys(propsToSeed).map(k => `${ k }=${ propsToSeed[k] }`).join('&') }`,
             state: {
               stack: [...stack, pathname],
-              // props: [...seededProps, seedProps(props)]
+              search: [...searchStack, search]
             }
           })
         })
@@ -234,7 +254,7 @@ export const makeOnClick = (...args) => {
     e => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();
-      return Promise.resolve(interact(action, itemId, seedProps(props)))
+      return Promise.resolve(interact(action, itemId, propsToSeed))
         .then(() => /^api:/.test(action) && doThen())
         .then(() => /^api:/.test(action) && interact("dms:back"));
     }

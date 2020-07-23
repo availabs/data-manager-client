@@ -220,7 +220,8 @@ export const dmsCreate = Component => {
       const values = {};
 
       DmsCreateState.attributes.forEach(att => {
-        if (att.default && !att.hasValue) {
+        if (("default" in att) && !att.hasValue) {
+console.log("DEFAULT:", att)
           const value = getValue(att.default, { props });
           hasValue(value) && (values[att.key] = value);
         }

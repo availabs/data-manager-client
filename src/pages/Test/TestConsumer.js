@@ -80,7 +80,7 @@ export default {
                     },
                     sortBy: "data.chapter",
                     props: {
-                      active: "props:item.id==self:id",
+                      active: "item:id==self:id",
                       level: {
                         args: ["self:data.chapter"],
                         func: chapter => chapter.split(".").length - 1

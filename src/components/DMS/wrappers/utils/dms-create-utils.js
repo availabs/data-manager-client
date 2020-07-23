@@ -183,6 +183,7 @@ class Attribute {
       this.onChange(value || [])
     }
     else {
+      // this.onChange(this.type === "boolean" ? Boolean(value) : value);
       this.onChange(value);
     }
   }
@@ -299,6 +300,9 @@ class DmsAttribute extends Attribute {
       }
       else {
         a[c.key] = get(value, c.key, c.isArray ? [] : null);
+        // if (c.type === "boolean") {
+        //   a[c.key] = Boolean(a[c.key]);
+        // }
       }
       return a;
     }, {})

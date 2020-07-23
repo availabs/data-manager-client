@@ -65,7 +65,7 @@ export const verifyDmsValue = (value, attributes, required = false) => {
   }, true)
 }
 
-export const processAction = arg => {
+export const processAction = action => {
   let response = {
     action: "unknown",
     seedProps: () => null,
@@ -73,20 +73,22 @@ export const processAction = arg => {
     label: null,
     buttonTheme: null,
     disabled: false,
-    then: null
+    then: null,
+    doThen: () => Promise.resolve()
   };
-  if (typeof arg === "string") {
-    response.action = arg;
+  if (typeof action === "string") {
+    response.action = action;
   }
   else {
-    response = { ...response, ...arg };
+    response = { ...response, ...action };
+  }
+  if (typeof response.seedProps === "object") {
+    const map = { ...response.seedProps };
+    response.seedProps = (props, self) => mapDataToProps(map, { props, self });
   }
   const { then, ...processed } = response;
-  processed.doThen = () => {
-    if (typeof then === "function") {
-      return then();
-    }
-    return null;
+  if (typeof then === "function") {
+    processed.doThen = () => Promise.resolve(then());
   }
   return processed;
 }
@@ -463,7 +465,7 @@ export const getValue = (arg, sources, directives = {}, _default = null) => {
         interact: interact.map(a => getValueFromPath(a, { self: d, ...sources }, directives)),
         props: mapDataToProps(props, { self: d, ...sources }, directives)
       })),
-      type
+      Comp: type
     })
     return (func, interact) => func(args, interact);
   }

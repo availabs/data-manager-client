@@ -58,6 +58,9 @@ const TestFormat3 = {
   app: "dms",
   type: "dms-test-3",
   attributes: [
+    { key: "bool",
+      type: "boolean"
+    },
     { key: "test-3-1",
       type: "text",
       isArray: true,

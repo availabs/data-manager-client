@@ -85,7 +85,10 @@ export default {
             seedProps: () => ({ text: "FAKE ONE IS SUPER FAKE!!!" })
           },
           { action: "dms:fake-two",
-            seedProps: () => ({ text: "FAKE TWO IS SUPER FAKE!!!" })
+            // seedProps: () => ({ text: "FAKE TWO IS SUPER FAKE!!!" }),
+            seedProps: {
+              text: "FAKE TWO IS SUPER FAKE!!!"
+            }
           }
         ],
         columns: [
@@ -103,7 +106,15 @@ export default {
     { type: FakeComp,
       props: {
         dmsAction: "fake-one",
-        className: "text-xl text-center font-bold"
+        className: "text-xl text-center font-bold",
+        dmsActions: [
+          { action: "dms:fake-three",
+            buttonTheme: "buttonPrimary"
+          },
+          { action: "dms:fake-four",
+            buttonTheme: "buttonSuccess"
+          }
+        ]
       }
     },
 
@@ -146,15 +157,7 @@ export default {
     { type: "dms-create",
       props: {
         dmsAction: "create",
-        domain,
-        dmsActions: [
-          { action: "dms:fake-three",
-            buttonTheme: "buttonPrimary"
-          },
-          { action: "dms:fake-four",
-            buttonTheme: "buttonSuccess"
-          }
-        ]
+        domain
       },
       wrappers: ["with-auth"]
     },

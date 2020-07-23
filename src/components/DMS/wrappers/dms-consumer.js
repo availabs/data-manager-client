@@ -5,14 +5,14 @@ import { mapDataToProps as doMapDataToProps, getValue } from "../utils"
 
 // import get from "lodash.get"
 
-const createElements = ({ data, ...rest }, interact) =>
+const createElements = ({ data, Comp }, interact) =>
   data.map((d, i) =>
-    <rest.type key={ d.key } { ...d.props }
+    <Comp key={ d.key } { ...d.props }
       onClick={ !d.interact.length ? null :
         e => interact(...d.interact)
       }>
       { d.value }
-    </rest.type>
+    </Comp>
   )
 
 export default (Component, options = {}) => {
