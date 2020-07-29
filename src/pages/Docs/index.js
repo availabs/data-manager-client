@@ -1,5 +1,6 @@
 import { /*docsPage, docsSection,*/ npmrdsDoc } from './docs.type'
 import SectionManager from './components/SectionManager'
+import PageEdit from './components/PageEdit'
 
 
 let config = {
@@ -56,17 +57,9 @@ let config = {
       ]
     },
 
-    { type: "dms-create",
+    { type: PageEdit,
       props: {
         dmsAction: "create",
-        dmsActions: [
-          { action: "dms:fake-three",
-            buttonTheme: "buttonPrimary"
-          },
-          { action: "dms:fake-four",
-            buttonTheme: "buttonSuccess"
-          }
-        ]
       },
       wrappers: ["with-auth"]
     },

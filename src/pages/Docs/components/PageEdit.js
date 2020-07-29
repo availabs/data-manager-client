@@ -1,4 +1,5 @@
 import React, { useState, useEffect }  from "react"
+import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import { List, ListItemAction, Input } from 'components/avl-components/components'
 import { Link } from 'react-router-dom'
@@ -9,9 +10,10 @@ import { DmsButton } from "components/DMS/components/dms-button"
 
 export const Create = ({ createState, setValues, item, ...props }) => {
   const theme = useTheme();
-  let Title = createState.sections[0].attributes[0]
-  let Content = createState.sections[0].attributes[1]
-  let UserID = createState.sections[0].attributes[2]
+  console.log('Page Edit', createState)
+  let Title = createState.sections[0].attributes[4]
+  let Content = createState.sections[0].attributes[5]
+  // let UserID = createState.sections[0].attributes[2]
 
   return (
     <div className='max-w-2xl mx-auto'>
@@ -27,7 +29,7 @@ export const Create = ({ createState, setValues, item, ...props }) => {
               onChange={ Title.onChange }
             />
           </div>
-          <div
+          {/*<div
             className={`hidden`}>
             <div>{UserID.name} | {UserID.key} | {UserID.value}</div>
             <UserID.Input
@@ -35,7 +37,7 @@ export const Create = ({ createState, setValues, item, ...props }) => {
               value={ UserID.value }
 
             />
-          </div>
+          </div>*/}
           <div
             className={`p-2 font-thin overflow-hidden`}>
             <Content.Input
@@ -54,3 +56,5 @@ export const Create = ({ createState, setValues, item, ...props }) => {
     </div>
   )
 }
+
+export default Create
