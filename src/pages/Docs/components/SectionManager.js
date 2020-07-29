@@ -16,9 +16,12 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
   const filter = makeFilter(props),
     dataItems = (filter ? props.dataItems.filter(filter) : props.dataItems);
 
-// console.log("DATA ITEMS:", dataItems)
+  // console.log("DATA ITEMS:", dataItems)
   return (
     <div>
+      <pre>
+        {JSON.stringify(dataItems, null, 4)}
+      </pre>
       <Input value={newSectionTitle} onChange={setNewSectionTitle} className='w-full text-xl p-4' />
       <DmsButton 
         action={{
@@ -34,7 +37,7 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
           return (
             <List key={i} className='my-3'>
               <ListItemAction 
-                item={`${d.id} ${d.data.section}`} 
+                item={`(${d.id})-${d.data.section}`} 
                 action={
                   <DmsButton 
                     action={{

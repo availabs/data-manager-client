@@ -71,6 +71,7 @@ export const DmsCreateBase = ({ createState, ...props }) => {
                       ${ att.fullWidth || (att.type === "richtext") || (att.type === "img") ? "w-full" : "max-w-2xl"}
                       ${ !att.verified ? theme.borderDanger : att.required ? theme.borderSuccess :
                           att.hasValue ? theme.borderInfo : "border-current" }
+                      ${ att.hidden ? 'hidden' : '' }
                     ` }>
                     <label htmlFor={ att.id }>{ att.name }</label>
                     <Input value={ att.value } onChange={ att.onChange }
