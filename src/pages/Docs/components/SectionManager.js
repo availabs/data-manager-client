@@ -17,15 +17,15 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
   return (
     <div>
 			<div className="flex">
-	      <Input value={newSectionTitle} onChange={setNewSectionTitle}
+	      <Input value={ newSectionTitle } onChange={ setNewSectionTitle }
 					className='w-full text-xl p-4 flex-1 rounded-lg'
 					placeholder="Enter section name..." autoFocus/>
-	      <DmsButton large className="flex-0 text-xl ml-3"
-	        action={{
-						disabled: !Boolean(newSectionTitle),
+	      <DmsButton large className="flex-0 text-xl ml-3 px-8"
+					disabled={ !Boolean(newSectionTitle) }
+	        action={ {
 	          action: 'api:create',
-	          seedProps: () => ({section: newSectionTitle, sectionLanding: 1})
-	        }}
+	          seedProps: () => ({ section: newSectionTitle, sectionLanding: 1 })
+	        } }
 	      />
 			</div>
       {!props.dataItems.length ? null :
@@ -40,7 +40,7 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
 	              <ListItemAction
 	                item={`${d.id} ${d.data.section}`}
 	                action={ [
-		                  <DmsButton key="create"
+		                  <DmsButton key="dms:create"
 		                    action={{
 		                      action: 'create',
 		                      seedProps: () => ({section: d.data.section, index: subSections.length })
