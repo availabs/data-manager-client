@@ -65,7 +65,7 @@ class ReadOnlyEditor extends React.Component {
     const { editorState } = this.state;
 
     return (
-      <div className="draft-js-editor">
+      <div className="draft-js-editor read-only-editor">
         <Editor placeholder="Type a value..."
           editorState={ editorState }
           onChange={ editorState => this.setState(state => ({ editorState })) }

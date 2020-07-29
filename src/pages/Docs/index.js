@@ -59,14 +59,14 @@ let config = {
     { type: "dms-create",
       props: {
         dmsAction: "create",
-        dmsActions: [
-          { action: "dms:fake-three",
-            buttonTheme: "buttonPrimary"
-          },
-          { action: "dms:fake-four",
-            buttonTheme: "buttonSuccess"
-          }
-        ]
+        // dmsActions: [
+        //   { action: "dms:fake-three",
+        //     buttonTheme: "buttonPrimary"
+        //   },
+        //   { action: "dms:fake-four",
+        //     buttonTheme: "buttonSuccess"
+        //   }
+        // ]
       },
       wrappers: ["with-auth"]
     },

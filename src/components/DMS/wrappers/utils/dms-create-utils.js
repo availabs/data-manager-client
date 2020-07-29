@@ -295,7 +295,7 @@ class DmsAttribute extends Attribute {
   }
   getDefault = props => {
     const defaults = this._getDefault(props, this.attributes);
-    if (this.defaultLoaded = checkDmsDefault(defaults)) {
+    if ((this.defaultLoaded = checkDmsDefault(defaults)) === true) {
       this.defaultValue = defaults;
     };
     return defaults;

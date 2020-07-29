@@ -2,13 +2,11 @@ import React, { useState  }  from "react"
 
 import { List, ListItemAction, Input } from 'components/avl-components/components'
 
-
 import { DmsButton } from "components/DMS/components/dms-button"
 
-
-//import get from "lodash.get"
-
 import { makeFilter } from "components/DMS/utils"
+
+import ReadOnlyEditor from "components/DMS/components/editor/editor.read-only"
 
 const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...props }) => {
 	const [newSectionTitle, setNewSectionTitle] = useState('');
@@ -16,38 +14,60 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
   const filter = makeFilter(props),
     dataItems = (filter ? props.dataItems.filter(filter) : props.dataItems);
 
-// console.log("DATA ITEMS:", dataItems)
   return (
     <div>
-      <Input value={newSectionTitle} onChange={setNewSectionTitle} className='w-full text-xl p-4' />
-      <DmsButton 
-        action={{
-          action: 'api:create',
-          seedProps: () => ({section: newSectionTitle, sectionLanding: 1})
-        }}
-      />
-      {!props.dataItems.length ? null : 
+			<div className="flex">
+	      <Input value={newSectionTitle} onChange={setNewSectionTitle}
+					className='w-full text-xl p-4 flex-1 rounded-lg'
+					placeholder="Enter section name..." autoFocus/>
+	      <DmsButton large className="flex-0 text-xl ml-3"
+	        action={{
+						disabled: !Boolean(newSectionTitle),
+	          action: 'api:create',
+	          seedProps: () => ({section: newSectionTitle, sectionLanding: 1})
+	        }}
+	      />
+			</div>
+      {!props.dataItems.length ? null :
       (
         dataItems
           .filter(d => d.data.sectionLanding)
           .map((d,i) => {
-          return (
-            <List key={i} className='my-3'>
-              <ListItemAction 
-                item={`${d.id} ${d.data.section}`} 
-                action={
-                  <DmsButton 
-                    action={{
-                      action: 'create',
-                      seedProps: () => ({section: d.data.section})
-                    }}
-                    label={'Add Page'}
-                  />
-                }
-              />
-            </List>
-          )
-        })
+						const subSections = props.dataItems
+							.filter(({ data }) => !data.sectionLanding && (data.section === d.data.section));
+	          return (
+	            <List key={i} className='my-3'>
+	              <ListItemAction
+	                item={`${d.id} ${d.data.section}`}
+	                action={ [
+		                  <DmsButton key="create"
+		                    action={{
+		                      action: 'create',
+		                      seedProps: () => ({section: d.data.section, index: subSections.length })
+		                    }}
+		                    label='Add Page'
+		                  />,
+		                  <DmsButton key="api:delete" item={ d.id }
+												className="ml-2"
+		                    action={ {
+													action: 'api:delete',
+													showConfirm: true
+												} }
+		                    label='Delete'
+		                  />
+										]
+	                }
+	              />
+								{ subSections.map(d =>
+										<div key={ d.id } className="p-3 m-3 mt-0 flex border-2 rounded-lg">
+											<div className="flex-1"><ReadOnlyEditor value={ d.data.content }/></div>
+											<DmsButton item={ d.id } action="api:delete" className="ml-3 flex-0"/>
+										</div>
+									)
+								}
+	            </List>
+	          )
+	        })
       )}
     </div>
   )

@@ -8,7 +8,7 @@ const docsPage = {
     },
     {
       key:"index",
-      type: "number", 
+      type: "number",
     },
     { key: "body",
       type: "richtext",
@@ -33,7 +33,7 @@ const docsSection = {
     },
     {
       key:"index",
-      type: "number", 
+      type: "number",
     },
     { key: "pages",
       type: "dms-format",
@@ -41,7 +41,7 @@ const docsSection = {
       fullWidth: true,
       isArray: true
     },
-    
+
   ]
 }
 
@@ -55,18 +55,20 @@ const npmrdsDoc = {
       default: "props:section"
     },
     { key: "sectionLanding",
-      type: "number",
-      required: true,
-      default: 0
+      type: "boolean",
+      default: false,
+      editable: false,
+      hidden: true
     },
     { key: "index",
-      type: "number"
-    },
-    { key: "page",
-      type: "number"
+      type: "number",
+      default: "props:index",
+      editable: false,
+      hidden: true
     },
     { key: "content",
-      type: "richtext"
+      type: "richtext",
+      required: true
     },
     { key: "tags",
       type: "text",
