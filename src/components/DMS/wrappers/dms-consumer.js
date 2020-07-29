@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react"
 
+import { useAuth } from "../contexts/auth-context"
 import { useDms } from "../contexts/dms-context"
 import { mapDataToProps as doMapDataToProps, getValue } from "../utils"
+import { hasValue } from "components/avl-components/components/Inputs/utils"
 
 // import get from "lodash.get"
 
@@ -22,18 +24,22 @@ export default (Component, options = {}) => {
   } = options;
 
   return ({ ...props }) => {
-    const newProps = { ...props, ...useDms() },
+    const newProps = { ...props, ...useDms(), user: useAuth().user },
       { interact } = newProps;
 
     const [acted, setActed] = useState(false);
 
     let defaultInteract = [];
     if (!acted) {
-      defaultInteract = getValue(interactOnMount, { props: newProps });
+      defaultInteract = [
+        getValue(interactOnMount[0], { props: newProps }),
+        getValue(interactOnMount[1], { props: newProps }),
+        doMapDataToProps(interactOnMount[2] || {}, { props: newProps })
+      ];
     }
     const [action, id, seededProps] = defaultInteract,
-      numOnMount = interactOnMount.filter(Boolean).length,
-      numInteract = defaultInteract.filter(Boolean).length,
+      numOnMount = interactOnMount.filter(hasValue).length,
+      numInteract = defaultInteract.filter(hasValue).length,
       ready = Boolean(action) && (numOnMount === numInteract);
 
     useEffect(() => {

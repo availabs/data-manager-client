@@ -65,13 +65,16 @@ const makeDisplayComp = attribute => {
     )
   }
 }
-function getEmptyFormatValue(att) {
+function getEmptyFormatValue(att, props) {
   return att.attributes.reduce((a, c) => {
     if (c.type === "dms-format") {
       a[c.key] = getEmptyFormatValue(c);
     }
     else if (c.type === "richtext") {
       a[c.key] = createEmpty();
+    }
+    else if ("default" in c) {
+      a[c.key] = getValue(c.default, props);
     }
     return a;
   }, {})
@@ -110,7 +113,7 @@ export const getInput = (att, props, disabled) => {
     case "dms-format":
       InputComp = DmsInput;
       inputProps = { Attribute: att };
-      getEmptyValue = getEmptyFormatValue.bind(null, att);
+      getEmptyValue = getEmptyFormatValue.bind(null, att, props);
       DisplayComp = att.isArray && makeDisplayComp(att);
       break;
     case "boolean":

@@ -408,7 +408,7 @@ const getValueFromPath = (pathArg, sources, directives, _default, format = ident
 }
 
 export const getValue = (arg, sources, directives = {}, _default = null) => {
-  if (!arg) return null;
+  if (!hasValue(arg)) return _default || arg;
 
   if (!sources.item) {
     sources.item = get(sources, ["props", "item"], null);

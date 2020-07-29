@@ -1,6 +1,7 @@
 import React from "react"
 
 import { useDms } from "../contexts/dms-context"
+import { useAuth } from "../contexts/auth-context"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import { useSetSections } from "../wrappers/dms-create"
@@ -12,7 +13,7 @@ import {
 export default React.forwardRef(({ Attribute, id, autoFocus = false, onFocus, onBlur, onChange, value, ...props }, ref) => {
   value = value || {};
 
-  const Props = { ...props, ...useDms() };
+  const Props = { ...props, ...useDms(), user: useAuth().user };
 
   const sections = useSetSections(Attribute.Format),
     Sections = useDmsSections(sections, value, onChange, Props);

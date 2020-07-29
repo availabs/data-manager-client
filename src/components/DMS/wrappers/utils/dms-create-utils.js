@@ -9,6 +9,7 @@ import get from "lodash.get"
 
 import { verifyValue, hasValue } from "components/avl-components/components/Inputs/utils"
 import {
+  getValue,
   prettyKey,
   checkEditorValue,
   checkDmsValue,
@@ -27,6 +28,7 @@ export class DmsCreateStateClass {
 
     this.values = {};
     this.hasValues = false;
+    this.defaultsLoaded = false;
 
     this.canGoNext = false;
     this.next = () => {};
@@ -106,6 +108,10 @@ class Attribute {
     this.hasValue = false;
     this.verified = !this.required;
 
+    this.hasDefault = ("default" in att);
+    this.defaultLoaded = false;
+    this.defaultValue = null;
+
     this.onChange = value => {
       this.value = value;
       this.hasValue = this.checkHasValue(value);
@@ -141,6 +147,11 @@ class Attribute {
     this.onSave = () => {
 
     }
+  }
+  getDefault = props => {
+    this.defaultValue = getValue(this.default, { props });
+    this.defaultLoaded = this.checkHasValue(this.defaultValue);
+    return this.defaultValue;
   }
   getValue = value => value;
   checkHasValue = value => {
@@ -194,6 +205,8 @@ class EditorAttribute extends Attribute {
   constructor(att, setValues, dmsMsg, props) {
     super(att, setValues, dmsMsg, props);
 
+    this.hasDefault = false;
+
     this.value = this.isArray ? [] : createEditorState(null);
   }
   getValue = value => {
@@ -243,6 +256,14 @@ export const getAttributes = (format, formats) => {
   return attributes;
 }
 
+const checkDmsDefault = defaults =>
+  Object.keys(defaults).reduce((a, c) => {
+    if (typeof defaults[c] === "object") {
+      return a && checkDmsDefault(defaults[c]);
+    }
+    return a && hasValue(defaults[c]);
+  }, true)
+
 class DmsAttribute extends Attribute {
   constructor(att, setValues, dmsMsg, props) {
     super(att, setValues, dmsMsg, props);
@@ -252,7 +273,32 @@ class DmsAttribute extends Attribute {
 
     this.value = this.isArray ? [] : {};
 
+    this.defaultValue = this.isArray ? [] : this.getDefault(props);
+    this.hasDefault = this.isArray ? false : Boolean(Object.keys(this.defaultValue).length);
+    this.defaultLoaded = false;
+
     this.required = this.isArray ? this.required : isRequired(this.attributes);
+  }
+  _getDefault = (props, attributes) => {
+    return attributes.reduce((a, c) => {
+      if (c.type === "dms-format") {
+        const defaults = this._getDefault(props, c.attributes);
+        if (Object.keys(defaults).length) {
+          a[c.key] = defaults;
+        }
+      }
+      else if (("default" in c) && (c.type !== "richtext")) {
+        a[c.key] = getValue(c.default, { props });
+      }
+      return a;
+    }, {})
+  }
+  getDefault = props => {
+    const defaults = this._getDefault(props, this.attributes);
+    if (this.defaultLoaded = checkDmsDefault(defaults)) {
+      this.defaultValue = defaults;
+    };
+    return defaults;
   }
   _getValue = (value, attributes) => {
     return attributes.reduce((a, c) => {
@@ -280,11 +326,11 @@ class DmsAttribute extends Attribute {
       return a;
     }, {});
   }
-  getValue = (values, attributes = this.attributes) => {
+  getValue = values => {
     if (Array.isArray(values)) {
-      return values.map(v => this._getValue(v, attributes));
+      return values.map(v => this._getValue(v, this.attributes));
     }
-    return this._getValue(values, attributes);
+    return this._getValue(values, this.attributes);
   }
   _initValue = (value, attributes) => {
     return attributes.reduce((a, c) => {
@@ -307,10 +353,10 @@ class DmsAttribute extends Attribute {
       return a;
     }, {})
   }
-  initValue = (value, attributes = this.attributes) => {
+  initValue = value => {
     this.onChange(
-      this.isArray ? (value ? value.map(v => this._initValue(v, attributes)) : []) :
-      this._initValue(value, attributes)
+      this.isArray ? (value ? value.map(v => this._initValue(v, this.attributes)) : []) :
+      this._initValue(value, this.attributes)
     );
   }
   checkHasValue = (value, attributes = this.attributes) => {
@@ -359,7 +405,7 @@ class DmsAttribute extends Attribute {
       this.setWarning(invalidKey, invalidMsg);
     })
   }
-  sendWarnings = (value, attributes = this.attributes, attTree = [this]) => {
+  sendWarnings = value => {
     if (this.isArray) {
       if (this.required && !hasValue(value)) {
         this.setWarning(`missing-data-${ this.key }`, `Missing value for required attribute: ${ this.name }.`);
@@ -369,7 +415,7 @@ class DmsAttribute extends Attribute {
       }
       return;
     }
-    this._sendWarnings(value, attributes, attTree);
+    this._sendWarnings(value, this.attributes, [this]);
   }
   verifyValue = (value, attributes = this.attributes) => {
     return verifyDmsValue(value, attributes, this.required);

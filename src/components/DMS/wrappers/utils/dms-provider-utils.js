@@ -17,9 +17,8 @@ const flattenAttributes = (Sections, Attributes = [], depth = 0, id = [0]) => {
         depth,
         id: `${ att.key }-${ id.join(".") }.${ i }`
       }
-      if ((Att.type === "boolean") && !Att.default) {
-        Att.default = false;
-  console.log("???????", Att)
+      if ((Att.type === "boolean")) {
+        Att.default = Boolean(Att.default);
       }
       return Att;
     }))

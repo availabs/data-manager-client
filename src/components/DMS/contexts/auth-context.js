@@ -1,6 +1,10 @@
 import React from "react"
 
-export default React.createContext({
+const DmsContext = React.createContext({
   authRules: null, user: null,
   useRouter: false, basePath: null
 });
+
+export const useAuth = () => React.useContext(DmsContext);
+
+export default DmsContext;

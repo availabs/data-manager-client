@@ -7,7 +7,6 @@ import get from "lodash.get"
 import throttle from "lodash.throttle"
 
 import { hasValue } from "components/avl-components/components/Inputs/utils"
-import { getValue } from "../utils"
 import { DmsCreateStateClass, makeNewAttribute } from "./utils/dms-create-utils"
 
 import { useMessenger } from "../contexts/messenger-context"
@@ -73,8 +72,16 @@ export const useDmsCreateState = (sections, props) => {
       DmsCreateState.values = values;
       DmsCreateState.saveValues = DmsCreateState.getValues(values);
       DmsCreateState.hasValues = DmsCreateState.attributes.reduce((a, c) =>
-        a || ((c.editable !== false) && c.checkHasValue(values[c.key]))
+        a || (
+          (c.editable !== false) &&
+          c.checkHasValue(values[c.key]) &&
+          !deepequal(c.defaultValue, DmsCreateState.saveValues[c.key])
+        )
       , false);
+
+      DmsCreateState.defaultsLoaded = DmsCreateState.attributes.reduce((a, c) =>
+        a && (!c.hasDefault || c.defaultLoaded)
+      , true);
 
       Sections.forEach((sect, index) => {
         sect.isActive = section === index;
@@ -94,7 +101,7 @@ export const useDmsCreateState = (sections, props) => {
         .reduce((a, c) => ({
           canGoPrev: a.canGoPrev && c.canGoPrev,
           canGoNext: a.canGoNext && c.canGoNext
-        }), { canGoNext: true, canGoPrev: true })
+        }), { canGoNext: true, canGoPrev: true });
 
       DmsCreateState.canGoNext = canGoNext &&
         Sections[section].verified && ((section + 1) < Sections.length);
@@ -129,7 +136,7 @@ export const useDmsCreateState = (sections, props) => {
 const makeStorageId = (format = {}, item = null) =>
   `${ format.app }+${ format.type }${ item ? `:${ item.id }` : `` }`;
 
-const useLocalStorage = (DmsCreateState, format = {}, doSave = false, item = null, ready = true) => {
+const useLocalStorage = (DmsCreateState, format = {}, doSave = false, ready = true, item = null) => {
 
   const [_ready, setReady] = useState(false);
   useEffect(() => {
@@ -154,7 +161,7 @@ const useLocalStorage = (DmsCreateState, format = {}, doSave = false, item = nul
 
     const data = JSON.parse(window.localStorage.getItem(storageId));
     setShowModal(Boolean(data));
-    !Boolean(data) && setChecked(true);
+    setChecked(!Boolean(data));
     setData(data);
   }, [storageId, checked, data, DmsCreateState, format, item, ready, showModal]);
 
@@ -217,12 +224,17 @@ export const dmsCreate = Component => {
     }, [DmsCreateState.hasValues, DmsCreateState.verified, DmsCreateState]);
 
     useEffect(() => {
+      if (DmsCreateState.defaultsLoaded) return;
+
       const values = {};
 
       DmsCreateState.attributes.forEach(att => {
-        if (("default" in att) && !att.hasValue) {
-console.log("DEFAULT:", att)
-          const value = getValue(att.default, { props });
+        // if (("default" in att) && !att.hasValue) {
+        //   const value = getValue(att.default, { props });
+        //   hasValue(value) && (values[att.key] = value);
+        // }
+        if (att.hasDefault && !att.defaultLoaded) {
+          const value = att.getDefault(props);
           hasValue(value) && (values[att.key] = value);
         }
       })
@@ -231,7 +243,7 @@ console.log("DEFAULT:", att)
       }
     });
 
-    const [show, onHide, loadData] = useLocalStorage(DmsCreateState, props.format, DmsCreateState.hasValues);
+    const [show, onHide, loadData] = useLocalStorage(DmsCreateState, props.format, DmsCreateState.hasValues, DmsCreateState.defaultsLoaded);
 
     return (
       <>
@@ -299,7 +311,7 @@ export const dmsEdit = Component => {
       }
     }
 
-    const [showModal, onHide, loadData] = useLocalStorage(DmsCreateState, props.format, DmsCreateState.hasValues && updated, item, Boolean(item));
+    const [showModal, onHide, loadData] = useLocalStorage(DmsCreateState, props.format, DmsCreateState.hasValues && updated, Boolean(item), item);
 
     return (
       <>

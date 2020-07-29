@@ -14,7 +14,8 @@ const TestFormat1 = {
       type: "text"
     },
     { key: "test-1-3",
-      type: "number"
+      type: "number",
+      default: "props:user.authLevel"
     },
   ]
 }
@@ -23,7 +24,8 @@ const TestFormat2 = {
   type: "dms-test-2",
   attributes: [
     { key: "test-2-1",
-      type: "text"
+      type: "text",
+      default: "test-2-1-default-value"
     },
     { key: "test-2-2",
       type: "date",
@@ -68,8 +70,7 @@ const TestFormat3 = {
     },
     { key: "test-3-2",
       type: "text",
-      verify: "^text:\\w+",
-      required: true
+      verify: "^text:\\w+"
     },
     { key: "test-3-3",
       type: "number",
@@ -103,6 +104,10 @@ export default {
   sections: [
     { title: "Tests",
       attributes: [
+        { key: "test-bool",
+          type: "boolean",
+          default: true
+        },
         { key: "test-1",
           type: "dms-format",
           format: "dms+dms-test-3"
