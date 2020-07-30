@@ -61,7 +61,8 @@ const TestFormat3 = {
   type: "dms-test-3",
   attributes: [
     { key: "bool",
-      type: "boolean"
+      type: "boolean",
+      editable: false
     },
     { key: "test-3-1",
       type: "text",
@@ -143,7 +144,8 @@ export default {
         { key: 'test-multi-select',
           type: "text",
           isArray: true,
-          domain: "props:domain"
+          domain: "props:domain",
+          editable: false
         },
         { key: 'test-select',
           type: "text",

@@ -4,7 +4,7 @@ import TEST_FORMAT from "./test-config.type"
 
 import ReadOnlyEditor from "components/DMS/components/editor/editor.read-only"
 
-import { prettyKey, getFormat } from "components/DMS/utils"
+import { prettyKey/*, getFormat*/ } from "components/DMS/utils"
 
 const ExpandRow = ({ values }) => {
   const [creator, content] = values;
