@@ -22,7 +22,10 @@ let config = {
   },
   children: [
     { type: "dms-header",
-      props: { title: "Documentation" }
+      props: {
+        title: "Documentation",
+        shadowed: false
+      }
     },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
