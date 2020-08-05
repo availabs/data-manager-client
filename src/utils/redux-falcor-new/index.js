@@ -40,11 +40,11 @@ export const reduxFalcor = Component => {
     componentDidMount() {
       this.fetchFalcorDeps();
     }
-    // componentDidUpdate(oldProps) {
-    //   if (oldProps.falcorCache !== this.props.falcorCache) {
-    //     this.fetchFalcorDeps();
-    //   }
-    // }
+    componentDidUpdate(oldProps) {
+      if (oldProps.falcorCache !== this.props.falcorCache) {
+        this.fetchFalcorDeps();
+      }
+    }
     fetchFalcorDeps() {
       const { current } = this.WrappedComponent;
       if (!current) return;

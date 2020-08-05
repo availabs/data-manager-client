@@ -97,6 +97,7 @@ export default (WrappedComponent, options = {}) => {
       if (falcorAction) {
         this.startLoading();
         return Promise.resolve(falcorAction.call(this, action, id, data))
+          .then(() => this.fetchFalcorDeps())
           .then(() => this.stopLoading());
       }
       return Promise.resolve();
