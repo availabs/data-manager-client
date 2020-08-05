@@ -1,44 +1,4 @@
 
-const npmrdsDoc = {
-  app: "npmrds",
-  type: "doc-page",
-  attributes: [
-    { key: "section",
-      type: "text",
-      required: true,
-      default: "props:section",
-      //hidden: true
-    },
-    { key: "sectionLanding",
-      type: "number",
-      required: true,
-      hidden: true,
-      //default: 0
-    },
-    { key: "index",
-      type: "number",
-      hidden: true
-    },
-    { key: "page",
-      type: "number"
-    },
-    { key: "title",
-      type: "text"
-    },
-    { key: "content",
-      type: "richtext"
-    },
-    { key: "tags",
-      type: "text",
-      isArray: true
-    }
-  ]
-}
-
-
-export {
-  npmrdsDoc
-}
 
 /*const docsPage = {
   app: "docs2",
@@ -50,7 +10,7 @@ export {
     },
     {
       key:"index",
-      type: "number", 
+      type: "number",
     },
     { key: "body",
       type: "richtext",
@@ -75,7 +35,7 @@ const docsSection = {
     },
     {
       key:"index",
-      type: "number", 
+      type: "number",
     },
     { key: "pages",
       type: "dms-format",
@@ -83,7 +43,49 @@ const docsSection = {
       fullWidth: true,
       isArray: true
     },
-    
+
   ]
 }
 */
+
+const npmrdsDoc = {
+  app: "npmrds",
+  type: "doc-page",
+  attributes: [
+    { key: "section",
+      type: "text",
+      required: true,
+      default: "props:section",
+      hidden: true
+    },
+    { key: "sectionLanding",
+      type: "boolean",
+      default: false,
+      editable: false,
+      hidden: true
+    },
+    { key: "index",
+      type: "number",
+      default: "props:index",
+      editable: false,
+      hidden: true
+    },
+    { key: "title",
+      type: "text"
+    },
+    { key: "content",
+      type: "richtext",
+      required: true
+    },
+    { key: "tags",
+      type: "text",
+      isArray: true
+    }
+  ]
+}
+
+
+export {
+  npmrdsDoc
+}
+

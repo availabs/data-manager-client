@@ -6,6 +6,7 @@ import MyBlog from 'pages/blog-it-up'
 
 import Blog from 'pages/Blog'
 import Docs from 'pages/Docs'
+import DocsView from 'pages/Docs/view'
 
 import BlogPublic from 'pages/Blog/Landing'
 
@@ -14,6 +15,7 @@ import Login from "pages/Login"
 import Logout from "pages/Logout"
 import Home from "pages/home"
 
+
 import DmsDocs from "components/DMS/docs"
 
 export default [
@@ -21,6 +23,7 @@ export default [
 	BlogPublic,
 	Blog,
 	Docs,
+	DocsView,
 	MyBlog,
 	DmsDocs,
 	// ConfigSimple,

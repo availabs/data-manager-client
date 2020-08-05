@@ -1,8 +1,8 @@
-import React, { useState, useEffect }  from "react"
+import React  from "react"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
-import { List, ListItemAction, Input } from 'components/avl-components/components'
-import { Link } from 'react-router-dom'
+// import { List, ListItemAction, Input } from 'components/avl-components/components'
+// import { Link } from 'react-router-dom'
 
 import { DmsButton } from "components/DMS/components/dms-button"
 
@@ -10,13 +10,12 @@ import { DmsButton } from "components/DMS/components/dms-button"
 
 export const Create = ({ createState, setValues, item, ...props }) => {
   const theme = useTheme();
-  console.log('Page Edit', createState)
-  let Title = createState.sections[0].attributes[4]
-  let Content = createState.sections[0].attributes[5]
-  // let UserID = createState.sections[0].attributes[2]
+  let Title = createState.sections[0].attributes[3]
+  let Content = createState.sections[0].attributes[4]
+   let Tags = createState.sections[0].attributes[5]
 
   return (
-    <div className='max-w-2xl mx-auto'>
+    <div className='max-w-5xl mx-auto'>
       <form onSubmit={ e => e.preventDefault() }>
         <div className="w-full flex flex-col justify-centerhasValue h-min-screen">
           <div
@@ -29,15 +28,15 @@ export const Create = ({ createState, setValues, item, ...props }) => {
               onChange={ Title.onChange }
             />
           </div>
-          {/*<div
+          *<div
             className={`hidden`}>
-            <div>{UserID.name} | {UserID.key} | {UserID.value}</div>
-            <UserID.Input
+            <div>Tags</div>
+            <Tags.Input
               className={`border-none active:border-none focus:outline-none custom-bg h-full ${theme.text}`}
-              value={ UserID.value }
+              value={ Tags.value }
 
             />
-          </div>*/}
+          </div>
           <div
             className={`p-2 font-thin overflow-hidden`}>
             <Content.Input

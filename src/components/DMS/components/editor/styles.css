@@ -1,6 +1,9 @@
 .draft-js-editor .public-DraftEditor-content {
   min-height: 12rem;
 }
+.draft-js-editor.read-only-editor .public-DraftEditor-content {
+  min-height: auto;
+}
 .draft-js-editor .public-DraftEditor-content::-webkit-scrollbar {
   height: 10px;
   width: 10px;
