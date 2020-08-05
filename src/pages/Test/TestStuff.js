@@ -28,8 +28,7 @@ export default {
     wrappers: [
       "dms-provider",
       "show-loading",
-      "dms-falcor",
-      "with-auth"
+      "dms-falcor"
     ],
     props: { format }
   }
