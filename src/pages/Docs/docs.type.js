@@ -1,4 +1,6 @@
-const docsPage = {
+
+
+/*const docsPage = {
   app: "docs2",
   type: "page",
   attributes: [
@@ -44,6 +46,7 @@ const docsSection = {
 
   ]
 }
+*/
 
 const npmrdsDoc = {
   app: "npmrds",
@@ -52,7 +55,8 @@ const npmrdsDoc = {
     { key: "section",
       type: "text",
       required: true,
-      default: "props:section"
+      default: "props:section",
+      hidden: true
     },
     { key: "sectionLanding",
       type: "boolean",
@@ -65,6 +69,9 @@ const npmrdsDoc = {
       default: "props:index",
       editable: false,
       hidden: true
+    },
+    { key: "title",
+      type: "text"
     },
     { key: "content",
       type: "richtext",
@@ -79,7 +86,6 @@ const npmrdsDoc = {
 
 
 export {
-  docsPage,
-  docsSection,
   npmrdsDoc
 }
+

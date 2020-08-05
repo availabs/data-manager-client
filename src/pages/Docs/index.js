@@ -1,5 +1,7 @@
 import { /*docsPage, docsSection,*/ npmrdsDoc } from './docs.type'
 import SectionManager from './components/SectionManager'
+import PageEdit from './components/PageEdit'
+import PageView from './components/PageView'
 
 
 let config = {
@@ -20,6 +22,7 @@ let config = {
     format: npmrdsDoc,
     title: "Documentation",
   },
+
   children: [
     { type: "dms-header",
       props: {
@@ -34,49 +37,20 @@ let config = {
         dmsAction: "list"
       }
     },
-
-    { type: "dms-card", // generic dms component for viewing a single data item
-      props: { dmsAction: "view" },
-      wrappers: [
-        { type: "dms-view",
-          options: {
-            mapDataToProps: {
-// mapDataToProps is used by dms-view to map data items to wrapped component props
-// prop: [...attributes]
-              title: "item:data.title",
-              body: [
-                "item:data.test-format-2",
-              ],
-              footer: [
-                "item:data.creator",
-                { path: "item:updated_at",
-                  format: "date"
-                }
-              ]
-            }
-          }
-        }
-      ]
+    { type: PageView,
+      props: { dmsAction: "view" }
     },
 
-    { type: "dms-create",
+    { type: PageEdit,
       props: {
         dmsAction: "create",
-        // dmsActions: [
-        //   { action: "dms:fake-three",
-        //     buttonTheme: "buttonPrimary"
-        //   },
-        //   { action: "dms:fake-four",
-        //     buttonTheme: "buttonSuccess"
-        //   }
-        // ]
       },
-      wrappers: ["with-auth"]
+      wrappers: [ "dms-create", "with-auth"]
     },
 
-    { type: "dms-edit",
+    { type: PageEdit,
       props: { dmsAction: "edit" },
-      wrappers: ["with-auth"]
+      wrappers: ["dms-edit","with-auth"]
     }
   ]
 }
@@ -86,7 +60,7 @@ export default {
   mainNav: true,
   // exact: true,
   auth: true,
-  name: 'Docs',
+  name: 'Docs Editor',
   icon: '',
   layoutSettings: {
     fixed: true,
