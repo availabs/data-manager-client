@@ -8,7 +8,7 @@ import get from "lodash.get"
 
 import { makeFilter, prettyKey, getValue, useDmsColumns } from "../utils"
 
-const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...props }) => {
+const DmsTable = ({ sortBy, sortOrder, columns, expandColumns, initialPageSize, Container, ...props }) => {
 	const [attributes, actions] = useDmsColumns(columns);
 
   const filter = makeFilter(props),
@@ -63,7 +63,8 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
         return o
       }, {}),
 			onClick: props.makeOnClick('dms:view', self.id),
-			subRows: []
+			subRows: [],
+			expand: expandColumns.map(c => getValue(c, { self }, { preserveKeys: true }))
     }))
 // console.log("DATA ITEMS:", dataItems)
   return !props.dataItems.length ? null : (
@@ -71,17 +72,20 @@ const DmsTable = ({ sortBy, sortOrder, columns, initialPageSize, Container, ...p
       columns={ columnData }
 			sortBy={ sortBy }
 			sortOrder={ sortOrder }
-			initialPageSize={ initialPageSize }/>
+			initialPageSize={ initialPageSize }
+			ExpandRow={ props.ExpandRow }/>
   )
 }
 DmsTable.defaultProps = {
   dmsAction: "list",
   dataItems: [],
   columns: [],
+	expandColumns: [],
   filter: false,
   sortBy: "updated_at",
   sortOrder: "desc",
   initialPageSize: 10,
-  striped: false
+  striped: false,
+	ExpandRow: undefined
 }
 export default DmsTable;

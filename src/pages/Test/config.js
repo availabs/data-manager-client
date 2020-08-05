@@ -2,6 +2,33 @@ import React from "react"
 
 import TEST_FORMAT from "./test-config.type"
 
+import ReadOnlyEditor from "components/DMS/components/editor/editor.read-only"
+
+import { prettyKey/*, getFormat*/ } from "components/DMS/utils"
+
+const ExpandRow = ({ values }) => {
+  const [creator, content] = values;
+  return (
+    <div>
+      <div className="flex">
+        <div key={ creator.key } className="flex-1">
+          <b>{ prettyKey(creator.key) }:</b>
+          <span className="ml-1">{ creator.value }</span>
+        </div>
+        { /*
+        <div key={ updated_at.key } className="flex-1">
+          <b>{ prettyKey(updated_at.key) }:</b>
+          <span className="ml-1">{ getFormat("date")(updated_at.value) }</span>
+        </div>
+        */ }
+      </div>
+      <div>
+        { content.value ? <ReadOnlyEditor value={ content.value }/> : null }
+      </div>
+    </div>
+  )
+}
+
 const FakeComp = ({ text, children, className, ...props }) =>
   <div>
     <div className={ className }>
@@ -93,14 +120,16 @@ export default {
         ],
         columns: [
           "self:data.title",
-          "self:data.creator",
+          // "self:data.creator",
           { path: "self:updated_at",
             format: "date"
           },
           "dms:edit",
           { action: "api:delete", showConfirm: true }
-        ]
-      }
+        ],
+        expandColumns: ["self:data.creator", "self:data.text-editor"],
+        ExpandRow
+      },
     },
 
     { type: FakeComp,

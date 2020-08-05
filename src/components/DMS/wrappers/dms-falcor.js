@@ -64,20 +64,18 @@ export default (WrappedComponent, options = {}) => {
 
     fetchFalcorDeps() {
       this.startLoading();
-      const { /*app, type,*/ path } = this.props;
-      return this.props.falcor.get(
-        // ["dms", "format", `${ app }+${ type }`, ["app", "type", "attributes"]],
-        [...path, "length"]
-      ).then(res => {
-        let length = get(res, ["json", ...path, "length"], 0);
-        if (length) {
-          return this.props.falcor.chunk(
-            [...path, "byIndex", { from: 0, to: --length },
-              ["id", "app", "type", "data", "updated_at"]
-            ]
-          )
-        }
-      }).then(() => this.stopLoading())
+      const { path } = this.props;
+      return this.props.falcor.get([...path, "length"])
+        .then(res => {
+          let length = get(res, ["json", ...path, "length"], 0);
+          if (length) {
+            return this.props.falcor.get(
+              [...path, "byIndex", { from: 0, to: length - 1 },
+                ["id", "app", "type", "data", "updated_at"]
+              ]
+            )
+          }
+        }).then(() => this.stopLoading())
     }
     apiInteract(action, id, data) {
       let falcorAction = false;
@@ -99,6 +97,7 @@ export default (WrappedComponent, options = {}) => {
       if (falcorAction) {
         this.startLoading();
         return Promise.resolve(falcorAction.call(this, action, id, data))
+          .then(() => this.fetchFalcorDeps())
           .then(() => this.stopLoading());
       }
       return Promise.resolve();
@@ -106,7 +105,7 @@ export default (WrappedComponent, options = {}) => {
     falcorEdit(action, id, data) {
       if (!(id && data)) return;
 
-      return this.props.falcor.call(["dms", "data", "update"], [id, data]);
+      return this.props.falcor.call(["dms", "data", "edit"], [id, data]);
     }
     falcorCreate(action, id, data) {
       const args = [this.props.app, this.props.type, data].filter(Boolean);

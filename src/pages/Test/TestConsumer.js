@@ -41,7 +41,9 @@ export default {
   exact: true,
   auth: true,
   layoutSettings: {
-    fixed: true,
+    fixed: false,
+    nav: 'side',
+    headerBar: false,
     theme: 'TEST_THEME'
   },
   component: {
