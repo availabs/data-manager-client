@@ -40,6 +40,10 @@ const getDataItems = (path, state, filter = false) => {
   return filter ? dataItems.filter(filter) : dataItems;
 }
 
+const DefaultOptions = {
+  loading: true
+}
+
 export default (WrappedComponent, options = {}) => {
   class Wrapper extends React.Component {
     state = { loading: 0 };
@@ -55,15 +59,15 @@ export default (WrappedComponent, options = {}) => {
       this.MOUNTED && super.setState(...args);
     }
 
-    startLoading() {
-      this.setState(state => ({ loading: ++state.loading }));
+    startLoading(bool = true) {
+      this.setState(({ loading }) => ({ loading: bool ? ++loading : loading }));
     }
-    stopLoading() {
-      this.setState(state => ({ loading: --state.loading }));
+    stopLoading(bool = true) {
+      this.setState(({ loading }) => ({ loading: bool ? --loading : loading }));
     }
 
-    fetchFalcorDeps() {
-      this.startLoading();
+    fetchFalcorDeps(loading = true) {
+      this.startLoading(loading);
       const { path } = this.props;
       return this.props.falcor.get([...path, "length"])
         .then(res => {
@@ -75,10 +79,15 @@ export default (WrappedComponent, options = {}) => {
               ]
             )
           }
-        }).then(() => this.stopLoading())
+        }).then(() => this.stopLoading(loading))
     }
-    apiInteract(action, id, data) {
+    apiInteract(action, id, data, options = {}) {
       let falcorAction = false;
+
+      options = {
+        ...DefaultOptions,
+        ...options
+      }
 
       switch (action) {
         case "api:edit":
@@ -95,10 +104,10 @@ export default (WrappedComponent, options = {}) => {
       }
 
       if (falcorAction) {
-        this.startLoading();
+        this.startLoading(options.loading);
         return Promise.resolve(falcorAction.call(this, action, id, data))
-          .then(() => this.fetchFalcorDeps())
-          .then(() => this.stopLoading());
+          .then(() => this.fetchFalcorDeps(options.loading))
+          .then(() => this.stopLoading(options.loading));
       }
       return Promise.resolve();
     }
@@ -124,7 +133,7 @@ export default (WrappedComponent, options = {}) => {
     }
     render() {
       return (
-        <WrappedComponent { ...this.props } { ...this.state }
+        <WrappedComponent { ...this.props } loading={ Boolean(this.state.loading) }
           apiInteract={ (...args) => this.apiInteract(...args) }/>
       )
     }

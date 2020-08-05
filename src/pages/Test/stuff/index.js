@@ -27,7 +27,7 @@ export default ({ dataItems, interact, ...props }) => {
     temp.splice(end, 0, item);
 
     for (let i = min; i <= max; ++i) {
-      interact("api:edit", temp[i].id, { ...temp[i].data, index: i });
+      interact("api:edit", temp[i].id, { ...temp[i].data, index: i }, { loading: false });
       temp[i].data.index = i; // <-- this is temp. It just makes the list look nice until data is updated
     }
   }, [dataItems, interact]);
@@ -37,7 +37,7 @@ export default ({ dataItems, interact, ...props }) => {
     [...dataItems].sort((a, b) => a.data.index - b.data.index)
       .forEach((item, i) => {
         if (item.data.index !== i) {
-          interact("api:edit", item.id, { ...item.data, index: i });
+          interact("api:edit", item.id, { ...item.data, index: i }, { loading: false });
         }
       })
   }, [dataItems, interact])
