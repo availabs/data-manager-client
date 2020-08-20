@@ -1,8 +1,8 @@
 
 // --- Public Pages ------
-import Test from 'pages/Test';
+// import Test from 'pages/Test';
 
-import MyBlog from 'pages/blog-it-up'
+//import MyBlog from 'pages/blog-it-up'
 
 import Blog from 'pages/Blog'
 import Docs from 'pages/Docs'
@@ -16,7 +16,7 @@ import Logout from "pages/Logout"
 import Home from "pages/home"
 
 
-import DmsDocs from "components/DMS/docs"
+// import DmsDocs from "components/DMS/docs"
 
 export default [
 	// -- public
@@ -24,10 +24,10 @@ export default [
 	Blog,
 	Docs,
 	DocsView,
-	MyBlog,
-	DmsDocs,
+	// MyBlog,
+	//DmsDocs,
 	// ConfigSimple,
-	...Test,
+	// ...Test,
 	Login,
 	Logout,
 	Home,

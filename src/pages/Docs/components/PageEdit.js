@@ -4,7 +4,7 @@ import { useTheme } from "components/avl-components/wrappers/with-theme"
 // import { List, ListItemAction, Input } from 'components/avl-components/components'
 // import { Link } from 'react-router-dom'
 
-import { DmsButton } from "components/DMS/components/dms-button"
+import { DmsButton } from "components/dms/components/dms-button"
 
 
 

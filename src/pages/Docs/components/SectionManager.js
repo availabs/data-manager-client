@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 
 import { List, ListItemAction, Input } from 'components/avl-components/components'
 
-import { DmsButton } from "components/DMS/components/dms-button"
+import { DmsButton } from "components/dms/components/dms-button"
 
-import { makeFilter } from "components/DMS/utils"
+import { makeFilter } from "components/dms/utils"
 
 // import ReadOnlyEditor from "components/DMS/components/editor/editor.read-only"
 

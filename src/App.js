@@ -5,9 +5,22 @@ import { BrowserRouter, Switch } from 'react-router-dom';
 import ScrollToTop from 'utils/ScrollToTop'
 
 import Routes from 'Routes';
+import { auth } from 'store/user';
+
 import Layout from 'components/avl-components/DefaultLayout'
 
-import { auth } from 'store/user';
+import DmsComponents from "components/dms"
+import DmsWrappers from "components/dms/wrappers"
+
+import {
+  addComponents,
+  addWrappers
+} from "components/avl-components/ComponentFactory"
+
+
+addComponents(DmsComponents)
+addWrappers(DmsWrappers)
+
 
 class App extends Component {
   state = {
