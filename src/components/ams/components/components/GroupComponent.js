@@ -7,18 +7,22 @@ import UsersInGroup from "./UsersInGroup"
 
 import get from "lodash.get"
 
-export const GroupHeader = () =>
+export const GroupHeader = ({ onChange, value }) =>
   <div className="grid grid-cols-12 gap-3 text-center font-bold">
     <div className="col-span-4 text-left border-b-2 border-gray-600">
-      Group Name
+      <div>Group Name</div>
+      <div className="mb-1">
+        <Input small showClear placeholder="Search groups..."
+          value={ value } onChange={ onChange }/>
+      </div>
     </div>
-    <div className="col-span-3 border-b-2 border-gray-600">
+    <div className="col-span-3 border-b-2 border-gray-600 flex justify-center items-end">
       Adjust Project Authority
     </div>
-    <div className="col-span-3 border-b-2 border-gray-600">
+    <div className="col-span-3 border-b-2 border-gray-600 flex justify-center items-end">
       Remove from Project
     </div>
-    <div className="col-span-2 border-b-2 border-gray-600">
+    <div className="col-span-2 border-b-2 border-gray-600 flex justify-center items-end">
       Delete Group
     </div>
   </div>

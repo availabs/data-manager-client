@@ -1,6 +1,6 @@
 import React from "react"
 
-import { DmsButton } from "components/DMS/components/dms-button"
+import { DmsButton } from "components/dms/components/dms-button"
 
 const BlogPost = ({ item, dataItems, startOpened = true, ...props }) => {
   const [opened, setOpened] = React.useState(startOpened);

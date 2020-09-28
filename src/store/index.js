@@ -8,7 +8,7 @@ import falcorCache from "utils/redux-falcor-new/falcorCache"
 import options from 'components/CensusCharts/options.store.js'
 import messages from './messages';
 
-import reducers from "components/AMS/reducers"
+import reducers from "components/ams/reducers"
 
 const reducer = combineReducers({
   ...reducers,

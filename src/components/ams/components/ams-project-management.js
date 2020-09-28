@@ -7,6 +7,8 @@ import Header from "components/avl-components/components/Header/HeaderComponent"
 
 import GroupComponent, { GroupHeader } from "./components/GroupComponent"
 
+import matchSorter from 'match-sorter'
+
 const verify = (groupName, authLevel, userAuthLevel) =>
   Boolean(groupName) && (authLevel >= 0) && (userAuthLevel >= authLevel)
 
@@ -28,7 +30,14 @@ const Base = ({ title, action, onClick, project, user, getUsers, groups = [], ac
   return (
     <div className="mb-5 max-w-xl m-auto">
       <div className="border-b-2 border-gray-500 mb-1">
-        { title }
+        <div className="grid grid-cols-4 gap-1">
+          <div className="col-span-2 font-bold">
+            { title }
+          </div>
+          <div className="col-span-1">
+            Authority Level
+          </div>
+        </div>
       </div>
       <form onSubmit={ onSubmit }>
         <div className="grid grid-cols-4 gap-1">
@@ -38,7 +47,7 @@ const Base = ({ title, action, onClick, project, user, getUsers, groups = [], ac
                 value={ groupName } onChange={ setGroupName }
                 placeholder="Select a group..."/>
               :
-              <Input placeholder="Enter group name..." required
+              <Input placeholder="Enter group name..." required showClear
                 value={ groupName } onChange={ setGroupName }/>
             }
           </div>
@@ -77,6 +86,10 @@ export default ({ getGroups, groups, project, ...props }) => {
     return [a1, [...a2, c]];
   }, [[], []]);
 
+  groupsInProject.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+
+  const [groupSearch, setGroupSearch] = React.useState("");
+
   // const [opened, setOpened] = React.useState([]),
   //   toggleGroup = React.useCallback(group => {
   //     if (opened.includes(group)) {
@@ -97,9 +110,8 @@ export default ({ getGroups, groups, project, ...props }) => {
 
         <CreateAndAssign project={ project } { ...props }/>
 
-        <GroupHeader />
-        { groupsInProject
-            .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+        <GroupHeader value={ groupSearch } onChange={ setGroupSearch}/>
+        { matchSorter(groupsInProject, groupSearch, { keys: ["name"] })
             .map(group =>
               <GroupComponent key={ group.name } { ...props }
                 group={ group } project={ project }/>

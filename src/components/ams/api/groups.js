@@ -1,3 +1,5 @@
+import { auth } from "./auth"
+import { getUsers } from "./users"
 import { sendSystemMessage } from 'store/messages';
 
 import { postJson } from "./utils"
@@ -73,7 +75,7 @@ export const createGroup = name =>
 	}
 export const deleteGroup = name =>
 	(dispatch, getState) => {
-		const { token } = getState().user;
+		const { token, groups } = getState().user;
 		if (token) {
 			return postJson(`${ AUTH_HOST }/group/delete`, { token, name })
 				.then(res => {
@@ -81,6 +83,10 @@ export const deleteGroup = name =>
 						dispatch(sendSystemMessage(res.error));
 					}
 					else {
+            if (groups.includes(name)) {
+              dispatch(auth());
+            }
+            dispatch(getUsers());
 						dispatch(getGroups());
 						if (res.message) {
 							dispatch(sendSystemMessage(res.message));
@@ -116,7 +122,7 @@ export const createAndAssign = (group_name, project_name, auth_level) =>
 
 export const assignToProject = (group_name, project_name, auth_level) =>
 	(dispatch, getState) => {
-		const { token } = getState().user;
+		const { token, groups } = getState().user;
 		if (token) {
 			return postJson(`${ AUTH_HOST }/group/project/assign`, { token, group_name, project_name: PROJECT_NAME, auth_level })
 				.then(res => {
@@ -124,6 +130,9 @@ export const assignToProject = (group_name, project_name, auth_level) =>
 						dispatch(sendSystemMessage(res.error));
 					}
 					else {
+            if (groups.includes(group_name)) {
+              dispatch(auth());
+            }
 						dispatch(getGroups());
 						if (res.message) {
 							dispatch(sendSystemMessage(res.message));
@@ -137,7 +146,7 @@ export const assignToProject = (group_name, project_name, auth_level) =>
 	}
 export const removeFromProject = (group_name, project_name) =>
 	(dispatch, getState) => {
-		const { token } = getState().user;
+		const { token, groups } = getState().user;
 		if (token) {
 			return postJson(`${ AUTH_HOST }/group/project/remove`, { token, group_name, project_name: PROJECT_NAME })
 				.then(res => {
@@ -145,7 +154,11 @@ export const removeFromProject = (group_name, project_name) =>
 						dispatch(sendSystemMessage(res.error));
 					}
 					else {
+            if (groups.includes(group_name)) {
+              dispatch(auth());
+            }
 						dispatch(getGroups());
+            dispatch(getUsers());
 						if (res.message) {
 							dispatch(sendSystemMessage(res.message));
 						}

@@ -3,7 +3,7 @@ import { useTheme } from "components/avl-components/wrappers/with-theme"
 
 import { SideNav } from 'components/avl-components/components'
 
-import ReadOnlyEditor from "components/DMS/components/editor/editor.read-only"
+import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
 
 const View = ({ item, dataItems, ...props }) => {
   const theme = useTheme();

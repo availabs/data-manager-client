@@ -1,13 +1,29 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import { Switch } from "react-router"
 import { BrowserRouter, Switch } from 'react-router-dom';
 import ScrollToTop from 'utils/ScrollToTop'
 
 import Routes from 'Routes';
+
 import Layout from 'components/avl-components/DefaultLayout'
 
-import { auth } from 'components/AMS/api/auth';
+import DmsComponents from "components/dms"
+import DmsWrappers from "components/dms/wrappers"
+
+import { auth } from 'components/ams/api/auth';
+import AmsComponents from "components/ams"
+import AmsWrappers from "components/ams/wrappers"
+
+import {
+  addComponents,
+  addWrappers
+} from "components/avl-components/ComponentFactory"
+
+addComponents(DmsComponents);
+addWrappers(DmsWrappers);
+
+addComponents(AmsComponents);
+addWrappers(AmsWrappers);
 
 class App extends Component {
   state = {

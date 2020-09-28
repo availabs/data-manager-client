@@ -7,15 +7,19 @@ import { Input/*, Select*/ } from "components/avl-components/components/Inputs"
 
 import matchSorter from 'match-sorter'
 
-const UserHeader = ({ ...props }) =>
-  <div className="grid grid-cols-9 font-bold gap-3 text-center">
-    <div className="col-span-4 border-b-2 border-gray-600 text-left">
-      User Email
+const UserHeader = ({ value, onChange, ...props }) =>
+  <div className="grid grid-cols-9 font-bold gap-3">
+    <div className="col-span-4 border-b-2 border-gray-600">
+      <div>User Email</div>
+      <div className="mb-1">
+        <Input small showClear placeholder="Searh users..."
+          value={ value } onChange={ onChange }/>
+      </div>
     </div>
-    <div className="col-span-3 border-b-2 border-gray-600">
+    <div className="col-span-3 border-b-2 border-gray-600 flex justify-center items-end">
       Remove from Group
     </div>
-    <div className="col-span-2 border-b-2 border-gray-600">
+    <div className="col-span-2 border-b-2 border-gray-600 flex justify-center items-end">
       Delete User
     </div>
   </div>
@@ -43,7 +47,7 @@ const UserInGroup = ({ group, user, removeFromGroup, deleteUser, ...props }) => 
 }
 const UserNotInGroup = ({ group, user, assignToGroup, ...props }) => {
   return (
-    <div className="grid grid-cols-12 my-1 flex items-center">
+    <div className="grid grid-cols-12 mb-1 flex items-center">
       <div className="col-span-8">
         { user.email }
       </div>
@@ -62,6 +66,7 @@ export default ({ group, usersForGroup, users, user, ...props }) => {
   // }, [usersForGroup, group.name]);
   const [num, setNum] = React.useState(5),
     [userSearch, setUserSearch] = React.useState(""),
+    [otherUserSearch, setOtherUserSearch] = React.useState(""),
     [usersInGroup, otherUsers] = users.reduce(([a1, a2], c) => {
       if (c.groups.includes(group.name)) {
         a1.push(c);
@@ -72,16 +77,17 @@ export default ({ group, usersForGroup, users, user, ...props }) => {
       return [a1, a2];
     }, [[], []]);
 
-  const otherSearch = matchSorter(otherUsers, userSearch, { keys: ["email"] });
-    // .filter(u => (u.email.toLowerCase().includes(userSearch.toLowerCase())));
+  usersInGroup.sort((a, b) => a.email < b.email ? -1 : a.email > b.email ? 1 : 0);
+
+  const otherSearch = matchSorter(otherUsers, otherUserSearch, { keys: ["email"] });
 
   return (
     <div>
-      <div className="mb-10 grid grid-cols-2 gap-2">
+      <div className="mb-5 grid grid-cols-3 gap-2">
         <div className="col-span-1 relative">
-          <Input value={ userSearch } onChange={ setUserSearch }
-            placeholder="Search for another user..."/>
-          { userSearch && otherSearch.length ?
+          <Input value={ otherUserSearch } onChange={ setOtherUserSearch }
+            placeholder="Search for another user..." showClear/>
+          { otherUserSearch && otherSearch.length ?
               <div className="absolute left-0 bottom-0 right-0">
                 { otherSearch.length <= 5 ? null :
                   <div className="flex justify-center">
@@ -100,8 +106,8 @@ export default ({ group, usersForGroup, users, user, ...props }) => {
               </div> : null
           }
         </div>
-        <div className="col-span-1">
-          { !userSearch ? null :
+        <div className="col-span-2">
+          { !otherUserSearch ? null :
             <div>
               { otherSearch.length ? null :
                 <div className="pt-1">No users found...</div>
@@ -118,9 +124,8 @@ export default ({ group, usersForGroup, users, user, ...props }) => {
           }
         </div>
       </div>
-      <UserHeader />
-      { usersInGroup
-          .sort((a, b) => a.email < b.email ? -1 : a.email > b.email ? 1 : 0)
+      <UserHeader onChange={ setUserSearch } value={ userSearch }/>
+      { matchSorter(usersInGroup, userSearch, { keys: ["email"] })
           .map(user =>
             <UserInGroup key={ user.email } user={ user }
               group={ group } { ...props }>

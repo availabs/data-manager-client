@@ -1,7 +1,7 @@
 import React from "react"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
-import { DmsButton } from "components/DMS/components/dms-button"
-import ReadOnlyEditor from "components/DMS/components/editor/editor.read-only"
+import { DmsButton } from "components/dms/components/dms-button"
+import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
 // import { hasValue } from "components/avl-components/components/Inputs/utils"
 import doc from './doc.type'
 

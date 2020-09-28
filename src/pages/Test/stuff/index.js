@@ -4,7 +4,7 @@ import { Input } from "components/avl-components/components/Inputs"
 import DndList from "components/avl-components/components/List/DndList"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 
-import { DmsButton } from "components/DMS/components/dms-button"
+import { DmsButton } from "components/dms/components/dms-button"
 
 const ListItem = ({ children }) => {
   const theme = useTheme();

@@ -2,9 +2,9 @@ import React from "react"
 
 import TEST_FORMAT from "./test-config.type"
 
-import ReadOnlyEditor from "components/DMS/components/editor/editor.read-only"
+import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
 
-import { prettyKey/*, getFormat*/ } from "components/DMS/utils"
+import { prettyKey/*, getFormat*/ } from "components/dms/utils"
 
 const ExpandRow = ({ values }) => {
   const [creator, content] = values;

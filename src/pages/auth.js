@@ -1,19 +1,4 @@
-import AmsComponents from "components/AMS"
-import AmsWrappers from "components/AMS/wrappers"
-
-import DmsComponents from "components/DMS"
-
-import {
-  addComponents,
-  addWrappers
-} from "components/avl-components/ComponentFactory"
-
-addComponents(AmsComponents)
-addWrappers(AmsWrappers)
-
-addComponents(DmsComponents)
-
-const AUTH = {
+const AuthConfig = {
   type: "ams-manager",
   wrappers: [
     "ams-redux",
@@ -47,5 +32,5 @@ export default {
     headerBar: false,
     theme: 'TEST_THEME'
   },
-  component: AUTH
+  component: AuthConfig
 }
