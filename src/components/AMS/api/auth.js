@@ -1,41 +1,28 @@
-import { sendSystemMessage } from './messages';
+import { sendSystemMessage } from 'store/messages';
 
 import { AUTH_HOST, PROJECT_NAME } from 'config';
-// ------------------------------------
-// Constants
-// ------------------------------------
-const USER_LOGIN = 'USER::USER_LOGIN';
-const USER_LOGOUT = 'USER::USER_LOGOUT';
-const AUTH_FAILURE = 'USER::AUTH_FAILURE';
-// const RESET_PASSWORD = 'USER::RESET_PASSWORD';
 
-// ------------------------------------
-// Actions
-// ------------------------------------
+export const USER_LOGIN = 'USER::USER_LOGIN';
+export const USER_LOGOUT = 'USER::USER_LOGOUT';
+export const AUTH_FAILURE = 'USER::AUTH_FAILURE';
+
 const receiveAuthResponse = user => ({
   type: USER_LOGIN,
   user
 });
 
-// function TODO_AuthServerVerifiesToken(user) {
-// return {
-// type: USER_LOGIN,
-// res: user // temp hack till auth server takes tokens
-// };
-// }
-
-const setUserToken = user => {
+export const setUserToken = user => {
   if (localStorage) {
     localStorage.setItem('userToken', user.token);
   }
 };
-const getUserToken = user => {
+export const getUserToken = user => {
   if (localStorage) {
     return localStorage.getItem('userToken');
   }
   return null;
 };
-const removeUserToken = () => {
+export const removeUserToken = () => {
   if (localStorage) {
     localStorage.removeItem('userToken');
   }
@@ -44,7 +31,7 @@ const removeUserToken = () => {
 export const logout = () => dispatch =>
   Promise.resolve(dispatch({ type: USER_LOGOUT }));
 
-export const login = ({ email, password }) => dispatch =>
+export const login = (email, password, project) => dispatch =>
   fetch(`${AUTH_HOST}/login`, {
     method: 'POST',
     headers: {
@@ -64,7 +51,7 @@ export const login = ({ email, password }) => dispatch =>
     })
     .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , {type: 'LOGIN ERROR'})) );
 
-export const auth = (token = null) => dispatch => {
+export const auth = (project, token = null) => dispatch => {
   token = token || getUserToken();
   if (token) {
     return fetch(`${AUTH_HOST}/auth`, {
@@ -85,14 +72,12 @@ export const auth = (token = null) => dispatch => {
           dispatch(receiveAuthResponse(res.user));
         }
       })
-      .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , {type: 'LOGIN ERROR'})) );
-      ;
-  } else {
-    return dispatch({ type: AUTH_FAILURE });
+      .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'LOGIN ERROR' })));
   }
+  return dispatch({ type: AUTH_FAILURE });
 };
 
-export const passwordSet = password =>
+export const setPassword = password =>
   (dispatch, getState) => {
     const { token } = getState().user;
     if (token) {
@@ -122,16 +107,14 @@ export const passwordSet = password =>
     }
   }
 
-const NEW_USER_GROUP = "candidate";
-
-export const signup = (email, password, office) => dispatch => {
-  return fetch(`${AUTH_HOST}/signup`, {
+export const signup = (email, password, project, addToGroup = null) => dispatch => {
+  return fetch(`${AUTH_HOST}/signup/request`, {
     method: 'POST',
     headers: {
       Accept: 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ email, password, office, project: PROJECT_NAME, addToGroup: NEW_USER_GROUP })
+    body: JSON.stringify({ email, password, project: PROJECT_NAME, addToGroup })
   })
     .then(res => res.json())
     .then(res => {
@@ -145,14 +128,14 @@ export const signup = (email, password, office) => dispatch => {
     .catch(err => console.log('err', err));
 };
 
-export const resetPassword = email => dispatch => {
+export const resetPassword = (email, project_name) => dispatch => {
   return fetch(`${AUTH_HOST}/password/reset`, {
     method: 'POST',
     headers: {
       Accept: 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ email, project_name: PROJECT_NAME })
+    body: JSON.stringify({ email, project_name })
   })
     .then(res => res.json())
     .then(res => {
@@ -163,48 +146,3 @@ export const resetPassword = email => dispatch => {
       }
     });
 };
-
-export const actions = {
-  login,
-  logout
-};
-
-// -------------------------------------
-// Initial State
-// -------------------------------------
-let initialState = {
-  token: null,
-  groups: [],
-  authLevel: -1,
-  authed: false,
-  attempts: 0,
-  meta: [],
-  id: null
-};
-
-// ------------------------------------
-// Action Handlers
-// ------------------------------------
-const ACTION_HANDLERS = {
-  [USER_LOGIN]: (state = initialState, action) => {
-    const newState = { ...state, ...action.user, authed: true };
-    ++newState.attempts;
-    setUserToken(action.user);
-    return newState;
-  },
-  [AUTH_FAILURE]: (state = initialState, action) => {
-    removeUserToken();
-    const newState = { ...initialState };
-    ++newState.attempts;
-    return newState;
-  },
-  [USER_LOGOUT]: (state = initialState, action) => {
-    removeUserToken();
-    return { ...initialState };
-  }
-};
-
-export default function userReducer(state = initialState, action) {
-  const handler = ACTION_HANDLERS[action.type];
-  return handler ? handler(state, action) : state;
-}

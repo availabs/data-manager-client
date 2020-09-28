@@ -7,7 +7,7 @@ import ScrollToTop from 'utils/ScrollToTop'
 import Routes from 'Routes';
 import Layout from 'components/avl-components/DefaultLayout'
 
-import { auth } from 'store/user';
+import { auth } from 'components/AMS/api/auth';
 
 class App extends Component {
   state = {
@@ -21,6 +21,11 @@ class App extends Component {
       this.setState({ isAuthenticating: false });
     }
   }
+  shouldComponentUpdate(nextProps, nextState) {
+    return (nextProps.user.authed !== this.props.user.authed) ||
+      (nextProps.user.authLevel !== this.props.user.authLevel) ||
+      (nextState.isAuthenticating !== this.state.isAuthenticating);
+  }
 
   render() {
     return (
@@ -31,7 +36,6 @@ class App extends Component {
             return (
               <Layout key={ i }
                 { ...route }
-                authed={ this.props.user.authed }
                 isAuthenticating={ this.state.isAuthenticating }
                 menus={ Routes.filter(r => r.mainNav) }
                 router={ this.props.router }
@@ -47,6 +51,4 @@ class App extends Component {
 
 const mapStateToProps = state => ({ user: state.user });
 
-const mapDispatchToProps = { auth };
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, { auth })(App);

@@ -40,12 +40,14 @@ export default (Component, options = {}) => {
       alt11 = `${ path }/:action/`,
       alt13 = `${ path }/:action/:id/`,
       alt21 = `${ path }/:action/:attribute/:value`,
-      routerProps = {
+      location = useLocation(),
+      history = useHistory(),
+      routerProps = React.useMemo(() => ({
         basePath: path,
         useRouter: true,
-        location: useLocation(),
-        history: useHistory()
-      };
+        location,
+        history
+      }), [path, location, history]);
     return (
       <RouterContext.Provider value={ routerProps }>
         <Switch>

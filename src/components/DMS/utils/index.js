@@ -74,7 +74,8 @@ export const processAction = action => {
     buttonTheme: null,
     disabled: false,
     then: null,
-    doThen: () => Promise.resolve()
+    doThen: () => Promise.resolve(),
+    apiOptions: {}
   };
   if (typeof action === "string") {
     response.action = action;

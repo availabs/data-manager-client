@@ -1,6 +1,6 @@
 import React from "react"
 
-import { UserMenu, UserMenuItem } from "components/avl-components/components/HeaderBar/UserMenu"
+import Header from "components/avl-components/components/Header/HeaderComponent"
 import { useTheme } from "components/avl-components/wrappers/with-theme"
 import { useDms } from "../contexts/dms-context"
 import { useMessenger } from "../contexts/messenger-context"
@@ -8,6 +8,8 @@ import { useMessenger } from "../contexts/messenger-context"
 import { DmsButton } from "./dms-button"
 
 export default ({ title, shadowed = true, showHome = true, dmsActions = [], ...props }) => {
+  title = title || `${ props.app } Manager`;
+
   const { stack, top, item } = useDms(),
     { pageMessages, attributeMessages } = useMessenger();
 
@@ -26,43 +28,20 @@ export default ({ title, shadowed = true, showHome = true, dmsActions = [], ...p
   if (top.dmsAction === "list") {
     dmsActions.unshift({ action: "dms:create" });
   }
-  const theme = useTheme();
 
   return (
-    <div className={ `
-        fixed top-0 left-0 right-0 z-50 flex items-center px-8
-        md:ml-${ theme.sidebarW } ${ theme.headerBg }
-      ` }
-      style={ shadowed ? { boxShadow: "0px 6px 3px -3px rgba(0, 0, 0, 0.25)" } : null }>
-      <div className="flex-1 text-4xl font-bold">
-        { title || `${ props.app } Manager` }
-      </div>
-      <div className="flex-0 flex items-center">
-        { !pageMessages.length ? null :
-          <Warning warnings={ pageMessages }/>
-        }
-        { !attributeMessages.length ? null :
-          <Warning warnings={ attributeMessages } type="att"/>
-        }
-        { dmsActions.map(a =>
-            <DmsButton className="ml-1" key={ a.action || a } action={ a } item={ item }/>
-          )
-        }
-        <div className="ml-8">
-          <UserMenu>
-            <UserMenuItem>
-              Profile
-            </UserMenuItem>
-            <UserMenuItem>
-              Settings
-            </UserMenuItem>
-            <UserMenuItem to="logout">
-              Logout
-            </UserMenuItem>
-          </UserMenu>
-        </div>
-      </div>
-    </div>
+    <Header title={ title } shadowed={ shadowed }>
+      { !pageMessages.length ? null :
+        <Warning warnings={ pageMessages }/>
+      }
+      { !attributeMessages.length ? null :
+        <Warning warnings={ attributeMessages } type="att"/>
+      }
+      { dmsActions.map(a =>
+          <DmsButton className="ml-1" key={ a.action || a } action={ a } item={ item }/>
+        )
+      }
+    </Header>
   )
 }
 const Warning = ({ warnings, type = "page" }) => {

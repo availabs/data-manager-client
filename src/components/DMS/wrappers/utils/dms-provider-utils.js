@@ -78,7 +78,7 @@ const normalizeArgs = (dmsAction, item, props, ...rest) => {
 }
 export const makeInteraction = (...args) => {
   const [
-    { action, seedProps, disabled, doThen, ...rest },
+    { action, seedProps, disabled, doThen, apiOptions, ...rest },
     item, itemId,
     props,
     interact
@@ -134,7 +134,7 @@ export const makeInteraction = (...args) => {
           ...rest,
           onClick: e => {
             e.stopPropagation();
-            return Promise.resolve(interact(action, itemId, propsToSeed))
+            return Promise.resolve(interact(action, itemId, propsToSeed, apiOptions))
               .then(() => doThen())
               .then(() => push({
                 pathname: get(stack, [stackLength - 1], basePath),
@@ -169,7 +169,7 @@ export const makeInteraction = (...args) => {
     onClick: e => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();
-      return Promise.resolve(interact(action, itemId, propsToSeed))
+      return Promise.resolve(interact(action, itemId, propsToSeed, apiOptions))
         .then(() => /^api:/.test(action) && doThen())
         .then(() => /^api:/.test(action) && interact("dms:back"));
     }
@@ -178,7 +178,7 @@ export const makeInteraction = (...args) => {
 
 export const makeOnClick = (...args) => {
   const [
-    { action, seedProps, doThen },
+    { action, seedProps, doThen, apiOptions },
     item, itemId,
     props,
     interact
@@ -226,7 +226,7 @@ export const makeOnClick = (...args) => {
       : /^api:/.test(action) ?
         (e => {
           e.stopPropagation();
-          return Promise.resolve(interact(action, itemId, propsToSeed))
+          return Promise.resolve(interact(action, itemId, propsToSeed, apiOptions))
             .then(() => doThen())
             .then(() => push({
               pathname: get(stack, [stackLength - 1], basePath),
@@ -253,7 +253,7 @@ export const makeOnClick = (...args) => {
     e => {
       e.stopPropagation();
       if (!hasAuth) return Promise.resolve();
-      return Promise.resolve(interact(action, itemId, propsToSeed))
+      return Promise.resolve(interact(action, itemId, propsToSeed, apiOptions))
         .then(() => /^api:/.test(action) && doThen())
         .then(() => /^api:/.test(action) && interact("dms:back"));
     }

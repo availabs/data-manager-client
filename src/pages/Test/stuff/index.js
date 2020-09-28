@@ -62,8 +62,7 @@ export default ({ dataItems, interact, ...props }) => {
                     <div className="flex-1">
                       ({ item.id }) { item.data.text } ({ item.data.index })
                     </div>
-                    <DmsButton className="flex-0"
-                      small item={ item }
+                    <DmsButton className="flex-0" small item={ item }
                       action={ {
                         action: "api:delete"
                       } }/>

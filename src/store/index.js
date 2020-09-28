@@ -4,12 +4,14 @@ import thunk from 'redux-thunk'
 
 import falcorCache from "utils/redux-falcor-new/falcorCache"
 
-import user from './user';
+// import user from './user';
 import options from 'components/CensusCharts/options.store.js'
 import messages from './messages';
 
+import reducers from "components/AMS/reducers"
+
 const reducer = combineReducers({
-  user,
+  ...reducers,
   options,
   messages,
   // graph

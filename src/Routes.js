@@ -15,8 +15,9 @@ import Login from "pages/Login"
 import Logout from "pages/Logout"
 import Home from "pages/home"
 
-
 import DmsDocs from "components/DMS/docs"
+
+import Auth from "components/AMS/test_config"
 
 export default [
 	// -- public
@@ -31,6 +32,9 @@ export default [
 	Login,
 	Logout,
 	Home,
+
+	Auth,
+
 	// -- util
 	NoMatch
 ];

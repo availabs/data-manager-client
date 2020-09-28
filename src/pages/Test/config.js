@@ -90,7 +90,7 @@ export default {
         }
       }
     },
-    "dms-router",
+    // "dms-router",
     "show-loading",
     "dms-falcor",
     "with-auth"
