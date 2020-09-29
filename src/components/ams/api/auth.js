@@ -51,8 +51,9 @@ export const login = (email, password, project) => dispatch =>
     })
     .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , {type: 'LOGIN ERROR'})) );
 
-export const auth = (project, token = null) => dispatch => {
+export const auth = (token = null) => dispatch => {
   token = token || getUserToken();
+console.log("AUTHING????????????", AUTH_HOST, token)
   if (token) {
     return fetch(`${AUTH_HOST}/auth`, {
       method: 'POST',
@@ -64,6 +65,7 @@ export const auth = (project, token = null) => dispatch => {
     })
       .then(res => res.json())
       .then(res => {
+console.log("RES:", res)
         if (res.error) {
           dispatch({ type: AUTH_FAILURE });
           dispatch(sendSystemMessage(res.error));
@@ -74,6 +76,7 @@ export const auth = (project, token = null) => dispatch => {
       })
       .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'LOGIN ERROR' })));
   }
+console.log("????????")
   return dispatch({ type: AUTH_FAILURE });
 };
 
@@ -102,9 +105,7 @@ export const setPassword = password =>
         }
       });
     }
-    else {
-      return Promise.resolve();
-    }
+    return Promise.resolve();
   }
 
 export const signup = (email, password, project, addToGroup = null) => dispatch => {

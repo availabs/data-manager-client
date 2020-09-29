@@ -40,6 +40,7 @@ class App extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return (nextProps.user.authed !== this.props.user.authed) ||
       (nextProps.user.authLevel !== this.props.user.authLevel) ||
+      (nextProps.user.attempts !== this.props.user.attempts) ||
       (nextState.isAuthenticating !== this.state.isAuthenticating);
   }
 
