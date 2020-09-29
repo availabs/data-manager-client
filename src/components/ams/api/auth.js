@@ -53,7 +53,6 @@ export const login = (email, password, project) => dispatch =>
 
 export const auth = (token = null) => dispatch => {
   token = token || getUserToken();
-console.log("AUTHING????????????", AUTH_HOST, token)
   if (token) {
     return fetch(`${AUTH_HOST}/auth`, {
       method: 'POST',
@@ -65,7 +64,6 @@ console.log("AUTHING????????????", AUTH_HOST, token)
     })
       .then(res => res.json())
       .then(res => {
-console.log("RES:", res)
         if (res.error) {
           dispatch({ type: AUTH_FAILURE });
           dispatch(sendSystemMessage(res.error));
@@ -76,7 +74,6 @@ console.log("RES:", res)
       })
       .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'LOGIN ERROR' })));
   }
-console.log("????????")
   return dispatch({ type: AUTH_FAILURE });
 };
 
