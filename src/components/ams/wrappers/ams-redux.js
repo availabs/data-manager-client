@@ -2,9 +2,7 @@ import React from "react"
 
 import { connect } from "react-redux"
 
-import * as AUTH from "../api/auth"
-import * as GROUPS from "../api/groups"
-import * as USERS from "../api/users"
+import * as API from "../api"
 
 export default Component => {
   class AmsRedux extends React.Component {
@@ -29,7 +27,7 @@ export default Component => {
       const { project } = this.props;
       this.props.auth(project, token);
     }
-    signup(email, password, addToGroup = null) {
+    signup(email, password, addToGroup = false) {
       const { project } = this.props;
       this.props.signup(email, password, project, addToGroup);
     }
@@ -55,12 +53,9 @@ export default Component => {
   const mapStateToProps = state => ({
       user: state.user,
       groups: state.groups,
-      users: state.users
+      users: state.users,
+      requests: state.requests
     }),
-    mapDispatchToProps = {
-      ...AUTH,
-      ...GROUPS,
-      ...USERS
-    };
+    mapDispatchToProps = { ...API };
   return connect(mapStateToProps, mapDispatchToProps)(AmsRedux);
 }

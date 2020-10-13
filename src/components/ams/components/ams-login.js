@@ -1,59 +1,47 @@
 import React from "react"
 
-import { Redirect, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 import { Button } from "components/avl-components/components/Button"
 import { Input } from "components/avl-components/components/Inputs"
 
-import get from "lodash.get"
+import Container from "./components/Container"
 
-export default ({ login, user }) => {
-  const [state, setState] = React.useState({ email: "", password: "" });
+import loginWrapper from "../wrappers/ams-login"
 
-  const handleSubmit = React.useCallback(
-    e => {
-      e.preventDefault();
-      const { email, password } = state;
-      login(email, password);
-    }
-  , [state, login]);
-
-  const { email, password } = state,
-    submitDisabled = !(email && password),
-    location = useLocation(),
-    { pathname } = location;
-
-  if (user.authed) {
-    const from = get(location, ["state", "from"], null),
-      to = pathname !== from ? from : "/";
-    return <Redirect to={ to }/>
-  }
-
+export default loginWrapper(({ email, password, update, canSubmit, handleSubmit }) => {
   return (
-    <div className="flex justify-center items-center flex-col p-40">
-      <div className="inline-block rounded px-20 py-10 shadow-lg">
-        <div className="text-3xl font-bold">Login</div>
-        <div>
-          <form onSubmit={ e => handleSubmit(e) }>
-            <div className="my-2">
-              <label htmlFor="email" className="block font-bold">Email</label>
-              <Input type="email" id="email" required autoFocus value={ email }
-                onChange={ v => setState({ ...state, email: v }) }/>
-            </div>
-            <div className="my-2">
-              <label htmlFor="email" className="block font-bold">Password</label>
-              <Input type="password" id="password" required value={ password }
-                onChange={ v => setState({ ...state, password: v }) }/>
-            </div>
-            <div className="my-2">
-              <Button disabled={ submitDisabled } type="submit"
-                buttonTheme="buttonPrimaryLargeBlock">
-                Login
-              </Button>
-            </div>
-          </form>
+    <Container title="Login">
+      <form onSubmit={ handleSubmit }>
+        <div className="my-2">
+          <label htmlFor="email" className="block font-bold">Email</label>
+          <Input type="email" id="email" required autoFocus value={ email }
+            onChange={ v => update({ email: v }) }/>
+        </div>
+        <div className="my-2">
+          <label htmlFor="password" className="block font-bold">Password</label>
+          <Input type="password" id="password" required value={ password }
+            onChange={ v => update({ password: v }) }/>
+        </div>
+        <div className="my-2">
+          <Button disabled={ !canSubmit } type="submit"
+            buttonTheme="buttonPrimaryLargeBlock">
+            login
+          </Button>
+        </div>
+      </form>
+      <div className="text-sm flex">
+        <div className="flex-1">
+          <Link to="/auth/signup">
+            signup!
+          </Link>
+        </div>
+        <div className="flex-0">
+          <Link to="/auth/reset-password">
+            forgot password?
+          </Link>
         </div>
       </div>
-    </div>
+    </Container>
   )
-}
+})

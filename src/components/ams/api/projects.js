@@ -1,10 +1,10 @@
-import { sendSystemMessage } from 'store/messages';
+import { sendSystemMessage } from 'components/avl-components/messages/reducer';
 
 import { AUTH_HOST } from 'config';
 
 import { postJson } from "./utils"
 
-export const GET_PROJECTS = "GET_PROJECTS";
+export const GET_PROJECTS = "AMS::GET_PROJECTS";
 
 export const getProjects = () =>
   (dispatch, getState) => {

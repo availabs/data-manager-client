@@ -1,83 +1,24 @@
 import React from "react"
 
-import { Button } from "components/avl-components/components/Button"
-import { Input, Select } from "components/avl-components/components/Inputs"
-
 import Header from "components/avl-components/components/Header/HeaderComponent"
 
 import GroupComponent, { GroupHeader } from "./components/GroupComponent"
+import GroupBase from "./components/GroupBase"
+import Requests from "./components/Requests"
+
+import amsProjectManagementWrapper from "../wrappers/ams-project-management"
 
 import matchSorter from 'match-sorter'
 
-const verify = (groupName, authLevel, userAuthLevel) =>
-  Boolean(groupName) && (authLevel >= 0) && (userAuthLevel >= authLevel)
-
-const Base = ({ title, action, onClick, project, user, getUsers, groups = [], accessor = (d => d), ...props }) => {
-  const [groupName, setGroupName] = React.useState(""),
-    [authLevel, setAuthLevel] = React.useState(-1);
-
-  React.useEffect(() => { getUsers(); }, [getUsers]);
-
-  const onSubmit = React.useCallback(e => {
-    e.preventDefault();
-    onClick(accessor(groupName), project, authLevel)
-      .then(() => {
-        setGroupName("");
-        setAuthLevel(-1);
-      })
-  }, [onClick, accessor, groupName, project, authLevel]);
-
-  return (
-    <div className="mb-5 max-w-xl m-auto">
-      <div className="border-b-2 border-gray-500 mb-1">
-        <div className="grid grid-cols-4 gap-1">
-          <div className="col-span-2 font-bold">
-            { title }
-          </div>
-          <div className="col-span-1">
-            Authority Level
-          </div>
-        </div>
-      </div>
-      <form onSubmit={ onSubmit }>
-        <div className="grid grid-cols-4 gap-1">
-          <div className="col-span-2">
-            { groups.length ?
-              <Select domain={ groups } accessor={ accessor } multi={ false }
-                value={ groupName } onChange={ setGroupName }
-                placeholder="Select a group..."/>
-              :
-              <Input placeholder="Enter group name..." required showClear
-                value={ groupName } onChange={ setGroupName }/>
-            }
-          </div>
-          <div className="col-span-1">
-            <Input type="number" min="0" max="10"
-              value={ authLevel } onChange={ setAuthLevel }/>
-          </div>
-          <div className="col-span-1 flex justify-center">
-            <Button type="submit" disabled={ !verify(groupName, authLevel, user.authLevel) }>
-              { action }
-            </Button>
-          </div>
-        </div>
-      </form>
-    </div>
-  )
-}
-
 const AssignToProject = ({ assignToProject, ...props }) =>
-  <Base title="Assign to Project" action="assign" { ...props }
+  <GroupBase title="Assign to Project" { ...props } action="assign"
     onClick={ assignToProject } accessor={ d => d.name }/>
 
-const CreateAndAssign = ({ createAndAssign, ...props }) =>
-  <Base title="Create Group" action="create" { ...props }
+const CreateGroup = ({ createAndAssign, ...props }) =>
+  <GroupBase title="Create Group" { ...props } action="create"
     onClick={ createAndAssign }/>
 
-export default ({ getGroups, groups, project, ...props }) => {
-  React.useEffect(() => {
-    getGroups();
-  }, [getGroups]);
+export default amsProjectManagementWrapper(({ groups, project, requests, ...props }) => {
 
   const [groupsInProject, otherGroups] = groups.reduce(([a1, a2], c) => {
     if (c.projects.reduce((a, c) => a || c.project_name === project, false)) {
@@ -86,38 +27,35 @@ export default ({ getGroups, groups, project, ...props }) => {
     return [a1, [...a2, c]];
   }, [[], []]);
 
-  groupsInProject.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+  const nameSorter = (a, b) =>
+    a.name.toLowerCase() < b.name.toLowerCase() ? -1 :
+    a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0;
+
+  groupsInProject.sort(nameSorter);
+  otherGroups.sort(nameSorter);
 
   const [groupSearch, setGroupSearch] = React.useState("");
-
-  // const [opened, setOpened] = React.useState([]),
-  //   toggleGroup = React.useCallback(group => {
-  //     if (opened.includes(group)) {
-  //       setOpened(opened.filter(group));
-  //     }
-  //     else {
-  //       setOpened([...opened, group]);
-  //     }
-  //   }, [opened]);
 
   return (
     <div>
       <Header title="Project Management"/>
-      <div className="my-20 max-w-5xl m-auto">
+      <div className="my-20">
 
-        <AssignToProject project={ project } { ...props }
-          groups={ otherGroups.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0) }/>
+        <Requests requests={ requests } groups={ groupsInProject } { ...props }/>
 
-        <CreateAndAssign project={ project } { ...props }/>
+        <AssignToProject { ...props }
+          groups={ otherGroups }/>
+
+        <CreateGroup { ...props }/>
 
         <GroupHeader value={ groupSearch } onChange={ setGroupSearch}/>
         { matchSorter(groupsInProject, groupSearch, { keys: ["name"] })
             .map(group =>
               <GroupComponent key={ group.name } { ...props }
-                group={ group } project={ project }/>
+                group={ group }/>
             )
         }
       </div>
     </div>
   )
-}
+})

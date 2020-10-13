@@ -1,12 +1,12 @@
 import { auth } from "./auth"
 import { getUsers } from "./users"
-import { sendSystemMessage } from 'store/messages';
+import { sendSystemMessage } from 'components/avl-components/messages/reducer';
 
 import { postJson } from "./utils"
 
 import { AUTH_HOST, PROJECT_NAME } from 'config';
 
-export const GET_GROUPS = "GET_GROUPS";
+export const GET_GROUPS = "AMS::GET_GROUPS";
 
 export const getGroups = () =>
 	(dispatch, getState) => {
@@ -30,7 +30,7 @@ export const getGroups = () =>
 		}
 	}
 
-export const groupsForProject = project =>
+export const groupsForProject = () =>
 	(dispatch, getState) => {
 		const { token } = getState().user;
 		if (token) {
@@ -98,7 +98,7 @@ export const deleteGroup = name =>
 			return Promise.resolve();
 		}
 	}
-export const createAndAssign = (group_name, project_name, auth_level) =>
+export const createAndAssign = (group_name, auth_level) =>
 	(dispatch, getState) => {
 		const { token } = getState().user;
 		if (token) {
@@ -120,7 +120,7 @@ export const createAndAssign = (group_name, project_name, auth_level) =>
 		}
 	}
 
-export const assignToProject = (group_name, project_name, auth_level) =>
+export const assignToProject = (group_name, auth_level) =>
 	(dispatch, getState) => {
 		const { token, groups } = getState().user;
 		if (token) {
@@ -144,7 +144,7 @@ export const assignToProject = (group_name, project_name, auth_level) =>
 			return Promise.resolve();
 		}
 	}
-export const removeFromProject = (group_name, project_name) =>
+export const removeFromProject = group_name =>
 	(dispatch, getState) => {
 		const { token, groups } = getState().user;
 		if (token) {
@@ -170,7 +170,7 @@ export const removeFromProject = (group_name, project_name) =>
 		}
 	}
 
-export const adjustAuthLevel = (group_name, project_name, auth_level) =>
+export const adjustAuthLevel = (group_name, auth_level) =>
 	(dispatch, getState) => {
 		const { token } = getState().user;
 		if (token) {

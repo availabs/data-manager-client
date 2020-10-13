@@ -2,6 +2,7 @@ import {
   USER_LOGIN,
   AUTH_FAILURE,
   USER_LOGOUT,
+  UPDATE_USER,
   setUserToken,
   removeUserToken
 } from "../api/auth"
@@ -18,10 +19,13 @@ const getInitialState = () => ({
 
 export default (state = getInitialState(), action) => {
   switch (action.type) {
+    case UPDATE_USER: {
+      return { ...state, ...action.update };
+    }
     case USER_LOGIN: {
+      setUserToken(action.user);
       const newState = { ...state, ...action.user, authed: true };
       ++newState.attempts;
-      setUserToken(action.user);
       return newState;
     }
     case AUTH_FAILURE: {

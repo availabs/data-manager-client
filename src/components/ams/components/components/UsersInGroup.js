@@ -9,17 +9,17 @@ import matchSorter from 'match-sorter'
 
 const UserHeader = ({ value, onChange, ...props }) =>
   <div className="grid grid-cols-9 font-bold gap-3">
-    <div className="col-span-4 border-b-2 border-gray-600">
+    <div className="col-span-4 border-b-2">
       <div>User Email</div>
       <div className="mb-1">
         <Input small showClear placeholder="Searh users..."
           value={ value } onChange={ onChange }/>
       </div>
     </div>
-    <div className="col-span-3 border-b-2 border-gray-600 flex justify-center items-end">
+    <div className="col-span-3 border-b-2 flex justify-center items-end">
       Remove from Group
     </div>
-    <div className="col-span-2 border-b-2 border-gray-600 flex justify-center items-end">
+    <div className="col-span-2 border-b-2 flex justify-center items-end">
       Delete User
     </div>
   </div>

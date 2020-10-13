@@ -1,4 +1,10 @@
 export const PROJECT_NAME = 'NPMRDS';
-export const HOST = 'https://graph.availabs.org';
-// export const AUTH_HOST = 'https://availauth.availabs.org';
-export const AUTH_HOST = 'http://localhost:3457'
+
+let API_HOST = 'https://graph.availabs.org';
+let AUTH_HOST = 'https://availauth.availabs.org';
+
+if (process.env.NODE_ENV === 'development') {
+  API_HOST = 'http://localhost:4444';
+  AUTH_HOST = 'http://localhost:3457';
+}
+export { API_HOST, AUTH_HOST };

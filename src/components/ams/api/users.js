@@ -1,13 +1,13 @@
 import { auth } from "./auth"
-import { sendSystemMessage } from "store/messages"
+import { sendSystemMessage } from 'components/avl-components/messages/reducer';
 // import { getRequests } from "./requests.module"
 
 import { AUTH_HOST/*, PROJECT_NAME*/ } from 'config';
 
 import { postJson } from "./utils"
 
-export const GET_USERS = "GET_USERS";
-export const USERS_IN_GROUPS = "USERS_IN_GROUPS";
+export const GET_USERS = "AMS::GET_USERS";
+export const USERS_IN_GROUPS = "AMS::USERS_IN_GROUPS";
 
 export const getUsers = () =>
 	(dispatch, getState) => {

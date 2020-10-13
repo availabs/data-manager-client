@@ -11,15 +11,14 @@ import {
 const RouterContext = React.createContext({});
 
 const GetParams = ({ Component, ...others }) => {
-  const params = useParams();
-  return <Component { ...others } params={ { ...params } }/>;
+  return <Component { ...others } params={ { ...useParams() } }/>;
 }
 
 export default (Component, options = {}) => {
   return ({ ...props }) => {
     const { path } = useRouteMatch(),
-      alt1 = `${ path }/:action/`,
-      alt2 = `${ path }/:action/:id/`,
+      alt1 = `${ path }/:action`,
+      alt2 = `${ path }/:action/:urlArg`,
       location = useLocation(),
       history = useHistory(),
       routerProps = React.useMemo(() => ({

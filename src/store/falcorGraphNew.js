@@ -5,9 +5,7 @@ import HttpDataSource from 'falcor-http-datasource'
 
 import throttle from "lodash.throttle"
 
-// const host = "https://graph.availabs.org/graph/"
-const host = "http://localhost:4444/"
-export const API_HOST = host;
+import { API_HOST } from "config";
 
 class CustomSource extends HttpDataSource {
  onBeforeRequest (config) {
@@ -138,7 +136,7 @@ export const falcorChunkerNice = (...args) => {
 export const falcorGraph = (() =>
   new MyModel({
     _root: new MyModelRoot(),
-    source: new CustomSource(host + 'graph', {
+    source: new CustomSource(API_HOST + '/graph', {
       crossDomain: true,
       withCredentials: false,
       timeout: 120000

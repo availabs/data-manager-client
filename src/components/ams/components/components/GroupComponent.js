@@ -3,26 +3,28 @@ import React from "react"
 import { Button } from "components/avl-components/components/Button"
 import { Input/*, Select*/ } from "components/avl-components/components/Inputs"
 
+import { useTheme } from "components/avl-components/wrappers/with-theme"
+
 import UsersInGroup from "./UsersInGroup"
 
 import get from "lodash.get"
 
 export const GroupHeader = ({ onChange, value }) =>
   <div className="grid grid-cols-12 gap-3 text-center font-bold">
-    <div className="col-span-4 text-left border-b-2 border-gray-600">
+    <div className="col-span-4 text-left border-b-2">
       <div>Group Name</div>
       <div className="mb-1">
         <Input small showClear placeholder="Search groups..."
           value={ value } onChange={ onChange }/>
       </div>
     </div>
-    <div className="col-span-3 border-b-2 border-gray-600 flex justify-center items-end">
+    <div className="col-span-3 border-b-2 flex justify-center items-end">
       Adjust Project Authority
     </div>
-    <div className="col-span-3 border-b-2 border-gray-600 flex justify-center items-end">
+    <div className="col-span-3 border-b-2 flex justify-center items-end">
       Remove from Project
     </div>
-    <div className="col-span-2 border-b-2 border-gray-600 flex justify-center items-end">
+    <div className="col-span-2 border-b-2 flex justify-center items-end">
       Delete Group
     </div>
   </div>
@@ -38,12 +40,14 @@ export default ({ group, project, adjustAuthLevel, deleteGroup, removeFromProjec
 
   const submit = React.useCallback(e => {
     e.preventDefault();
-    adjustAuthLevel(group.name, project, authLevel);
-  }, [adjustAuthLevel, group.name, project, authLevel])
+    adjustAuthLevel(group.name, authLevel);
+  }, [adjustAuthLevel, group.name, authLevel]);
+
+  const theme = useTheme();
 
   return (
     <div className={ `
-        my-1 py-1 px-2 ${ opened ? "bg-gray-200 rounded" : "" }`
+        my-1 py-1 px-2 rounded ${ opened ? theme.accent1 : "" }`
       }>
 
       <div className="grid grid-cols-12 gap-3">
@@ -77,7 +81,7 @@ export default ({ group, project, adjustAuthLevel, deleteGroup, removeFromProjec
 
         <div className="col-span-3 flex justify-center">
           <Button showConfirm
-            onClick={ e => removeFromProject(group.name, project) }>
+            onClick={ e => removeFromProject(group.name) }>
             remove
           </Button>
         </div>

@@ -1,12 +1,15 @@
-import { sendSystemMessage } from 'store/messages';
+import { sendSystemMessage } from 'components/avl-components/messages/reducer';
 
 import { AUTH_HOST, PROJECT_NAME } from 'config';
 
-export const USER_LOGIN = 'USER::USER_LOGIN';
-export const USER_LOGOUT = 'USER::USER_LOGOUT';
-export const AUTH_FAILURE = 'USER::AUTH_FAILURE';
+import { postJson } from "./utils"
 
-const receiveAuthResponse = user => ({
+export const USER_LOGIN = 'AMS::USER_LOGIN';
+export const USER_LOGOUT = 'AMS::USER_LOGOUT';
+export const AUTH_FAILURE = 'AMS::AUTH_FAILURE';
+export const UPDATE_USER = 'AMS::UPDATE_USER';
+
+export const receiveAuthResponse = user => ({
   type: USER_LOGIN,
   user
 });
@@ -31,38 +34,22 @@ export const removeUserToken = () => {
 export const logout = () => dispatch =>
   Promise.resolve(dispatch({ type: USER_LOGOUT }));
 
-export const login = (email, password, project) => dispatch =>
-  fetch(`${AUTH_HOST}/login`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, password, project: PROJECT_NAME })
-  })
-    .then(res => res.json())
+export const login = (email, password) => dispatch =>
+  postJson(`${ AUTH_HOST }/login`, { email, password, project: PROJECT_NAME })
     .then(res => {
       if (res.error) {
         dispatch({ type: AUTH_FAILURE });
-        dispatch(sendSystemMessage(res.error, {type: 'LOGIN ERROR'}));
-      } else {
+        dispatch(sendSystemMessage(res.error, { type: 'Danger' }));
+      }
+      else {
         dispatch(receiveAuthResponse(res.user));
       }
     })
-    .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , {type: 'LOGIN ERROR'})) );
+    .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'Danger' })) );
 
-export const auth = (token = null) => dispatch => {
-  token = token || getUserToken();
+export const auth = (token = getUserToken()) => dispatch => {
   if (token) {
-    return fetch(`${AUTH_HOST}/auth`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ token, project: PROJECT_NAME })
-    })
-      .then(res => res.json())
+    return postJson(`${ AUTH_HOST }/auth`, { token, project: PROJECT_NAME })
       .then(res => {
         if (res.error) {
           dispatch({ type: AUTH_FAILURE });
@@ -72,70 +59,67 @@ export const auth = (token = null) => dispatch => {
           dispatch(receiveAuthResponse(res.user));
         }
       })
-      .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'LOGIN ERROR' })));
+      .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'Danger' })));
   }
   return dispatch({ type: AUTH_FAILURE });
 };
+
+export const updatePassword = (current, password) =>
+  (dispatch, getState) => {
+    const { token } = getState().user;
+    if (token) {
+      return postJson(`${ AUTH_HOST }/password/update`, { token, current, password })
+        .then(res => {
+          if (res.error) {
+            return dispatch(sendSystemMessage(res.error, { type: 'Danger' }));
+          } else {
+            setUserToken(res);
+            dispatch(sendSystemMessage(res.message));
+            return dispatch({
+              type: UPDATE_USER,
+              update: { token: res.token }
+            });
+          }
+        })
+        .catch(err => console.log('err', err));
+    }
+    return Promise.resolve();
+  }
 
 export const setPassword = password =>
   (dispatch, getState) => {
     const { token } = getState().user;
     if (token) {
-      return fetch(`${ AUTH_HOST }/password/set`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json, text/plain, */*',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token, password })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.error) {
-          dispatch(sendSystemMessage(res.error));
-        }
-        else {
-          if (res.message) {
-            dispatch(sendSystemMessage(res.message));
+      return postJson(`${ AUTH_HOST }/password/set`, { token, password })
+        .then(res => {
+          if (res.error) {
+            dispatch(sendSystemMessage(res.error));
           }
-          return dispatch(auth(res.token));
-        }
-      });
+          else {
+            if (res.message) {
+              dispatch(sendSystemMessage(res.message));
+            }
+            return dispatch(auth(res.token));
+          }
+        });
     }
     return Promise.resolve();
   }
 
-export const signup = (email, password, project, addToGroup = null) => dispatch => {
-  return fetch(`${AUTH_HOST}/signup/request`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, password, project: PROJECT_NAME, addToGroup })
-  })
-    .then(res => res.json())
+export const verifyRequest = (token, password) => dispatch =>
+  postJson(`${ AUTH_HOST }/signup/request/verified`, { token, password })
     .then(res => {
       if (res.error) {
-        return dispatch(sendSystemMessage(res.error, {type: 'SIGNUP ERROR'}));
+        return dispatch(sendSystemMessage(res.error, { type: 'Danger' }));
       } else {
         dispatch(sendSystemMessage(res.message));
         return dispatch(receiveAuthResponse(res.user));
       }
     })
     .catch(err => console.log('err', err));
-};
 
-export const resetPassword = (email, project_name) => dispatch => {
-  return fetch(`${AUTH_HOST}/password/reset`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json, text/plain, */*',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, project_name })
-  })
-    .then(res => res.json())
+export const resetPassword = email => dispatch =>
+  postJson(`${ AUTH_HOST }/password/reset`, { email, project_name: PROJECT_NAME })
     .then(res => {
       if (res.error) {
         dispatch(sendSystemMessage(res.error));
@@ -143,4 +127,3 @@ export const resetPassword = (email, project_name) => dispatch => {
         dispatch(sendSystemMessage(res.message));
       }
     });
-};

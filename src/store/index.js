@@ -6,7 +6,7 @@ import falcorCache from "utils/redux-falcor-new/falcorCache"
 
 // import user from './user';
 import options from 'components/CensusCharts/options.store.js'
-import messages from './messages';
+import messages from 'components/avl-components/messages/reducer';
 
 import reducers from "components/ams/reducers"
 
