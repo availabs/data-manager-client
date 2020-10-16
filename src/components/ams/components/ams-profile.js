@@ -53,13 +53,13 @@ const UpdatePassword = ({ updatePassword, ...props }) => {
 
 export default wrapper(({ user, ...props }) => {
   return (
-    <div>
+    <div className="mt-16">
       <Header title="Profile"/>
       <div className="p-20">
         <div className="font-bold text-xl text-center">
           Welcome: { user.email }
         </div>
-        <div>
+        <div className="mt-4">
           <UpdatePassword user={ user } { ...props }/>
         </div>
       </div>

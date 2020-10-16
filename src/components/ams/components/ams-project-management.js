@@ -5,6 +5,7 @@ import Header from "components/avl-components/components/Header/HeaderComponent"
 import GroupComponent, { GroupHeader } from "./components/GroupComponent"
 import GroupBase from "./components/GroupBase"
 import Requests from "./components/Requests"
+import SendInvite from "./components/SendInvite"
 
 import amsProjectManagementWrapper from "../wrappers/ams-project-management"
 
@@ -27,9 +28,10 @@ export default amsProjectManagementWrapper(({ groups, project, requests, ...prop
     return [a1, [...a2, c]];
   }, [[], []]);
 
-  const nameSorter = (a, b) =>
+  const nameSorter = (a, b) => (
     a.name.toLowerCase() < b.name.toLowerCase() ? -1 :
-    a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0;
+    a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0
+  );
 
   groupsInProject.sort(nameSorter);
   otherGroups.sort(nameSorter);
@@ -37,21 +39,28 @@ export default amsProjectManagementWrapper(({ groups, project, requests, ...prop
   const [groupSearch, setGroupSearch] = React.useState("");
 
   return (
-    <div>
+    <div className="mt-16">
       <Header title="Project Management"/>
-      <div className="my-20">
+      <div className="py-20">
 
         <Requests requests={ requests } groups={ groupsInProject } { ...props }/>
 
-        <AssignToProject { ...props }
-          groups={ otherGroups }/>
+        <SendInvite groups={ groupsInProject } project={ project } { ...props }/>
 
-        <CreateGroup { ...props }/>
+        <div className="mb-5 py-2 px-4 border-2 rounded max-w-2xl m-auto">
+          <div className="mb-2">
+            <AssignToProject { ...props } groups={ otherGroups }/>
+          </div>
+          <div className="mb-2">
+            <CreateGroup { ...props }/>
+          </div>
+        </div>
 
         <GroupHeader value={ groupSearch } onChange={ setGroupSearch}/>
         { matchSorter(groupsInProject, groupSearch, { keys: ["name"] })
             .map(group =>
               <GroupComponent key={ group.name } { ...props }
+                project={ project }
                 group={ group }/>
             )
         }

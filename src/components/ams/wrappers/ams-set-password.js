@@ -6,7 +6,9 @@ export default Component =>
   class Wrapper extends React.Component {
     static defaultProps = {
       amsAction: "set-password",
-      urlArg: null
+      urlArg: null,
+      showInDirectory: false,
+      redirectTo: "/"
     }
     state = {
       password: "",
@@ -14,15 +16,15 @@ export default Component =>
     }
     handleSubmit(e) {
       e.preventDefault();
-      this.setState({ password: "", verify: "" });
       this.props.setPassword(this.props.urlArg, this.state.password);
+      this.setState({ password: "", verify: "" });
     }
     render() {
       const { password, verify } = this.state,
         canSubmit = password && verify && (password === verify);
 
       if (this.props.user.authed) {
-        return <Redirect to="/"/>
+        return <Redirect to={ this.props.redirectTo }/>
       }
       return (
         <Component { ...this.state } { ...this.props }

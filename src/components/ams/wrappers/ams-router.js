@@ -14,8 +14,8 @@ const GetParams = ({ Component, ...others }) => {
   return <Component { ...others } params={ { ...useParams() } }/>;
 }
 
-export default (Component, options = {}) => {
-  return ({ ...props }) => {
+export default Component =>
+  ({ ...props }) => {
     const { path } = useRouteMatch(),
       alt1 = `${ path }/:action`,
       alt2 = `${ path }/:action/:urlArg`,
@@ -40,4 +40,3 @@ export default (Component, options = {}) => {
       </RouterContext.Provider>
     )
   }
-}

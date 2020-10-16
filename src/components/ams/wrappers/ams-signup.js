@@ -1,10 +1,13 @@
 import React from "react"
 
+import { Redirect } from "react-router-dom"
+
 export default Component =>
   class SignupWrapper extends React.Component {
     static defaultProps = {
       amsAction: "signup",
-      addToGroup: false
+      addToGroup: false,
+      redirectTo: "/"
     }
     state = {
       email: "",
@@ -18,6 +21,10 @@ export default Component =>
     render() {
       const { email, verify } = this.state,
         canSubmit = email && verify && (email === verify);
+
+      if (this.props.user.authed) {
+        return <Redirect to={ this.props.redirectTo }/>
+      }
       return (
         <Component { ...this.props } { ...this.state }
           handleSubmit={ e => this.handleSubmit(e) }

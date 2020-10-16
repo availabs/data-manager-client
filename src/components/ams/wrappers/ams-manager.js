@@ -12,6 +12,7 @@ import Container from "../components/components/Container"
 import get from "lodash.get"
 
 const NoChild = () => (
+  <div className="h-screen flex items-center justify-center">
     <Container>
       <div className="text-lg font-bold">OOPS!!! Something went awry!</div>
       <div className="text-right">
@@ -20,8 +21,10 @@ const NoChild = () => (
         </Link>
       </div>
     </Container>
-  ),
-  NoAuthority = () => (
+  </div>
+);
+const NoAuthority = () => (
+  <div className="h-screen flex items-center justify-center">
     <Container>
       <div className="text-lg font-bold">OOPS!!! You do not have the authority!</div>
       <div className="text-right">
@@ -30,12 +33,13 @@ const NoChild = () => (
         </Link>
       </div>
     </Container>
-  )
+  </div>
+);
 
 const Directory = ({ pathname, children, user, ...props }) => {
   const theme = useTheme();
   return (
-    <div>
+    <div className="mt-16">
       <Header title="Directory"/>
       <div className="py-20">
         <div className="inline-block">

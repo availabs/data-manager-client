@@ -7,7 +7,8 @@ import get from "lodash.get"
 export default Component =>
   class LoginWrapper extends React.Component {
     static defaultProps = {
-      amsAction: "login"
+      amsAction: "login",
+      redirectTo: "/"
     }
     state = {
       email: "",
@@ -21,12 +22,12 @@ export default Component =>
       const { email, password } = this.state,
         canSubmit = email && password,
 
-        { location, user } = this.props,
+        { location, user, redirectTo } = this.props,
         { pathname } = location;
 
       if (user.authed) {
         const from = get(location, ["state", "from"]),
-          to = ((pathname === from) || !from) ? "/" : from;
+          to = ((pathname === from) || !from) ? redirectTo : from;
         return <Redirect to={ to }/>
       }
       return (

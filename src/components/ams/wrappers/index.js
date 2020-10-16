@@ -10,6 +10,7 @@ import amsVerifyRequest from "./ams-verify-request"
 import amsProfile from "./ams-profile"
 import amsSetPassword from "./ams-set-password"
 import amsVerifyEmail from "./ams-verify-email"
+import amsAcceptInvite from "./ams-accept-invite"
 
 export default {
   "ams-manager": amsManager,
@@ -23,5 +24,6 @@ export default {
   "ams-verify-request": amsVerifyRequest,
   "ams-profile": amsProfile,
   "ams-set-password": amsSetPassword,
-  "ams-verify-email": amsVerifyEmail
+  "ams-verify-email": amsVerifyEmail,
+  "ams-accept-invite": amsAcceptInvite
 }

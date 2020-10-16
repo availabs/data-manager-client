@@ -1,7 +1,8 @@
 import { sendSystemMessage } from 'components/avl-components/messages/reducer';
 import { getUsers } from "./users"
+import { receiveAuthResponse } from "./auth"
 
-import { AUTH_HOST, PROJECT_NAME } from 'config';
+import { AUTH_HOST, PROJECT_NAME, CLIENT_HOST } from 'config';
 
 import { postJson } from "./utils"
 
@@ -31,13 +32,15 @@ export const getRequests = () =>
 
 export const signup = (email, addToGroup = false) => dispatch =>
   postJson(`${ AUTH_HOST }/signup/request`, {
-    email, project: PROJECT_NAME,
-    // addToGroup, host: "http://localhost:3000", url: "/auth/verify-request"
-    host: "http://localhost:3000", url: "/auth/verify-email"
+    email, addToGroup, project: PROJECT_NAME,
+    host: CLIENT_HOST, url: addToGroup ? "/auth/verify-request" : "/auth/verify-email"
   }).then(res => {
       if (res.error) {
         return dispatch(sendSystemMessage(res.error, { type: 'Danger' }));
       } else {
+        if (res.user) {
+          dispatch(receiveAuthResponse(res.user));
+        }
         return dispatch(sendSystemMessage(res.message));
       }
     })
@@ -50,7 +53,7 @@ export const signupAccept = (user_email, group_name) =>
       return postJson(`${ AUTH_HOST }/signup/accept`, {
           group_name, user_email, token,
           project_name: PROJECT_NAME,
-          host: "http://localhost:3000", url: "/auth/set-password"
+          host: CLIENT_HOST, url: "/auth/set-password"
       }).then(res => {
         if (res.error) {
           return dispatch(sendSystemMessage(res.error, { type: 'Danger' }));
@@ -88,6 +91,17 @@ export const verifyEmail = token => dispatch =>
   postJson(`${ AUTH_HOST }/email/verify`, { token })
     .then(res => ({ dispatch, res, sendSystemMessage }));
 
+export const verifyRequest = (token, password) => dispatch =>
+  postJson(`${ AUTH_HOST }/signup/request/verify`, { token, password })
+    .then(res => {
+      if (res.error) {
+        return dispatch(sendSystemMessage(res.error, { type: 'Danger' }));
+      } else {
+        dispatch(sendSystemMessage(res.message));
+        return dispatch(receiveAuthResponse(res.user));
+      }
+    })
+
 export const deleteRequest = request =>
   (dispatch, getState) => {
     const { token } = getState().user;
@@ -107,3 +121,33 @@ export const deleteRequest = request =>
     }
     return Promise.resolve();
   }
+
+export const sendInvite = (user_email, group_name) =>
+  (dispatch, getState) => {
+    const { token } = getState().user;
+    if (token) {
+      return postJson(`${ AUTH_HOST }/invite`, {
+        token, user_email, group_name, project_name: PROJECT_NAME,
+        host: CLIENT_HOST, url: "/auth/accept-invite"
+      }).then(res => {
+        if (res.error) {
+            dispatch(sendSystemMessage(res.error));
+        }
+        else {
+          dispatch(getRequests());
+          dispatch(sendSystemMessage(res.message));
+        }
+      })
+    }
+    return Promise.resolve();
+  }
+export const acceptInvite = (token, password) => dispatch =>
+  postJson(`${ AUTH_HOST }/invite/accept`, { token, password })
+    .then(res => {
+      if (res.error) {
+        return dispatch(sendSystemMessage(res.error, { type: 'Danger' }));
+      } else {
+        dispatch(sendSystemMessage(res.message));
+        return dispatch(receiveAuthResponse(res.user));
+      }
+    })

@@ -5,7 +5,7 @@ import { Redirect } from "react-router-dom"
 export default Component =>
   class Wrapper extends React.Component {
     static defaultProps = {
-      amsAction: "verify-request",
+      amsAction: "accept-invite",
       urlArg: null,
       showInDirectory: false,
       redirectTo: "/"
@@ -16,8 +16,8 @@ export default Component =>
     }
     handleSubmit(e) {
       e.preventDefault();
+      this.props.acceptInvite(this.props.urlArg, this.state.password);
       this.setState({ password: "", verify: "" });
-      this.props.verifyRequest(this.props.urlArg, this.state.password);
     }
     render() {
       const { password, verify } = this.state,

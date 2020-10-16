@@ -4,8 +4,7 @@ export {
   auth,
   updatePassword,
   setPassword,
-  resetPassword,
-  verifyRequest
+  resetPassword
 } from "./auth"
 
 export {
@@ -32,5 +31,8 @@ export {
   signupAccept,
   signupReject,
   verifyEmail,
-  deleteRequest
+  deleteRequest,
+  sendInvite,
+  verifyRequest,
+  acceptInvite
 } from "./requests"

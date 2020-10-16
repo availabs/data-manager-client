@@ -10,7 +10,7 @@ import UsersInGroup from "./UsersInGroup"
 import get from "lodash.get"
 
 export const GroupHeader = ({ onChange, value }) =>
-  <div className="grid grid-cols-12 gap-3 text-center font-bold">
+  <div className="grid grid-cols-12 gap-3 text-center font-bold mb-1">
     <div className="col-span-4 text-left border-b-2">
       <div>Group Name</div>
       <div className="mb-1">
@@ -47,7 +47,7 @@ export default ({ group, project, adjustAuthLevel, deleteGroup, removeFromProjec
 
   return (
     <div className={ `
-        my-1 py-1 px-2 rounded ${ opened ? theme.accent1 : "" }`
+        mb-1 py-1 px-2 rounded ${ opened ? theme.accent1 : "" }`
       }>
 
       <div className="grid grid-cols-12 gap-3">
