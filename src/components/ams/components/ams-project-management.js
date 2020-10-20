@@ -6,6 +6,7 @@ import GroupComponent, { GroupHeader } from "./components/GroupComponent"
 import GroupBase from "./components/GroupBase"
 import Requests from "./components/Requests"
 import SendInvite from "./components/SendInvite"
+import UserSearch from "./components/UserSearch"
 
 import amsProjectManagementWrapper from "../wrappers/ams-project-management"
 
@@ -19,7 +20,7 @@ const CreateGroup = ({ createAndAssign, ...props }) =>
   <GroupBase title="Create Group" { ...props } action="create"
     onClick={ createAndAssign }/>
 
-export default amsProjectManagementWrapper(({ groups, project, requests, ...props }) => {
+export default amsProjectManagementWrapper(({ groups, project, requests, users, ...props }) => {
 
   const [groupsInProject, otherGroups] = groups.reduce(([a1, a2], c) => {
     if (c.projects.reduce((a, c) => a || c.project_name === project, false)) {
@@ -27,6 +28,10 @@ export default amsProjectManagementWrapper(({ groups, project, requests, ...prop
     }
     return [a1, [...a2, c]];
   }, [[], []]);
+
+  const usersInProject = users.filter(user =>
+    user.projects.reduce((a, c) => a || (c.project_name === project), false)
+  );
 
   const nameSorter = (a, b) => (
     a.name.toLowerCase() < b.name.toLowerCase() ? -1 :
@@ -56,14 +61,22 @@ export default amsProjectManagementWrapper(({ groups, project, requests, ...prop
           </div>
         </div>
 
-        <GroupHeader value={ groupSearch } onChange={ setGroupSearch}/>
-        { matchSorter(groupsInProject, groupSearch, { keys: ["name"] })
-            .map(group =>
-              <GroupComponent key={ group.name } { ...props }
-                project={ project }
-                group={ group }/>
-            )
-        }
+        <UserSearch users={ usersInProject } { ...props }
+          groups={ groupsInProject }
+          project={ project }/>
+
+
+        <div className="mb-5 py-2 px-4 border-2 rounded m-auto">
+          <GroupHeader value={ groupSearch } onChange={ setGroupSearch}/>
+          { matchSorter(groupsInProject, groupSearch, { keys: ["name"] })
+              .map(group =>
+                <GroupComponent key={ group.name } { ...props }
+                  project={ project }
+                  group={ group }
+                  users={ usersInProject }/>
+              )
+          }
+        </div>
       </div>
     </div>
   )

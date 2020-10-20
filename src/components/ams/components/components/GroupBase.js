@@ -20,7 +20,7 @@ export default ({ title, action, onClick, user, groups = null, accessor = (d => 
   }, [onClick, accessor, groupName, authLevel]);
 
   return (
-    <div className="">
+    <div>
       <div className="border-b-2 mb-1">
         <div className="grid grid-cols-4 gap-1">
           <div className="col-span-2 font-bold">

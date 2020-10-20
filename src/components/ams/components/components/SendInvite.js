@@ -60,7 +60,7 @@ export default ({ project, groups, sendInvite, ...props }) => {
         </div>
       </div>
       <form onSubmit={ handleSubmit }>
-        <div className="grid grid-cols-10 gap-1">
+        <div className="grid grid-cols-10 gap-1 mb-2">
           <div className="col-span-3">
             <Input placeholder="Enter user email..." type="email"
               onChange={ v => update({ email: v }) } value={ email }/>
@@ -71,7 +71,8 @@ export default ({ project, groups, sendInvite, ...props }) => {
           </div>
           <div className="col-span-3">
             <Select domain={ groups } multi={ false }
-              accessor={ g => `${g.name} (auth level ${ g.authLevel })` }
+              accessor={ g => g.name } placeholder="Select a group..."
+              listAccessor={ g => `${g.name} (auth level ${ g.authLevel })` }
               onChange={ v => update({ group: v }) } value={ group }/>
           </div>
           <div className="col-span-1">

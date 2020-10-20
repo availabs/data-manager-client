@@ -51,7 +51,10 @@ export const login = (email, password) => dispatch => {
         dispatch(receiveAuthResponse(res.user));
       }
     })
-    .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'Danger' })) );
+    .catch(error => {
+      dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'Danger' }));
+      dispatch({ type: AUTH_FAILURE });
+    });
 }
 
 export const auth = (token = getUserToken()) => dispatch => {
@@ -67,7 +70,10 @@ export const auth = (token = getUserToken()) => dispatch => {
           dispatch(receiveAuthResponse(res.user));
         }
       })
-      .catch(error => dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'Danger' })));
+      .catch(error => {
+        dispatch(sendSystemMessage('Cannot contact authentication server.' , { type: 'Danger' }));
+        dispatch({ type: AUTH_FAILURE });
+      });
   }
   return dispatch({ type: AUTH_FAILURE });
 };
@@ -88,8 +94,7 @@ export const updatePassword = (current, password) =>
               update: { token: res.token }
             });
           }
-        })
-        .catch(err => console.log('err', err));
+        });
     }
     return Promise.resolve();
   }

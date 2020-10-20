@@ -7,4 +7,4 @@ export const postJson = (url, body) =>
     },
     body: JSON.stringify(body)
 	})
-	.then(r => r.json())
+	.then(r => r.json());
