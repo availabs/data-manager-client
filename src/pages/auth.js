@@ -28,7 +28,9 @@ const AuthConfig = {
     { type: "ams-profile" },
     { type: "ams-accept-invite" },
 
-    { type: "ams-project-management",
+    { type: "ams-directory" },
+
+    { type: "ams-project-management"
 // @props.authLevel
 // Optional prop. This prop can be applied to any AMS child.
 // If set, users must have equal or higher authLevel to view this page.

@@ -102,6 +102,16 @@ export default {
   registerFormats: [TestFormat1, TestFormat2, TestFormat3, Doc],
 
   sections: [
+    { title: "Markdown",
+      attributes: [
+        { key: "test-markdown",
+          type: "markdown"
+        },
+        { key: "text-input-1",
+          type: "text"
+        }
+      ]
+    },
     { title: "Tests",
       attributes: [
         { key: "test-bool",

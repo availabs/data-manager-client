@@ -22,6 +22,7 @@ module.exports = {
     borderRadius: ['responsive', 'first', 'last'],
     borderColor: ['responsive', 'hover', 'focus', 'disabled'],
     margin: ['responsive', 'first', 'last'],
+    marginBottom: ['responsive', 'first', 'last'],
     padding: ['responsive', 'first', 'last'],
     backgroundColor: ['responsive', 'hover', 'focus', 'first', 'last', 'odd', 'even', 'disabled'],
     cursor: ['disabled', 'responsive'],
