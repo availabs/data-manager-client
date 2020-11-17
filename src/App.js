@@ -5,9 +5,6 @@ import ScrollToTop from 'utils/ScrollToTop'
 
 import Routes from 'Routes';
 
-import Layout from 'components/avl-components/DefaultLayout'
-import Messages from "components/avl-components/messages"
-
 import DmsComponents from "components/dms"
 import DmsWrappers from "components/dms/wrappers"
 
@@ -16,9 +13,11 @@ import AmsComponents from "components/ams"
 import AmsWrappers from "components/ams/wrappers"
 
 import {
+  DefaultLayout as Layout,
+  Messages,
   addComponents,
   addWrappers
-} from "components/avl-components/ComponentFactory"
+} from "@availabs/avl-components"
 
 addComponents(DmsComponents);
 addWrappers(DmsWrappers);

@@ -1,5 +1,5 @@
 import React from "react"
-import { useTheme } from "components/avl-components/wrappers/with-theme"
+import { useTheme } from "@availabs/avl-components"
 import { DmsButton } from "components/dms/components/dms-button"
 import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
 // import { hasValue } from "components/avl-components/components/Inputs/utils"
@@ -118,7 +118,7 @@ const config =  ({
     { type: "dms-table", // generic dms component for viewing multiple data items
       props: {
         dmsAction: "list",
-        buttonTheme: "textbutton",
+        buttonTheme: "buttonText",
         columns: [
           {
             path: 'self:data.title',

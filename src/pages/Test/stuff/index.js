@@ -1,8 +1,6 @@
 import React from "react"
 
-import { Input } from "components/avl-components/components/Inputs"
-import DndList from "components/avl-components/components/List/DndList"
-import { useTheme } from "components/avl-components/wrappers/with-theme"
+import { Input, DndList, useTheme } from "@availabs/avl-components"
 
 import { DmsButton } from "components/dms/components/dms-button"
 

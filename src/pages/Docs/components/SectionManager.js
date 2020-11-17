@@ -1,7 +1,7 @@
 import React, { useState  }  from "react"
 import { Link } from 'react-router-dom'
 
-import { List, ListItemAction, Input } from 'components/avl-components/components'
+import { List, ListItemAction, Input } from "@availabs/avl-components"
 
 import { DmsButton } from "components/dms/components/dms-button"
 

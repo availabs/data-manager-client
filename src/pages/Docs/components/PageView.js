@@ -1,7 +1,6 @@
 import React  from "react"
-import { useTheme } from "components/avl-components/wrappers/with-theme"
 
-import { SideNav } from 'components/avl-components/components'
+import { SideNav, useTheme } from "@availabs/avl-components"
 
 import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
 

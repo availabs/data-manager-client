@@ -1,5 +1,5 @@
 import React  from "react"
-import { useTheme } from "components/avl-components/wrappers/with-theme"
+import { useTheme } from "@availabs/avl-components"
 
 // import { List, ListItemAction, Input } from 'components/avl-components/components'
 // import { Link } from 'react-router-dom'

@@ -8,7 +8,7 @@ export default {
   name: 'Blog it Up',
   icon: 'fas fa-blog',
   layoutSettings: {
-    fixed: false,
+    fixed: true,
     nav: 'side',
     headerBar: false,
     theme: 'TEST_THEME'

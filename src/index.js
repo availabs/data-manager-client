@@ -3,25 +3,26 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import * as THEMES from 'components/avl-components/components/Themes'
-import { ThemeContext } from "components/avl-components/wrappers/with-theme"
-import { PROJECT_THEME } from 'config'
+import { API_HOST, PROJECT_THEME } from 'config'
 
 import get from "lodash.get"
 
 import { Provider } from 'react-redux';
 import store from 'store';
-// import { FalcorProvider } from 'utils/redux-falcor'
-import { FalcorProvider } from 'utils/redux-falcor-new'
-import { falcorGraph } from 'store/falcorGraphNew'
+import {
+  Themes,
+  FalcorProvider,
+  ThemeContext,
+  falcorGraph
+} from "@availabs/avl-components"
 
 import 'styles/tailwind.css';
 
 ReactDOM.render(
   <React.StrictMode>
    	<Provider store={ store }>
-  		<FalcorProvider falcor={ falcorGraph }>
-        <ThemeContext.Provider value={ get(THEMES, PROJECT_THEME, THEMES["light"]) }>
+  		<FalcorProvider falcor={ falcorGraph(API_HOST) }>
+        <ThemeContext.Provider value={ get(Themes, PROJECT_THEME, Themes["light"]) }>
   	    	<App />
         </ThemeContext.Provider>
       </FalcorProvider>

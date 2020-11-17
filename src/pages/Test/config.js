@@ -6,6 +6,8 @@ import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
 
 import { prettyKey/*, getFormat*/ } from "components/dms/utils"
 
+import { API_HOST } from "config"
+
 const ExpandRow = ({ values }) => {
   const [creator, content] = values;
   return (
@@ -69,6 +71,7 @@ export default {
     "dms-manager",
     { type: "dms-provider",
       options: {
+        imgUploadUrl: API_HOST,
         buttonThemes: {
           home: "buttonInfo",
           create: "buttonSuccess",
@@ -138,10 +141,10 @@ export default {
         className: "text-xl text-center font-bold",
         dmsActions: [
           { action: "dms:fake-three",
-            buttonTheme: "buttonPrimary"
+            buttonTheme: "buttonPrimaryText"
           },
           { action: "dms:fake-four",
-            buttonTheme: "buttonSuccess"
+            buttonTheme: "buttonSuccessText"
           }
         ]
       }
@@ -161,7 +164,7 @@ export default {
           options: {
             mapDataToProps: {
 // mapDataToProps is used by dms-view to map data items to wrapped component props
-// prop: [...attributes]
+// in this instance, the dms-card component receives the props "title", "body", and "footer"
               title: "item:data.title",
               body: [
                 "item:data.test-format-2",
@@ -169,7 +172,8 @@ export default {
                 "item:data.test-format-1",
                 "item:data.test-number-array",
                 "item:data.test-image",
-                "item:data.text-editor"
+                "item:data.text-editor",
+                "item:data.test-markdown"
               ],
               footer: [
                 "item:data.creator",
