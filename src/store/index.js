@@ -7,10 +7,10 @@ import { falcorCache, messages } from "@availabs/avl-components"
 // import user from './user';
 import options from 'components/CensusCharts/options.store.js'
 
-import reducers from "components/ams/reducers"
+import { Reducers } from "components/ams/src"
 
 const reducer = combineReducers({
-  ...reducers,
+  ...Reducers,
   options,
   messages,
   // graph
