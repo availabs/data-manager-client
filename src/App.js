@@ -9,7 +9,7 @@ import {
   Messages
 } from "@availabs/avl-components"
 
-class App extends React.Component {
+export default class App extends React.Component {
   render() {
     return (
       <BrowserRouter>
@@ -26,5 +26,3 @@ class App extends React.Component {
     )
   }
 }
-
-export default App;

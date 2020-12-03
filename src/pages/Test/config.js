@@ -71,7 +71,7 @@ export default {
     "dms-manager",
     { type: "dms-provider",
       options: {
-        imgUploadUrl: API_HOST,
+        imgUploadUrl: `${ API_HOST }/img/new`,
         buttonThemes: {
           home: "buttonInfo",
           create: "buttonSuccess",

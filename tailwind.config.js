@@ -1,5 +1,7 @@
 // tailwind.config.js
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme');
+
+const colors = require('tailwindcss/colors');
 
 module.exports = {
   theme: {
@@ -8,6 +10,11 @@ module.exports = {
       default: theme('currentColor')
     }),
     extend: {
+      colors: {
+        teal: colors.teal,
+        blueGray: colors.blueGray,
+        cyan: colors.cyan
+      },
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
@@ -19,18 +26,19 @@ module.exports = {
     }
   },
   variants: {
-    borderRadius: ['responsive', 'first', 'last'],
-    borderColor: ['responsive', 'hover', 'focus', 'disabled'],
-    margin: ['responsive', 'first', 'last'],
-    marginBottom: ['responsive', 'first', 'last'],
-    padding: ['responsive', 'first', 'last'],
-    backgroundColor: ['responsive', 'hover', 'focus', 'first', 'last', 'odd', 'even', 'disabled'],
-    cursor: ['disabled', 'responsive'],
-    opacity: ['responsive', 'disabled', 'hover', 'focus'],
-    textColor: ['responsive', 'hover', 'focus', 'disabled'],
-    fontWeight: ['responsive', 'hover', 'focus', 'disabled']
+    extend: {
+      ringColor: ['hover', 'active'],
+      borderRadius: ['first', 'last'],
+      borderColor: ['disabled'],
+      margin: ['first', 'last'],
+      padding: ['first', 'last'],
+      cursor: ['disabled'],
+      opacity: ['disabled'],
+      fontWeight: ['disabled'],
+      backgroundColor: ['disabled', 'active', 'first', 'last', 'odd', 'even'],
+      textColor: ['disabled']
+    }
   },
   plugins: [
-    require('@tailwindcss/ui'),
   ]
 }
