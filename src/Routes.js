@@ -17,12 +17,16 @@ import Home from "pages/home"
 
 import Auth from "pages/auth"
 
+import WebTest from "pages/web-test"
+
 export default [
 	// -- public
 	BlogPublic,
 	Blog,
 	Docs,
 	DocsView,
+
+	...WebTest,
 
 	MyBlog,
 	DmsDocs,

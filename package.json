@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@availabs/avl-components": "^1.0.10",
+    "@availabs/avl-components": "^1.0.22",
     "@draft-js-plugins/alignment": "^4.0.0-beta2",
-    "@draft-js-plugins/editor": "^4.0.0-beta3",
+    "@draft-js-plugins/editor": "^4.0.0-beta4",
     "@draft-js-plugins/focus": "^4.0.0-beta2",
     "@draft-js-plugins/image": "^4.0.0-beta2",
     "@draft-js-plugins/resizeable": "^4.0.0-beta2",
@@ -22,7 +22,7 @@
     "d3-format": "^1.4.5",
     "d3-selection": "^1.4.2",
     "d3-time-format": "^2.3.0",
-    "deep-equal": "^2.0.4",
+    "deep-equal": "^2.0.5",
     "draft-js": "^0.11.7",
     "draft-js-plugins-editor": "^3.0.0",
     "falcor": "^2.2.2",
@@ -32,9 +32,9 @@
     "lodash.debounce": "^4.0.8",
     "lodash.get": "^4.4.2",
     "lodash.throttle": "^4.1.1",
-    "match-sorter": "^4.2.1",
+    "match-sorter": "^5.0.0",
     "papaparse": "^5.3.0",
-    "postcss": "^8.1.13",
+    "postcss": "^8.2.1",
     "react": "^16.14.0",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.14.0",
@@ -48,8 +48,8 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.2.1",
-    "tlds": "^1.212.0",
-    "uplot": "^1.4.2"
+    "tlds": "^1.215.0",
+    "uplot": "^1.4.7"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -84,10 +84,10 @@
   },
   "devDependencies": {
     "autoprefixer": "^9.8.6",
-    "husky": "^4.3.0",
+    "husky": "^4.3.5",
     "lodash": "^4.17.20",
     "postcss-cli": "^7.1.2",
-    "source-map-explorer": "^2.5.0",
+    "source-map-explorer": "^2.5.1",
     "tailwindcss": "^2.0.1"
   }
 }

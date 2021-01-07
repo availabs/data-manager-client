@@ -48,7 +48,7 @@ export default {
   layoutSettings: {
     fixed: true,
     nav: 'side',
-    headerBar: false,
+    headerBar: true,
     theme: 'TEST_THEME'
   },
   component: AuthConfig

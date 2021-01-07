@@ -1,5 +1,3 @@
-import React from "react"
-
 import { BLOG_POST } from "./blog-post.type"
 import BlogPost from "./blog-post"
 
@@ -55,7 +53,6 @@ export default ({
     { type: "dms-table",
       props: {
         dmsAction: "list",
-        Container: ({ children }) => <div className="bg-white pb-2 rounded-b-lg">{ children }</div>,
         columns: [
           { path: "self:data.title",
             filter: "fuzzyText"
