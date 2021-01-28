@@ -4,3 +4,6 @@
 [submodule "src/components/ams"]
 	path = src/components/ams
 	url = https://github.com/availabs/ams.git
+[submodule "src/components/avl-graph"]
+	path = src/components/avl-graph
+	url = https://github.com/availabs/avl-graph.git

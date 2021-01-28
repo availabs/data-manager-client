@@ -19,6 +19,8 @@ import Auth from "pages/auth"
 
 import WebTest from "pages/web-test"
 
+import GraphTest from "pages/Test/graph"
+
 export default [
 	// -- public
 	BlogPublic,
@@ -30,6 +32,7 @@ export default [
 
 	MyBlog,
 	DmsDocs,
+	GraphTest,
 	...Test,
 
 	// ConfigSimple,
