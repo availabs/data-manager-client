@@ -1,6 +1,0 @@
-export * from "./LineGraph"
-export * from "./AxisLeft"
-export * from "./AxisBottom"
-export * from "./BarGraph"
-export * from "./AxisRight"
-export * from "./Group"
