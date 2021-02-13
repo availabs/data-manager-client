@@ -168,19 +168,19 @@ export default {
               title: "item:data.title",
               body: [
                 "item:data.test-format-2",
-                "item:data.test-format-array",
-                "item:data.test-format-1",
-                "item:data.test-number-array",
-                "item:data.test-image",
-                "item:data.text-editor",
-                "item:data.test-markdown"
+              //   "item:data.test-format-array",
+              //   "item:data.test-format-1",
+              //   "item:data.test-number-array",
+              //   "item:data.test-image",
+              //   "item:data.text-editor",
+              //   "item:data.test-markdown"
               ],
-              footer: [
-                "item:data.creator",
-                { path: "item:updated_at",
-                  format: "date"
-                }
-              ]
+              // footer: [
+              //   "item:data.creator",
+              //   { path: "item:updated_at",
+              //     format: "date"
+              //   }
+              // ]
             }
           }
         }
@@ -188,10 +188,7 @@ export default {
     },
 
     { type: "dms-create",
-      props: {
-        dmsAction: "create",
-        domain
-      },
+      props: { dmsAction: "create", domain },
       wrappers: ["with-auth"]
     },
 

@@ -8,7 +8,7 @@ import {
   UserMenuSeparator
 } from "@availabs/avl-components"
 import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
-import { DmsButton } from "components/dms/components/dms-button"
+// import { DmsButton } from "components/dms/components/dms-button"
 import { useAuth } from "components/ams/src"
 
 import { useMakeInteraction } from "components/dms/wrappers/dms-provider"
