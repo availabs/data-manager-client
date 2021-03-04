@@ -151,12 +151,12 @@ export default {
           type: "object"
         },
         { key: 'test-multi-select',
-          type: "text",
+          type: "select",
           isArray: true,
           domain: "props:domain"
         },
         { key: 'test-select',
-          type: "text",
+          type: "select",
           searchable: false,
           domain: "props:domain"
         },

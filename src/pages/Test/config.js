@@ -1,6 +1,6 @@
 import React from "react"
 
-import TEST_FORMAT from "./test-config.type"
+import TEST_FORMAT from "./test.format"
 
 import ReadOnlyEditor from "components/dms/components/editor/editor.read-only"
 
