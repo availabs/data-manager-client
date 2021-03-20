@@ -74,7 +74,8 @@ export default ({
     },
 
     { type: BlogPost,
-      props: { dmsAction: "view" }
+      props: { dmsAction: "view" },
+      wrappers: ["with-auth"]
     },
 
     { type: "dms-create",

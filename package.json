@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@availabs/avl-components": "^1.0.36",
+    "@availabs/avl-components": "^1.0.43",
     "@draft-js-plugins/alignment": "^4.1.0",
     "@draft-js-plugins/editor": "^4.1.0",
     "@draft-js-plugins/focus": "^4.1.0",
@@ -19,7 +19,7 @@
     "@testing-library/user-event": "^7.1.2",
     "classnames": "^2.2.6",
     "colorbrewer": "^1.4.0",
-    "d3": "^6.5.0",
+    "d3": "^6.6.0",
     "d3-brush": "^1.1.6",
     "d3-format": "^1.4.5",
     "d3-selection": "^1.4.2",
@@ -37,7 +37,7 @@
     "lodash.throttle": "^4.1.1",
     "match-sorter": "^5.0.0",
     "papaparse": "^5.3.0",
-    "postcss": "^8.2.5",
+    "postcss": "^8.2.8",
     "react": "^17.0.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^17.0.1",
@@ -51,8 +51,8 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.2.1",
-    "tlds": "^1.216.0",
-    "uplot": "^1.6.4"
+    "tlds": "^1.218.0",
+    "uplot": "^1.6.7"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -88,9 +88,9 @@
   "devDependencies": {
     "autoprefixer": "^9.8.6",
     "husky": "^4.3.8",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "postcss-cli": "^7.1.2",
     "source-map-explorer": "^2.5.2",
-    "tailwindcss": "^2.0.3"
+    "tailwindcss": "^2.0.4"
   }
 }

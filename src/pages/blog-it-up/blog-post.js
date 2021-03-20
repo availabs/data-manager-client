@@ -7,6 +7,7 @@ const BlogPost = ({ item, dataItems, startOpened = true, ...props }) => {
   if (!item) return null;
   const replies = dataItems.filter(i => +i.data.replyTo === +item.id);
 
+console.log(props.user)
   return (
     <div className={ `
       px-3 pt-3 mb-3 border border-gray-200 bg-gray-50 rounded-md shadow-md

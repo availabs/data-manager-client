@@ -3,10 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import {
-  API_HOST, PROJECT_THEME,
-  PROJECT_NAME, CLIENT_HOST, AUTH_HOST
-} from 'config'
+import { API_HOST, PROJECT_THEME } from 'config'
 
 import get from "lodash.get"
 
@@ -18,8 +15,7 @@ import DmsWrappers from "components/dms/wrappers"
 
 import {
   Components as AmsComponents,
-  Wrappers as AmsWrappers,
-  enableAuth
+  Wrappers as AmsWrappers
 } from "components/ams/src"
 
 import {
@@ -33,8 +29,6 @@ import {
 
 import 'styles/tailwind.css';
 
-const AuthEnabledApp = enableAuth(App, { AUTH_HOST, PROJECT_NAME, CLIENT_HOST });
-
 addComponents(DmsComponents);
 addWrappers(DmsWrappers);
 
@@ -46,7 +40,7 @@ ReactDOM.render(
    	<Provider store={ store }>
   		<FalcorProvider falcor={ falcorGraph(API_HOST) }>
         <ThemeContext.Provider value={ get(Themes, PROJECT_THEME, Themes["light"]) }>
-  	    	<AuthEnabledApp />
+          <App />
         </ThemeContext.Provider>
       </FalcorProvider>
   	</Provider>

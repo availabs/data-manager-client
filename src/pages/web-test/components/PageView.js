@@ -3,7 +3,7 @@ import React from "react"
 import {
   NavItem,
   useTheme,
-  UserMenu,
+  TopUserMenu,
   UserMenuItem,
   UserMenuSeparator
 } from "@availabs/avl-components"
@@ -41,7 +41,7 @@ console.log("USER:", user)
           Fake
         </NavItem>
         <div className="flex-1 flex items-center justify-end">
-          <UserMenu>
+          <TopUserMenu>
             { get(user, "authLevel", -1) < 5 ? null :
               <UserMenuItem to="/web-test-dev">
                 Admin
@@ -51,7 +51,7 @@ console.log("USER:", user)
             <UserMenuItem to="/auth/logout">
               Logout
             </UserMenuItem>
-          </UserMenu>
+          </TopUserMenu>
         </div>
       </div>
     </div>
