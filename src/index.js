@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import { API_HOST, PROJECT_THEME } from 'config'
+import { API_HOST } from 'config'
+import Theme from "./theme"
 
-import get from "lodash.get"
+// import get from "lodash.get"
 
 import { Provider } from 'react-redux';
 import store from 'store';
@@ -19,7 +20,7 @@ import {
 } from "components/ams/src"
 
 import {
-  Themes,
+  // Themes,
   FalcorProvider,
   ThemeContext,
   falcorGraph,
@@ -39,7 +40,7 @@ ReactDOM.render(
   <React.StrictMode>
    	<Provider store={ store }>
   		<FalcorProvider falcor={ falcorGraph(API_HOST) }>
-        <ThemeContext.Provider value={ get(Themes, PROJECT_THEME, Themes["light"]) }>
+        <ThemeContext.Provider value={ Theme }>
           <App />
         </ThemeContext.Provider>
       </FalcorProvider>
