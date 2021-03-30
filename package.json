@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@availabs/avl-components": "^1.0.50",
+    "@availabs/avl-components": "^1.0.56",
     "@draft-js-plugins/alignment": "^4.1.0",
     "@draft-js-plugins/editor": "^4.1.0",
     "@draft-js-plugins/focus": "^4.1.0",

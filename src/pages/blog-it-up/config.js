@@ -41,9 +41,7 @@ export default ({
     "dms-falcor",
     "with-auth"
   ],
-  props: {
-    format: BLOG_POST
-  },
+  props: { format: BLOG_POST },
   children: [
     { type: "dms-header",
       props: { title: "Blog it Up" }

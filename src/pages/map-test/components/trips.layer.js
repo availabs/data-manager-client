@@ -1,15 +1,12 @@
 import React from "react"
 
-import mapobxgl from "mapbox-gl"
-
 import { useTheme } from "@availabs/avl-components"
 
 import { LayerContainer } from "components/avl-map/src"
 
 import collection from "../utils/trips.json"
 
-const HoverComp = ({ data, layer }) => {
-console.log(data)
+const HoverComp = ({ data, layer, pinned }) => {
   const theme = useTheme();
   return (
     <div className="grid grid-cols-1 gap-y-1">

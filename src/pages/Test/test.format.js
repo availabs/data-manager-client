@@ -60,9 +60,6 @@ const TestFormat3 = {
   app: "dms",
   type: "dms-test-3",
   attributes: [
-    { key: "bool",
-      type: "boolean"
-    },
     { key: "test-3-1",
       type: "text",
       isArray: true,
@@ -91,7 +88,10 @@ const TestFormat3 = {
       type: "number",
       verify: "<= 10",
       isArray: true
-    }
+    },
+    { key: "bool",
+      type: "boolean"
+    },
   ]
 }
 
@@ -102,6 +102,28 @@ export default {
   registerFormats: [TestFormat1, TestFormat2, TestFormat3, Doc],
 
   sections: [
+    { title: "Type Select",
+      attributes: [
+        { key: "type-select",
+          type: "type-select",
+          attributes: [
+            { key: "type-1",
+              type: "richtext",
+              fullWidth: true
+            },
+            { key: "type-2",
+              type: "text"
+            },
+            { key: "type-3",
+              type: "dms-format",
+              format: "dms+dms-test-3",
+              isArray: true,
+              useOrdered: true
+            }
+          ]
+        }
+      ]
+    },
     { title: "Markdown",
       attributes: [
         { key: "test-markdown",
@@ -109,6 +131,16 @@ export default {
         },
         { key: "text-input-1",
           type: "text"
+        },
+        { key: "color-test-1",
+          type: "color",
+          inputProps: {
+            showRgb: false,
+            showLabels: false
+          }
+        },
+        { key: "color-test-2",
+          type: "color"
         }
       ]
     },
@@ -137,7 +169,8 @@ export default {
           type: "dms-format",
           format: "dms+doc",
           fullWidth: true,
-          isArray: true
+          isArray: true,
+          useOrdered: true
         }
       ]
     },

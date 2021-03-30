@@ -62,13 +62,13 @@ const domain = [
 ]
 
 export default {
-  type: "dms-content",
+  type: "dms-manager",
   // type: "dms-manager",
   wrappers: [
 // wrapper order is important
 // from index zero to i, higher index wrappers send props into lower index wrappers
 // higher index wrappers do not see props from lower index wrappers
-    "dms-manager",
+    // "dms-manager",
     { type: "dms-provider",
       options: {
         imgUploadUrl: `${ API_HOST }/img/new`,
@@ -99,12 +99,10 @@ export default {
     "with-auth"
   ],
   props: {
-    format: TEST_FORMAT
+    format: TEST_FORMAT,
+    title: "Testing Stuff"
   },
   children: [
-    { type: "dms-header",
-      props: { title: "Testing Stuff" }
-    },
 // dms-manager children are special
 // they are only shown when the dms-manager state.stack.top.action === child.props.dmsAction
     { type: "dms-table",
@@ -168,12 +166,12 @@ export default {
               title: "item:data.title",
               body: [
                 "item:data.test-format-2",
-              //   "item:data.test-format-array",
-              //   "item:data.test-format-1",
-              //   "item:data.test-number-array",
-              //   "item:data.test-image",
-              //   "item:data.text-editor",
-              //   "item:data.test-markdown"
+                "item:data.test-format-array",
+                "item:data.test-format-1",
+                "item:data.test-number-array",
+                "item:data.test-image",
+                "item:data.text-editor",
+                "item:data.test-markdown"
               ],
               // footer: [
               //   "item:data.creator",

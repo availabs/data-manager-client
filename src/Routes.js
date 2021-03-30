@@ -16,13 +16,15 @@ import NoMatch from 'pages/404';
 // import Login from "pages/Login"
 // import Logout from "pages/Logout"
 
-// import Home from "pages/home"
+import Home from "pages/home"
 
 import Auth from "pages/auth"
 
 // import WebTest from "pages/web-test"
 
 import GraphTest from "pages/Test/graph"
+
+import ShmpCms from "pages/Test/shmp-cms"
 
 export default [
 	// -- public
@@ -36,6 +38,9 @@ export default [
 	MyBlog,
 	DmsDocs,
 	GraphTest,
+
+	ShmpCms,
+
 	...Test,
 
 	...MapTest,
@@ -43,7 +48,7 @@ export default [
 	// ConfigSimple,
 	// Login,
 	// Logout,
-	// Home,
+	Home,
 
 	Auth,
 

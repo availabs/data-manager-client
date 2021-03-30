@@ -1,16 +1,22 @@
 import React from "react"
 
+import { useTheme } from "@availabs/avl-components"
+
 import { DmsButton } from "components/dms/components/dms-button"
 
 const BlogPost = ({ item, dataItems, startOpened = true, ...props }) => {
   const [opened, setOpened] = React.useState(startOpened);
+
+  const theme = useTheme();
+
   if (!item) return null;
+
   const replies = dataItems.filter(i => +i.data.replyTo === +item.id);
 
-console.log(props.user)
   return (
     <div className={ `
-      px-3 pt-3 mb-3 border border-gray-200 bg-gray-50 rounded-md shadow-md
+      px-3 pt-3 mb-3 rounded-md shadow-md
+      ${ theme.menuBg }
       ${ opened && replies.length ? "pb-0" : "pb-3" }
     ` }>
       <div className="text-xl font-bold">{ item.data.title }</div>
@@ -22,7 +28,7 @@ console.log(props.user)
           ({ item.id }) { item.updated_at }
         </div>
       </div>
-      <div className="p-4 rounded border bg-white">
+      <div className={ `p-4 rounded ${ theme.bg }` }>
         { item.data.body }
       </div>
       <div className="relative flex items-center pt-2">

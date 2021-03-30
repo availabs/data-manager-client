@@ -67,7 +67,7 @@ const TDS_THEME_BASE = {
 	inputBorderDisabled: "rounded border border-blueGray-400 hover:border-blueGray-400",
 	inputBgFocus: "bg-blueGray-500 cursor-pointer focus:outline-none",
 	inputBorderFocus: "rounded border hover:border-blueGray-300 focus:border-blueGray-300 border-blueGray-300",
-	booleanInputSlider: "bg-blueGray-800",
+	booleanInputSlider: "bg-blueGray-700",
 
 	textBase: "text-base",
 	textSmall: "text-sm",
