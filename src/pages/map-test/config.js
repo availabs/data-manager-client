@@ -2,7 +2,7 @@ import { AvlMap } from "components/avl-map/src"
 
 import { MAPBOX_TOKEN } from "config.private"
 
-import tripsFactory from "./components/trips.layer"
+import tripsFactory from "./layers/trips.layer"
 
 const Config = {
   type: AvlMap,

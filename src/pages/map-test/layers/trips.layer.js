@@ -1,6 +1,8 @@
 import React from "react"
 
-import { useTheme } from "@availabs/avl-components"
+import get from "lodash.get"
+
+import { Button, useTheme, getColorRange } from "@availabs/avl-components"
 
 import { LayerContainer } from "components/avl-map/src"
 
@@ -32,6 +34,32 @@ const HoverComp = ({ data, layer, pinned }) => {
           </div>
         ))
       }
+    </div>
+  )
+}
+const InfoBox = ({ layer, MapActions }) => {
+  const onClick = React.useCallback(e => {
+    layer.updateState({ selection: [] });
+    get(layer, ["onBoxSelect", "selectedValues"], [])
+      .forEach(value => {
+        MapActions.mapboxMap.setFeatureState(value, { select: false });
+      });
+  }, [layer, MapActions.mapboxMap]);
+  return (
+    <div className="pt-1 px-1">
+      <Button block showConfirm
+        onClick={ onClick }>
+        clear
+      </Button>
+      <div className="mt-2">
+        { get(layer, ["state", "selection"], [])
+            .map(feature =>
+              <div key={ feature.id }>
+                { feature.properties.trip_id }
+              </div>
+            )
+        }
+      </div>
     </div>
   )
 }
@@ -81,6 +109,16 @@ class TripsLayer extends LayerContainer {
     map.setFilter("trips", filter);
   }
 
+  legend = {
+    Title: ({ layer }) => <div>{ layer.name } Legend</div>,
+    domain: [0, 5, 10, 10, 20, 20, 40, 40, 40, 40, 40, 40, 80, 80, 80, 80, 160, 160, 160, 320],
+    range: getColorRange(5, "BrBG"),
+    types: ["quantile", "quantize"],
+    type: "quantize",
+    show: true,
+    format: ",.1f"
+  }
+
   filters = {
     tripModes: {
       name: "Trip Mode",
@@ -113,9 +151,26 @@ class TripsLayer extends LayerContainer {
     }
   ]
 
+  infoBoxes = [{
+    Header: "Trip IDs",
+    Component: InfoBox,
+// The show key can now be a function. It can still be a boolean.
+    show: layer => Boolean(get(layer, ["state", "selection", "length"], 0))
+  }]
+
   onHover = {
     layers: ["trips"],
-    callback: (layerId, features, lngLat) => {
+    property: "trip_mode",
+// Supplying property is the same as the following filterFunc.
+// The filterFunc allows for more advanced filters to be applied onHover.
+    // filterFunc: (layerId, features, lngLat, point) => {
+    //   return [
+    //     "in",
+    //     ["get", "trip_mode"],
+    //     ["literal", features.map(f => f.properties.trip_mode)]
+    //   ]
+    // },
+    callback: (layerId, features, lngLat, point) => {
       return features.map(f => [
         [f.properties.trip_id],
         ["Trip Mode", f.properties.trip_mode],
@@ -124,6 +179,13 @@ class TripsLayer extends LayerContainer {
       ]);
     },
     HoverComp
+  }
+
+  onBoxSelect = {
+    layers: ["trips"],
+// This filter is optional. It might not be useful but was easy to implement...
+    filter: ["==", ["get", "trip_mode"], "6"],
+    className: "bg-blueGray-800 bg-opacity-50 border-blueGray-900 border-2"
   }
 
   sources = [
@@ -140,7 +202,19 @@ class TripsLayer extends LayerContainer {
       type: "line",
       paint: {
         "line-width": 4,
-        "line-color": "#900",
+        "line-color": [
+          "case",
+          ["all",
+            ["boolean", ["feature-state", "select"], false],
+            ["boolean", ["feature-state", "hover"], false]
+          ],
+          "#909",
+          ["boolean", ["feature-state", "select"], false],
+          "#009",
+          ["boolean", ["feature-state", "hover"], false],
+          "#900",
+          "#090"
+        ],
         "line-opacity": 0.5
       }
     }
