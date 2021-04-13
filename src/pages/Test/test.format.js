@@ -95,64 +95,63 @@ const TestFormat3 = {
   ]
 }
 
+const Section = {
+  app: "dms",
+  type: "section-test",
+  attributes: [
+    { key: "section-title",
+      type: "text"
+    },
+    { key: "section-type",
+      type: "type-select",
+      attributes: [
+        { key: "type-1",
+          type: "richtext",
+          fullWidth: true
+        },
+        { key: "type-2",
+          type: "text"
+        },
+        { key: "type-3",
+          type: "dms-format",
+          format: "dms+dms-test-3",
+          isArray: true,
+          useOrdered: true
+        }
+      ]
+    }
+  ]
+}
+const Page = {
+  app: "dms",
+  type: "page-test",
+  attributes: [
+    { key: "page-title",
+      type: "text"
+    },
+    { key: "sections",
+      type: "dms-format",
+      format: "dms+section-test",
+      isArray: true,
+      useOrdered: true
+    }
+  ]
+}
+
 export default {
   app: "dms",
   type: "dms-test",
 
-  registerFormats: [TestFormat1, TestFormat2, TestFormat3, Doc],
+  registerFormats: [TestFormat1, TestFormat2, TestFormat3, Page, Section, Doc],
 
   sections: [
     { title: "Type Select",
       attributes: [
-        { key: "type-select",
-          type: "type-select",
-          attributes: [
-            { key: "type-1",
-              type: "richtext",
-              fullWidth: true
-            },
-            { key: "type-2",
-              type: "text"
-            },
-            { key: "type-3",
-              type: "dms-format",
-              format: "dms+dms-test-3",
-              isArray: true,
-              useOrdered: true
-            }
-          ]
-        }
-      ]
-    },
-    { title: "Markdown",
-      attributes: [
-        { key: "test-markdown",
-          type: "markdown"
-        },
-        { key: "text-input-1",
-          type: "text"
-        },
-        { key: "color-test-1",
-          type: "color",
-          inputProps: {
-            showRgb: false,
-            showLabels: false
-          }
-        },
-        { key: "color-test-2",
-          type: "color"
-        }
-      ]
-    },
-    { title: "Tests",
-      attributes: [
-        { key: "test-bool",
-          type: "boolean",
-          default: true
-        },
-        { key: "test-1",
+        { key: "pages",
           type: "dms-format",
-          format: "dms+dms-test-3"
+          format: "dms+page-test",
+          isArray: true,
+          useOrdered: true
         }
       ]
     },
@@ -163,85 +162,128 @@ export default {
         }
       ]
     },
-    { title: "Test Doc",
+    { title: "Format Test",
       attributes: [
-        { key: "doc-page",
+        { key: "test-format-2",
           type: "dms-format",
-          format: "dms+doc",
-          fullWidth: true,
+          format: "dms+dms-test-2",
           isArray: true,
           useOrdered: true
         }
       ]
     },
-    { title: "Random",
-      attributes: [
-        { key: "test-date-array",
-          type: 'date',
-          isArray: true
-        },
-        { key: "test-object-input",
-          type: "object"
-        },
-        { key: 'test-multi-select',
-          type: "select",
-          isArray: true,
-          domain: "props:domain"
-        },
-        { key: 'test-select',
-          type: "select",
-          searchable: false,
-          domain: "props:domain"
-        },
-      ]
-    },
-    { title: "Image",
-      attributes: [
-        { key: "test-image",
-          type: "img"
-        }
-      ]
-    },
-    { title: "Numbers",
-      attributes: [
-        { key: "test-number",
-          type: "number"
-        },
-        { key: "test-number-array",
-          type: "number",
-          isArray: true
-        },
-      ]
-    },
-    { title: "Info",
-      attributes: [
-        { key: "title",
-          type: "text",
-          required: true
-        },
-        { key: "creator",
-          type: "text",
-          default: "props:user.id",
-          editable: false
-        }
-      ]
-    },
-    { title: "Format",
-      attributes: [
-        { key: "test-format-1",
-          type: "dms-format",
-          format: "dms+dms-test-1"
-        },
-        { key: "test-format-2",
-          type: "dms-format",
-          format: "dms+dms-test-2"
-        },
-        { key: "test-format-array",
-          type: "dms-format",
-          format: "dms+dms-test-2",
-          isArray: true
-        },
-      ]
-    },
-  ]
+    // { title: "Format",
+    //   attributes: [
+    //     { key: "test-format-1",
+    //       type: "dms-format",
+    //       format: "dms+dms-test-1"
+    //     },
+    //     { key: "test-format-2",
+    //       type: "dms-format",
+    //       format: "dms+dms-test-2"
+    //     },
+    //     { key: "test-format-array",
+    //       type: "dms-format",
+    //       format: "dms+dms-test-2",
+    //       isArray: true
+    //     },
+    //   ]
+    // },
+    //
+    // { title: "Markdown",
+    //   attributes: [
+    //     { key: "test-markdown",
+    //       type: "markdown"
+    //     },
+    //     { key: "text-input-1",
+    //       type: "text"
+    //     },
+    //     { key: "color-test-1",
+    //       type: "color",
+    //       inputProps: {
+    //         showRgb: false,
+    //         showLabels: false
+    //       }
+    //     },
+    //     { key: "color-test-2",
+    //       type: "color"
+    //     }
+    //   ]
+    // },
+    // { title: "Tests",
+    //   attributes: [
+    //     { key: "test-bool",
+    //       type: "boolean",
+    //       default: true
+    //     },
+    //     { key: "test-1",
+    //       type: "dms-format",
+    //       format: "dms+dms-test-3"
+    //     }
+    //   ]
+    // },
+    // { title: "Test Doc",
+    //   attributes: [
+    //     { key: "doc-page",
+    //       type: "dms-format",
+    //       format: "dms+doc",
+    //       fullWidth: true,
+    //       isArray: true,
+    //       useOrdered: true
+    //     }
+    //   ]
+    // },
+    // { title: "Random",
+    //   attributes: [
+    //     { key: "test-date-array",
+    //       type: 'date',
+    //       isArray: true
+    //     },
+    //     { key: "test-object-input",
+    //       type: "object"
+    //     },
+    //     { key: 'test-multi-select',
+    //       type: "select",
+    //       isArray: true,
+    //       domain: "props:domain"
+    //     },
+    //     { key: 'test-select',
+    //       type: "select",
+    //       searchable: false,
+    //       domain: "props:domain"
+    //     },
+    //   ]
+    // },
+    // { title: "Image",
+    //   attributes: [
+    //     { key: "test-image",
+    //       type: "img"
+    //     }
+    //   ]
+    // },
+    // { title: "Numbers",
+    //   attributes: [
+    //     { key: "test-number",
+    //       type: "number"
+    //     },
+    //     { key: "test-number-array",
+    //       type: "number",
+    //       isArray: true
+    //     },
+    //   ]
+    // },
+    // { title: "Info",
+    //   attributes: [
+    //     { key: "title",
+    //       type: "text",
+    //       required: true
+    //     },
+    //     { key: "creator",
+    //       type: "text",
+    //       default: "props:user.id",
+    //       editable: false
+    //     }
+    //   ]
+    // },
+  ] // END SECTIONS ARRAY
 }
