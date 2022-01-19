@@ -1,5 +1,5 @@
 import NoMatch from "pages/404";
 
-import Home from "pages/home";
+import DataManagerMetadata from "pages/data-manager-views";
 
-export default [Home, NoMatch];
+export default [DataManagerMetadata, NoMatch];
