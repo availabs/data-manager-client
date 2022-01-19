@@ -1,52 +1,33 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
 
-import { API_HOST } from 'config'
-import Theme from "./theme"
+import { API_HOST } from "config";
+import Theme from "./theme";
 
-// import get from "lodash.get"
-
-import { Provider } from 'react-redux';
-import store from 'store';
-
-import DmsComponents from "components/dms"
-import DmsWrappers from "components/dms/wrappers"
+import { Provider } from "react-redux";
+import store from "store";
 
 import {
-  Components as AmsComponents,
-  Wrappers as AmsWrappers
-} from "components/ams/src"
-
-import {
-  // Themes,
   FalcorProvider,
   ThemeContext,
   falcorGraph,
-  addComponents,
-  addWrappers
-} from "@availabs/avl-components"
+} from "@availabs/avl-components";
 
-import 'styles/tailwind.css';
-
-addComponents(DmsComponents);
-addWrappers(DmsWrappers);
-
-addComponents(AmsComponents);
-addWrappers(AmsWrappers);
+import "styles/tailwind.css";
 
 ReactDOM.render(
   <React.StrictMode>
-   	<Provider store={ store }>
-  		<FalcorProvider falcor={ falcorGraph(API_HOST) }>
-        <ThemeContext.Provider value={ Theme }>
+    <Provider store={store}>
+      <FalcorProvider falcor={falcorGraph(API_HOST)}>
+        <ThemeContext.Provider value={Theme}>
           <App />
         </ThemeContext.Provider>
       </FalcorProvider>
-  	</Provider>
+    </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change
