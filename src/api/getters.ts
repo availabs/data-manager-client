@@ -106,7 +106,9 @@ export async function getFullDataManagerMetadata(): Promise<any> {
 
   const srcByIdPath = ["datamanager", "sources", "byId"];
 
-  const sourcesIds = Object.keys(_.get(falcorCache, srcByIdPath));
+  const sourcesIds = Object.keys(_.get(falcorCache, srcByIdPath)).filter((x) =>
+    Number.isFinite(+x)
+  );
 
   const sourcesById = sourcesIds.reduce((acc: any, srcId) => {
     const attributesSubGraph = _.get(falcorCache, [
@@ -142,7 +144,9 @@ export async function getFullDataManagerMetadata(): Promise<any> {
 
   const viewsByIdPath = ["datamanager", "views", "byId"];
 
-  const viewIds = Object.keys(_.get(falcorCache, viewsByIdPath));
+  const viewIds = Object.keys(_.get(falcorCache, viewsByIdPath)).filter((x) =>
+    Number.isFinite(+x)
+  );
 
   const viewsById = viewIds.reduce((acc: any, viewId) => {
     const attributesSubGraph = _.get(falcorCache, [
