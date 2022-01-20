@@ -67,7 +67,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build:style": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
     "start": "ESLINT_NO_DEV_ERRORS='true' npm run build:style && ESLINT_NO_DEV_ERRORS='true' NODE_ENV=development TSC_COMPILE_ON_ERROR=true react-scripts start",
-    "build": "react-scripts build",
+    "build": "ESLINT_NO_DEV_ERRORS=true TSC_COMPILE_ON_ERROR=true react-scripts build",
     "test": "react-scripts test",
     "test:nowatch": "CI=true react-scripts test --env=jsdom",
     "lint": "eslint --fix src/**/*.js --max-warnings=0",
